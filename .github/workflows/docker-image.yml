@@ -44,5 +44,8 @@ jobs:
       
       - name: Deploy to cluster
         run: |
+          kubectl create secret generic homlibrary-bot-secrets \
+            --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
+            --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
           kubectl rollout restart deployment/telegram-bot

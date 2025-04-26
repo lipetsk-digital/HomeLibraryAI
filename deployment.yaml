@@ -19,8 +19,8 @@ spec:
         - name: TELEGRAM_TOKEN
           valueFrom:
             secretKeyRef:
-              name: bot-secrets
-              key: token
+              name: homlibrary-bot-secrets
+              key: telegram-token
         resources:
           requests:
             memory: "128Mi"
