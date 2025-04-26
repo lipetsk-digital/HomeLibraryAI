@@ -19,7 +19,7 @@ spec:
         - name: TELEGRAM_TOKEN
           valueFrom:
             secretKeyRef:
-              name: homlibrary-bot-secrets
+              name: homelibrary-bot-secrets
               key: telegram-token
         resources:
           requests:

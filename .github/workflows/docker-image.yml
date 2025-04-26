@@ -29,8 +29,8 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.REGISTRY_HOST }}/stkorn/homlibrary-bot:latest
-          ${{ secrets.REGISTRY_HOST }}/stkorn/homlibrary-bot:${{ github.sha }}
+          ${{ secrets.REGISTRY_HOST }}/stkorn/homelibrary-bot:latest
+          ${{ secrets.REGISTRY_HOST }}/stkorn/homelibrary-bot:${{ github.sha }}
           
 
   deploy:
@@ -47,7 +47,7 @@ jobs:
       
       - name: Deploy to cluster
         run: |
-          kubectl create secret generic homlibrary-bot-secrets \
+          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
