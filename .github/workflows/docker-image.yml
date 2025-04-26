@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: cr.selcloud.ru
-  IMAGE_NAME: stkorn/homelibrary-bot
+  IMAGE_NAME: ${{ env.REGISTRY }}/stkorn/homelibrary-bot
 
 jobs:
 
