@@ -1,6 +1,10 @@
 # HomeLibraryAI
 
-![HomeLibraryAI Avatar](images/avatar_min.jpg)(images/avatar.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)(https://t.me/home_library_ai_bot)
+| ![HomeLibraryAI Avatar](images/avatar_min.jpg) | ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png) <br/>  https://t.me/home_library_ai_bot |
+| :-: | :-: |
+|   |   |
+
+ 
 
 
 
