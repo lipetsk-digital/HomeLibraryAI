@@ -29,8 +29,8 @@ jobs:
         context: .
         push: true
         tags: |
-          ${{ secrets.REGISTRY_HOST }}/${{ secrets.REGISTRY_NAME }}:latest
-          ${{ secrets.REGISTRY_HOST }}/${{ secrets.REGISTRY_NAME }}:${{ github.sha }}
+          ${{ secrets.REGISTRY_HOST }}/stkorn/homlibrary-bot:latest
+          ${{ secrets.REGISTRY_HOST }}/stkorn/homlibrary-bot:${{ github.sha }}
           
 
   deploy:
@@ -51,4 +51,4 @@ jobs:
             --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
-          kubectl rollout restart deployment/telegram-bot
+          kubectl rollout restart deployment/homlibrary-bot

@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36" version="26.2.14">
   <diagram name="Страница — 1" id="oOJbh-bXk2o8b-5QtpvW">
-    <mxGraphModel dx="1749" dy="1336" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1452" dy="649" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -45,6 +45,14 @@
         <mxCell id="yHow243BQbqHlRSpVy6M-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-17" target="yHow243BQbqHlRSpVy6M-41">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="yHow243BQbqHlRSpVy6M-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-17" target="yHow243BQbqHlRSpVy6M-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-310" y="188" />
+              <mxPoint x="-310" y="215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="yHow243BQbqHlRSpVy6M-17" value="GitHub &lt;br&gt;actions" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="-397" y="150" width="62" height="50" as="geometry" />
         </mxCell>
@@ -75,9 +83,9 @@
         <mxCell id="yHow243BQbqHlRSpVy6M-18" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;developer&lt;/div&gt;" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#A9C4EB;" vertex="1" parent="1">
           <mxGeometry x="-730" y="140" width="30" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="yHow243BQbqHlRSpVy6M-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-21" target="yHow243BQbqHlRSpVy6M-22">
+        <mxCell id="yHow243BQbqHlRSpVy6M-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-22" target="yHow243BQbqHlRSpVy6M-21">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="290" y="360" as="targetPoint" />
+            <mxPoint x="290" y="360" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="yHow243BQbqHlRSpVy6M-21" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;user&lt;/div&gt;" style="shape=actor;whiteSpace=wrap;html=1;fillColor=#FFB570;" vertex="1" parent="1">
@@ -89,7 +97,7 @@
         <mxCell id="yHow243BQbqHlRSpVy6M-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-22" target="yHow243BQbqHlRSpVy6M-39">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="yHow243BQbqHlRSpVy6M-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-22" target="yHow243BQbqHlRSpVy6M-23">
+        <mxCell id="yHow243BQbqHlRSpVy6M-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="yHow243BQbqHlRSpVy6M-23" target="yHow243BQbqHlRSpVy6M-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="yHow243BQbqHlRSpVy6M-22" value="&amp;nbsp; &amp;nbsp;Telegram&amp;nbsp; application" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.mobile_client;" vertex="1" parent="1">
