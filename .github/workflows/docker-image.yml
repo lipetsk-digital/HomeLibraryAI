@@ -29,3 +29,20 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.REGISTRY_HOST }}/${{ secrets.REGISTRY_NAME }}:latest
+
+  deploy:
+      needs: [build-and-push]
+      runs-on: ubuntu-latest
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Configure Kubernetes
+        uses: azure/k8s-set-context@v3
+        with:
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      
+      - name: Deploy to cluster
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl rollout restart deployment/telegram-bot
