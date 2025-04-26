@@ -31,4 +31,5 @@ jobs:
       with:
         context: .
         push: true
+        registry: ${{ secrets.DOCKER_HOST }}
         tags: ${{ env.IMAGE_NAME }}:latest
