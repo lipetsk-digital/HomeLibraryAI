@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: telegram-bot
+  name: homelibrary-bot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: telegram-bot
+      app: homelibrary-bot
   template:
     metadata:
       labels:
-        app: telegram-bot
+        app: homelibrary-bot
     spec:
       containers:
       - name: bot
