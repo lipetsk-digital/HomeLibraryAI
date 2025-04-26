@@ -1,6 +1,6 @@
 # HomeLibraryAI
 
-![HomeLibraryAI Avatar](images/avatar_mini.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot_mini.png)
+![HomeLibraryAI Avatar](images/avatar_min.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot_min.png)
 
 
 
