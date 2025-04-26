@@ -51,4 +51,4 @@ jobs:
             --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
-          kubectl rollout restart deployment/homlibrary-bot
+          kubectl rollout restart deployment/homelibrary-bot
