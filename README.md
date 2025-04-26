@@ -7,3 +7,4 @@ https://t.me/home_library_ai_bot
 
 ## How it works
 
+![Working environment diagram](images/homelib.drawio.png) 

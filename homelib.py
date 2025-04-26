@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
 TOKEN = os.getenv("TELEGRAM_TOKEN")
-print(TOKEN)
+print("Token:", TOKEN)
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text:
