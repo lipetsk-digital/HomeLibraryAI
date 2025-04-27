@@ -1,6 +1,7 @@
 # Catalog of the home library with AI-recognition of covers and annotations
 
-![HomeLibraryAI Avatar](images/avatar_min.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)
+[![HomeLibraryAI Avatar](images/avatar_min.jpg)](images/avatar.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)
+
 
 Telegram bot to photo the covers and annotations of your books and create a catalog of your home library. Share the catalog with your friends. No manual input: AI will do everything for you, and it will take no more than 10 seconds to enter one book. If necessary, you can always upload your collection to a file.
 https://t.me/home_library_ai_bot
@@ -44,4 +45,5 @@ We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/
 
 | Source photo | Extracted cover |
 | - | - |
-| ![Example 1 - source](examples/find_cover/cover1.jpg) | ![Example 1 - result](examples/find_cover/output1.jpg) |
+| [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
+| [![Example 6 - source](images/th_cover6.jpg)](examples/find_cover/cover6.jpg) | [![Example 6 - result](images/th_output6.jpg)](examples/find_cover/output6.jpg) |
