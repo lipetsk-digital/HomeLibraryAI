@@ -38,12 +38,16 @@ Just start chatting with [@home_library_ai_bot](https://t.me/home_library_ai_bot
 We store all your photos with unique anonymous identifiers is S3 file storage. So if someone known the photo identificator - they can see it. Access to other people's photos is unlikely, but try not to photograph things that you would not like to allow for public review.
 
 For each book we need two photos:
+- Photo of book's cover - for extract cover's picture and store them in library databas
+- Photo of first book's page with annotation - for extract from them text imformation about the book
 
-### 1. Photo of the book cover on plain surface, for example, on the desk. Use the flash to evenly illuminate the book. Avoid mirrored or glass surfaces. 
+## Photo of book's cover
+
+Photo of the book cover on plain surface, for example, on the desk. Use the desktop lamp or mobilephone flash to illuminate the book. Avoid mirrored or glass surfaces. Try not to use tables with a colorful surface, such as wooden ones. Hold the phone at a right angle to the table to avoid trapezoidal deformations.
 
 We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/U-2-Net) of th [python rembg library](https://github.com/danielgatis/rembg) to remove background, find the cover's rectanlge and them align it in the form of a vertical rectangle.
 
 | Source photo | Extracted cover |
 | - | - |
 | [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
-| [![Example 6 - source](images/th_cover6.jpg)](examples/find_cover/cover6.jpg) | [![Example 6 - result](images/th_output6.jpg)](examples/find_cover/output6.jpg) |
+| [![Example 4 - source](images/th_cover4.jpg)](examples/find_cover/cover4.jpg) | [![Example 4 - result](images/th_output4.jpg)](examples/find_cover/output4.jpg) |

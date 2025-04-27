@@ -49,15 +49,15 @@ if contours:
     if len(approx) == 4:
         # Get dimensions for the output image
         # Use maximum of width and height to determine orientation
-        width = int(max(
-            np.linalg.norm(approx[0] - approx[1]),
+        width = int((
+            np.linalg.norm(approx[0] - approx[1])+
             np.linalg.norm(approx[2] - approx[3])
-        ))
-        height = int(max(
-            np.linalg.norm(approx[1] - approx[2]),
+        )/2)
+        height = int((
+            np.linalg.norm(approx[1] - approx[2])+
             np.linalg.norm(approx[3] - approx[0])
-        ))
-        
+        )/2)
+                
         # Swap width and height if the image is in portrait orientation
         if width > height:
             width, height = height, width
