@@ -21,6 +21,31 @@ spec:
             secretKeyRef:
               name: homelibrary-bot-secrets
               key: telegram-token
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: postgres-host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: postgres-port
+        - name: POSTGRES_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: postgres-database
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: postgres-username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: postgres-password
         resources:
           requests:
             memory: "128Mi"
