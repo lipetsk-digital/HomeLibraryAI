@@ -49,20 +49,10 @@ jobs:
         run: |
           kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=postgres-host=${{ secrets.POSTGRES_HOST }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=postgres-port=${{ secrets.POSTGRES_PORT }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=postgres-database=${{ secrets.POSTGRES_DATABASE }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=postgres-username=${{ secrets.POSTGRES_USERNAME }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl create secret generic homelibrary-bot-secrets \
             --from-literal=postgres-password=${{ secrets.POSTGRES_PASSWORD }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
