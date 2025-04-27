@@ -50,4 +50,9 @@ We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/
 | Source photo | Extracted cover |
 | - | - |
 | [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
-| [![Example 4 - source](images/th_cover4.jpg)](examples/find_cover/cover4.jpg) | [![Example 4 - result](images/th_output4.jpg)](examples/find_cover/output4.jpg) |
+
+## Photo of book's annotation
+
+| Source photo | Extracted information |
+| - | - |
+| [![Example 1 - source](images/th_page1.jpg)](examples/find_cover/cover1.jpg) | `name` = Птицы на кормушках: Подкормка и привлечение <br/> `authors` = Василий Вишневский <br/> `pages` = 304 <br/> `publisher` = Фитон XXI <br/> `year` = 2025 <br/> `ISBN` = 978-5-6051287-5-5 <br/> `brief` = Подкормка птиц — очень важное и нужное дело, а наблюдение за пернатыми посетителями кормушек приносит массу удовольствия. <br/> `annotation` = Книга даёт исчерпывающие ответы на самые важные вопросы: как, чем, когда и каких диких птиц подкармливать. Делать это можно в самых разных местах: от балкона городской квартиры до дачного участка, парка или близлежащего леса. Большое внимание в книге уделено разнообразию кормов, и поскольку не все они полезны, то и тому, чем можно (а чем нельзя) кормить, как приготовить корм, как его хранить. Кроме подкормки, вы можете посадить определённые растения, которые привлекут ещё больше птиц на дачный участок. Поскольку посещение кормушек связано с рядом опасностей, в книге даны очень важные рекомендации, как их избежать и как защитить пернатых гостей от врагов и конкурентов. Если вы повесили кормушку... |
