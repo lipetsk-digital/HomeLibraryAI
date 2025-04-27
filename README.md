@@ -19,6 +19,11 @@ https://t.me/home_library_ai_bot
 | REGISTRY_PASSWORD | Password of Container Registry | CI/CD |
 | KUBECONFIG | YAML text config of production Kubernates cluster to deploy docker container | CI/CD |
 | TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production |
+| POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production |
+| POSTGRES_PORT | IP-Port of Postgres database server | Production |
+| POSTGRES_DATABASE | Database name of Postgres database | Production |
+| POSTGRES_USERNAME | Login of Postgres database | Production |
+| POSTGRES_PASSWORD | Password of Postgres database | Production |
 
 ## Project files
 
@@ -87,4 +92,77 @@ For example:
 
 ## Telegram-bot's dialog algorithm
 
-![Telegram-bot's dialog algorithm](images/algorithm.drawio.png) 
+![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
+
+## PostgreSQL database
+
+Where are three tables in the PostgreSQL database:
+
+1. Table `logs` for log of starting the bot:
+```SQL
+CREATE TABLE IF NOT EXISTS logs (
+    userid BIGINT,
+    nickname TEXT,
+    username TEXT,
+    datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+```
+
+2. Table `state` for store current state of each users conversation:
+```SQL
+CREATE TABLE IF NOT EXISTS state (
+    userid BIGINT PRIMARY KEY,
+    state TEXT,
+    cathegory TEXT,
+    uidphoto UUID,
+    uidcover UUID,
+    uidannotation UUID,
+    bookid BIGINT,
+    cathegorytask TEXT,
+    name TEXT,
+    authors TEXT,
+    pages TEXT,
+    puiblisher TEXT,
+    year TEXT,
+    isbn TEXT,
+    annotation TEXT,
+    brief TEXT           
+)
+```
+
+3. Table `books` for store information of all books, added by users:
+```SQL
+CREATE TABLE IF NOT EXISTS books (
+    userid BIGINT,
+    bookid BIGINT,
+    cathegory TEXT,
+    uidphoto UUID,
+    uidcover UUID,
+    uidannotation UUID,
+    name TEXT,
+    authors TEXT,
+    pages TEXT,
+    puiblisher TEXT,
+    year TEXT,
+    isbn TEXT,
+    annotation TEXT,
+    brief TEXT,
+    datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (userid, bookid)
+)
+```
+
+You don't need to create these tables manualy. Then telegram-bot connect to postgres, it try to create these tables, if they are not exists.
+
+## Telegram bot's commands
+
+There are 5 bot's commands, whitch can be executate from any bot state. You need ask `@BotFather` to add these commands to main menu button of your bot:
+```
+add - Add book
+find - Search
+edit - Edit book
+cat - Cathegories
+export - Export
+```
+
+Also your bot must process `/start` command - for the first run of each user.
