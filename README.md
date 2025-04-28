@@ -27,14 +27,25 @@ https://t.me/home_library_ai_bot
 
 ## Project files
 
+Program files:
+
 - `homelib.py` - core of telegram-bot
+- `modules\environment.py` - prepare environment variables, classes and connections
+- `modules\databasecreation.py` - script to create tables in Postgres database on the first run of script
+- `modules\handle_addbook.py` - handlers to for processing bot messages in adding book mode
+
+Deployment scripts:
+
 - `requirements.txt` - python's library dependencies
 - `dockerfile` - instructions: how to build Docker container
 - `deployment.yaml` - instructions: how to deploy it on Kubernates cluster
 - `.gitignore` - hide my python cache, debug environment variables with sectets, certificates, etc.
+- `.github\workflows\` - instructions: automatization CI/CD with GitHub Actions
+
+Documentation:
+
 - `README.md` - current description
-- `\images` - floder with images for current description
-- `.github\workflows` - instructions: automatization CI/CD with GitHub Actions
+- `images\` - floder with images for current description
 
 ## Basic usage
 
@@ -48,7 +59,7 @@ For each book we need two photos:
 - Photo of book's cover - for extract cover's picture and store them in library databas
 - Photo of first book's page with annotation - for extract from them text imformation about the book
 
-## Photo of book's cover
+## AI processing of photo of book's cover 
 
 Photo of the book cover on plain surface, for example, on the desk. Use the desktop lamp or mobilephone flash to illuminate the book. Avoid mirrored or glass surfaces. Try not to use tables with a colorful surface, such as wooden ones. Hold the phone at a right angle to the table to avoid trapezoidal deformations.
 
@@ -58,7 +69,7 @@ We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/
 | - | - |
 | [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
 
-## Photo of book's annotation
+## AI processing of photo of book's annotation
 
 Take a picture of the first annotation page of the book in the same way. Inevitably, your fingers holding the book will get into the photo. If they don't obscure the text, it's okay.
 
@@ -93,6 +104,8 @@ For example:
 ## Telegram-bot's dialog algorithm
 
 ![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
+
+Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm.
 
 ## PostgreSQL database
 

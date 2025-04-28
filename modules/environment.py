@@ -11,7 +11,9 @@
 
 import os # For environment variables
 import logging # For logging
+from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
+
 
 # PostgreSQL connection settings
 POSTGRES_CONFIG = {
@@ -30,7 +32,6 @@ TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # Class for finite state machine
 class Form(StatesGroup):
-    first_name = State()
+    wait_for_command = State()
     last_name = State()
     position = State()
-

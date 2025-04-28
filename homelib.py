@@ -1,18 +1,18 @@
 import asyncpg # For asynchronous PostgreSQL connection
 # For Telegram bot framework
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Bot, Dispatcher
+#from aiogram.fsm.storage.memory import MemoryStorage
+
 # Internal modules
 import modules.environment as env # For environment variables and configurations
 import modules.databasecreation as databasecreation # For creating tables in PostgreSQL
 from modules.handle_addbook import addbook_router # For handling messages related to adding books
+from modules.postgres_storage import PostgresStorage # For PostgreSQL storage of bot state
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TOKEN)
-storage = MemoryStorage()
+#storage = MemoryStorage()
+storage = PostgresStorage(**env.POSTGRES_CONFIG)
 dp = Dispatcher(storage=storage)
 
 # Configuring middleware for database access
