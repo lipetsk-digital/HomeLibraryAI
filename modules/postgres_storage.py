@@ -1,5 +1,5 @@
 from typing import Any, Dict, Optional
-import jsonpickle
+import json
 import asyncpg
 from aiogram.fsm.state import State
 from aiogram.fsm.storage.base import BaseStorage, StateType, StorageKey
@@ -45,17 +45,14 @@ class PostgresStorage(BaseStorage):
                                     "user_id" BIGINT NOT NULL,
                                     "data" JSON,
                                     PRIMARY KEY ("chat_id", "user_id"))""")
-        jsonpickle.set_preferred_backend('json')
-        jsonpickle.set_encoder_options('json', ensure_ascii=False)
+        #jsonpickle.set_preferred_backend('json')
+        #jsonpickle.set_encoder_options('json', ensure_ascii=False)
         return self._db
 
     # Destructor of PostgresStorage object. Close database connection if it is open
     async def close(self):
         if isinstance(self._db, asyncpg.Connection):
             await self._db.close()
-
-    #async def wait_closed(self):
-    #    return True
 
     # Save current state into database (or delete if state is undefined)
     async def set_state(self, key: StorageKey, state: StateType = None) -> None:
@@ -82,10 +79,10 @@ class PostgresStorage(BaseStorage):
         else:
             await db.execute("""INSERT INTO "aiogram_data" VALUES($1, $2, $3)"""
                              """ON CONFLICT ("user_id", "chat_id") DO UPDATE SET "data" = $3""",
-                             key.chat_id, key.user_id, jsonpickle.encode(data))
+                             key.chat_id, key.user_id, json.dumps(data, ensure_ascii=False))
 
     # Retrieve and deserialize (from JSON) data from database, or return empty dict if no data found
     async def get_data(self, key: StorageKey) -> Dict[str, Any]:
         db = await self.get_db()
         result = await db.fetchval("""SELECT "data" FROM "aiogram_data" WHERE "chat_id"=$1 AND "user_id"=$2""", key.chat_id, key.user_id)
-        return jsonpickle.decode(result) if result else {}
+        return json.loads(result) if result else {}

@@ -19,6 +19,8 @@ async def doitall(message: Message, state: FSMContext, pool: asyncpg.Pool) -> No
     await message.answer("State = wait_for_command! 😉")
     await state.set_state(env.Form.position)
     await state.update_data(full_name=message.from_user.full_name)
+    data = await state.get_data()
+    await message.answer("Full name = "+data.get('full_name'))
 
 
 @addbook_router.message()

@@ -1,11 +1,9 @@
 import asyncpg # For asynchronous PostgreSQL connection
-# For Telegram bot framework
-from aiogram import Bot, Dispatcher
-#from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Bot, Dispatcher # For Telegram bot framework
 
 # Internal modules
 import modules.environment as env # For environment variables and configurations
-import modules.databasecreation as databasecreation # For creating tables in PostgreSQL
+import modules.database_creation as database_creation # For creating tables in PostgreSQL
 from modules.handle_addbook import addbook_router # For handling messages related to adding books
 from modules.postgres_storage import PostgresStorage # For PostgreSQL storage of bot state
 
@@ -33,7 +31,7 @@ async def main():
     dp.update.middleware(DatabaseMiddleware(pool))
     
     # Table creation (if not exists)
-    await databasecreation.create_tables(env.POSTGRES_CONFIG)
+    await database_creation.create_tables(env.POSTGRES_CONFIG)
     
     # Register handlers
     dp.include_router(addbook_router)
