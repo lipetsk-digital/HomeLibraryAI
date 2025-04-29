@@ -13,6 +13,7 @@ import os # For environment variables
 import logging # For logging
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
+from aiogram.filters.callback_data import CallbackData # For callback data handling
 
 
 # PostgreSQL connection settings
@@ -33,5 +34,16 @@ TOKEN = os.getenv("TELEGRAM_TOKEN")
 # Class for finite state machine
 class Form(StatesGroup):
     wait_for_command = State()
-    last_name = State()
-    position = State()
+
+# Main menu actions
+MAIN_MENU_ACTIONS = {
+    "add": "➕ Add book",
+    "find": "🔍 Search",
+    "edit": "✏️ Edit book",
+    "cat": "⚙️ Cathegories",
+    "export": "📨 Export"
+}
+
+# Callback factory for main menu
+class MainMenu(CallbackData, prefix="main"):
+    action: str

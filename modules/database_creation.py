@@ -17,36 +17,16 @@ async def create_tables(POSTGRES_CONFIG):
     conn = await asyncpg.connect(**POSTGRES_CONFIG)
     await conn.execute('''
         CREATE TABLE IF NOT EXISTS logs (
-            userid BIGINT,
+            user_id BIGINT,
             nickname TEXT,
             username TEXT,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     await conn.execute('''
-        CREATE TABLE IF NOT EXISTS state (
-            userid BIGINT PRIMARY KEY,
-            state TEXT,
-            cathegory TEXT,
-            uidphoto UUID,
-            uidcover UUID,
-            uidannotation UUID,
-            bookid BIGINT,
-            cathegorytask TEXT,
-            name TEXT,
-            authors TEXT,
-            pages TEXT,
-            puiblisher TEXT,
-            year TEXT,
-            isbn TEXT,
-            annotation TEXT,
-            brief TEXT           
-        )
-    ''')
-    await conn.execute('''
         CREATE TABLE IF NOT EXISTS books (
-            userid BIGINT,
-            bookid BIGINT,
+            user_id BIGINT,
+            book_id BIGINT,
             cathegory TEXT,
             uidphoto UUID,
             uidcover UUID,
@@ -60,7 +40,7 @@ async def create_tables(POSTGRES_CONFIG):
             annotation TEXT,
             brief TEXT,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (userid, bookid)
+            PRIMARY KEY (user_id, book_id)
         )
     ''')
     await conn.close()

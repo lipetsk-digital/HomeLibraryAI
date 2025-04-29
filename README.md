@@ -109,45 +109,23 @@ Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm
 
 ## PostgreSQL database
 
-Where are three tables in the PostgreSQL database:
+Where are two application tables in the PostgreSQL database:
 
 1. Table `logs` for log of starting the bot:
 ```SQL
 CREATE TABLE IF NOT EXISTS logs (
-    userid BIGINT,
+    user_id BIGINT,
     nickname TEXT,
     username TEXT,
     datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 ```
 
-2. Table `state` for store current state of each users conversation:
-```SQL
-CREATE TABLE IF NOT EXISTS state (
-    userid BIGINT PRIMARY KEY,
-    state TEXT,
-    cathegory TEXT,
-    uidphoto UUID,
-    uidcover UUID,
-    uidannotation UUID,
-    bookid BIGINT,
-    cathegorytask TEXT,
-    name TEXT,
-    authors TEXT,
-    pages TEXT,
-    puiblisher TEXT,
-    year TEXT,
-    isbn TEXT,
-    annotation TEXT,
-    brief TEXT           
-)
-```
-
-3. Table `books` for store information of all books, added by users:
+2. Table `books` for store information of all books, added by users:
 ```SQL
 CREATE TABLE IF NOT EXISTS books (
-    userid BIGINT,
-    bookid BIGINT,
+    user_id BIGINT,
+    book_id BIGINT,
     cathegory TEXT,
     uidphoto UUID,
     uidcover UUID,
@@ -161,7 +139,29 @@ CREATE TABLE IF NOT EXISTS books (
     annotation TEXT,
     brief TEXT,
     datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (userid, bookid)
+    PRIMARY KEY (user_id, book_id)
+)
+```
+
+And two internal tables for continuous operation of the bot: one to store current state of conversation, and another to store current information, received from user. These tables used by `PostrgreSQL-storage` plugin, written by me for [`aiorgam`](https://aiogram.dev/) library.
+
+3. Table `aiogram_states` for store current state of bot-user conversation
+```SQL
+CREATE TABLE IF NOT EXISTS aiogram_states(
+    chat_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    state TEXT,
+    PRIMARY KEY (chat_id, user_id)
+)
+```
+
+4. Table `aiogram_data` for store information, received from user during the conversation:
+```SQL
+CREATE TABLE IF NOT EXISTS aiogram_data(
+    chat_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    data JSON,
+    PRIMARY KEY ("chat_id", "user_id")
 )
 ```
 
@@ -169,13 +169,11 @@ You don't need to create these tables manualy. Then telegram-bot connect to post
 
 ## Telegram bot's commands
 
-There are 5 bot's commands, whitch can be executate from any bot state. You need ask `@BotFather` to add these commands to main menu button of your bot:
-```
-add - Add book
-find - Search
-edit - Edit book
-cat - Cathegories
-export - Export
-```
+There are 5 bot's commands, whitch can be executate from any bot state. You don't need to ask `@BotFather` add these commands to main menu button. They added automaticaly by the bot itself:
+- `add` - Add book
+- `find` - Search
+- `edit` - Edit book
+- `cat` - Cathegories
+- `export` - Export
 
 Also your bot must process `/start` command - for the first run of each user.
