@@ -41,6 +41,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     builder = InlineKeyboardBuilder()
     for action in env.MAIN_MENU_ACTIONS:
         builder.button(text=env.MAIN_MENU_ACTIONS[action], callback_data=env.MainMenu(action=action) )
+    builder.adjust(2, 3)
     await message.answer("What do you want?", reply_markup=builder.as_markup())
 
 # Prepare the bot's bottom left main menu commands
