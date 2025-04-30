@@ -43,6 +43,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
         builder.button(text=env.MAIN_MENU_ACTIONS[action], callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
     await message.answer("What do you want?", reply_markup=builder.as_markup())
+    await state.set_state(env.State.wait_for_command)
 
 # Prepare the bot's bottom left main menu commands
 async def PrepareMenu(bot: Bot):

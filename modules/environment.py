@@ -32,8 +32,10 @@ logging.basicConfig(level=logging.INFO)
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # Class for finite state machine
-class Form(StatesGroup):
+class State(StatesGroup):
     wait_for_command = State()
+    wait_select_cathegory = State()
+    wait_for_cover_photo = State()
 
 # Main menu actions
 MAIN_MENU_ACTIONS = {
@@ -47,3 +49,6 @@ MAIN_MENU_ACTIONS = {
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
     action: str
+
+class Cathegory(CallbackData, prefix="cat"):
+    name: str
