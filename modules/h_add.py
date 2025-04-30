@@ -16,10 +16,10 @@ add_router = Router()
 
 @add_router.message(Command("add"))
 async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await message.answer("Please send me photo of the book cover")
+    await message.answer("Please send me photo of the book cover for adding a new book...")
 
 @add_router.callback_query(env.MainMenu.filter(F.action=="add"))
 async def add_callback(event: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await event.message.edit_reply_markup(reply_markup=None)
-    await event.message.answer("Please send me photo of the book cover")
+    await event.message.answer("Please send me photo of the book cover for adding a new book...")
     await event.answer()
