@@ -23,8 +23,8 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # Handler for the callback query when the user selects "add" from the main menu
 @add_router.callback_query(env.MainMenu.filter(F.action=="add"))
-async def add_callback(event: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await event.answer()
-    await event.message.edit_reply_markup(reply_markup=None)
-    await h_cat.SelectCathegory(event.message, state, pool, bot, 
+async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await h_cat.SelectCathegory(callback.message, state, pool, bot, 
                                 True, "add_book", "Select cathegory for adding a new book:")

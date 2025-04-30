@@ -18,6 +18,9 @@ cat_router = Router()
 
 # This function prepares and sends the inline keyboard for selecting a cathegory.
 # It also sets the state for the bot to wait for the user's selection.
+# The function takes the following additional parameters:
+# - can_add: A boolean indicating if the user can add a new cathegory
+# - action: The action, executed this routine (e.g., "add_book")
 async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, can_add: bool, action: str, text: str) -> None:
     builder = InlineKeyboardBuilder()
     # Store can_add and action parameters in user data
@@ -37,10 +40,11 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
         # If there are cathegories, create buttons for each one and ask user
         if result:
             for row in result:
-                builder.button(text=row[1]+' ('+row[2]+')', callback_data=env.Cathegory(name=row[1]) )
+                builder.button(text=f"{row[1]}  ({row[2]})", callback_data=env.Cathegory(name=row[1]) )
             builder.adjust(1)
             await message.answer(text, reply_markup=builder.as_markup())
         else:
+            # If there are no cathegories, check if the user can add a new one
             if can_add:
                 await message.answer("You have no cathegories in your library. Enter new cathegory name:", reply_markup=None)
             else:
@@ -49,3 +53,41 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
                 await state.set_state(env.State.wait_for_command)
                 return
         await state.set_state(env.State.wait_select_cathegory)
+
+# Handler for inline button selection of a cathegory
+@cat_router.callback_query(env.Cathegory)
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await DoCathegory(callback_data.name, callback.message, state, pool, bot)
+
+# Handler for entered text when the user can add a new cathegory
+@cat_router.message(env.State.wait_select_cathegory, F.text)
+async def cathegory_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    data = await state.get_data()
+    can_add = data.get("can_add")
+    if can_add:
+        await DoCathegory(message.text, message, state, pool, bot)
+    else:
+        await message.delete()
+        await message.answer("You cannot add a new cathegory at this moment. Please select an existing one")
+
+# Handler for non-text messages when the bot is in the wait_select_cathegory state
+@cat_router.message(env.State.wait_select_cathegory)
+async def trash_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await message.delete()
+    await message.answer("Please send a valid cathegory name")
+
+# Process the selected cathegory
+async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    # Save selected cathegory
+    await state.update_data(cathegory=cathegory)
+    # Notify the user about the selected cathegory
+    await message.answer(f"You selected the cathegory: {cathegory}")
+    # Retrieve the action from the state
+    data = await state.get_data()
+    action = data.get("action")
+    # Perform the action based on the selected cathegory
+    if action == "add_book":
+        await message.answer("Please enter the book details to add to this cathegory.")
+        await state.set_state(env.State.wait_for_cover_photo)

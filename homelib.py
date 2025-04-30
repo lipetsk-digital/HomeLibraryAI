@@ -5,8 +5,9 @@ from aiogram import Bot, Dispatcher # For Telegram bot framework
 import modules.environment as env # For environment variables and configurations
 from modules.postgres_storage import PostgresStorage # For PostgreSQL storage of bot state
 import modules.database_creation as database_creation # For creating tables in PostgreSQL
-import modules.h_start as h_start 
-import modules.h_add as h_add
+import modules.h_start as h_start # For handling start command
+import modules.h_add as h_add # For handling adding a new book
+import modules.h_cat as h_cat # For manipulating cathegories
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TOKEN)
@@ -37,6 +38,7 @@ async def main():
     # Register handlers
     dp.include_router(h_start.start_router)
     dp.include_router(h_add.add_router)
+    dp.include_router(h_cat.cat_router)
     
     # Register startup routines
     dp.startup.register(h_start.PrepareMenu)
