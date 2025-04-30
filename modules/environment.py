@@ -11,7 +11,8 @@
 
 import os # For environment variables
 import logging # For logging
-from aiogram.types import Message # For Telegram message handling
+from aiogram import Bot # For Telegram bot framework
+from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
 from aiogram.filters.callback_data import CallbackData # For callback data handling
 
@@ -52,3 +53,12 @@ class MainMenu(CallbackData, prefix="main"):
 
 class Cathegory(CallbackData, prefix="cat"):
     name: str
+
+async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:
+    data = await state.get_data()
+    inline = data.get("inline")
+    if inline:
+        try:
+            await bot.edit_message_reply_markup(chat_id=chat_id, message_id=inline, reply_markup=None)
+        except Exception as e:
+            logging.error(f"Error deleting inline keyboard: {e}")

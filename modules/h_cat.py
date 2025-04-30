@@ -39,10 +39,12 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
         """, message.from_user.id)
         # If there are cathegories, create buttons for each one and ask user
         if result:
+            await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
                 builder.button(text=f"{row[1]}  ({row[2]})", callback_data=env.Cathegory(name=row[1]) )
             builder.adjust(1)
-            await message.answer(text, reply_markup=builder.as_markup())
+            sent_message = await message.answer(text, reply_markup=builder.as_markup())
+            await state.update_data(inline=sent_message.message_id)
         else:
             # If there are no cathegories, check if the user can add a new one
             if can_add:
@@ -91,3 +93,4 @@ async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool:
     if action == "add_book":
         await message.answer("Please enter the book details to add to this cathegory.")
         await state.set_state(env.State.wait_for_cover_photo)
+    

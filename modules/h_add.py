@@ -18,6 +18,7 @@ add_router = Router()
 # Handler for the /add command
 @add_router.message(Command("add"))
 async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     await h_cat.SelectCathegory(message, state, pool, bot, 
                                 True, "add_book", "Select cathegory for adding a new book:")
 
