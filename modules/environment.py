@@ -38,22 +38,28 @@ class State(StatesGroup):
     wait_select_cathegory = State()
     wait_for_cover_photo = State()
 
+# Dummy function for pybabel to detect translatable strings
+def _translate_(text: str) -> str:
+    return text
+
 # Main menu actions
 MAIN_MENU_ACTIONS = {
-    "add": "➕ Add book",
-    "find": "🔍 Search",
-    "edit": "✏️ Edit book",
-    "cat": "⚙️ Cathegories",
-    "export": "📨 Export"
+    "add": _translate_("➕ Add book"),
+    "find": _translate_("🔍 Search"),
+    "edit": _translate_("✏️ Edit book"),
+    "cat": _translate_("⚙️ Cathegories"),
+    "export": _translate_("📨 Export")
 }
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
     action: str
 
+# Callback factory for cathegory selection
 class Cathegory(CallbackData, prefix="cat"):
     name: str
 
+# Remove old inline keyboards from messages in the chat
 async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:
     data = await state.get_data()
     inline = data.get("inline")
