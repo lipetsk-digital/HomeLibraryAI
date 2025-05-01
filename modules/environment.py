@@ -46,11 +46,11 @@ i18n = None  # Placeholder for i18n instance
 
 # Main menu actions
 MAIN_MENU_ACTIONS = {
-    "add": _translate_("➕ Add book"),
-    "find": _translate_("🔍 Search"),
-    "edit": _translate_("✏️ Edit book"),
-    "cat": _translate_("⚙️ Cathegories"),
-    "export": _translate_("📨 Export")
+    "add": _translate_("add"),
+    "find": _translate_("find"),
+    "edit": _translate_("edit"),
+    "cat": _translate_("cat"),
+    "export": _translate_("export")
 }
 
 # Callback factory for main menu

@@ -44,7 +44,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     for action in env.MAIN_MENU_ACTIONS:
         builder.button(text=_(env.MAIN_MENU_ACTIONS[action]), callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
-    sent_message = await message.answer(_("What do you want?"), reply_markup=builder.as_markup())
+    sent_message = await message.answer(_("main_menu"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_for_command)
 
@@ -63,7 +63,7 @@ async def PrepareMenu(bot: Bot):
 async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
         result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", message.from_user.id)
-    if result is None:
-        await message.answer(_("You have no books in your library"))
+    if (result is None) or (result == 0):
+        await message.answer(_("no_books"))
     else:
-        await message.answer(_("You have {result} books in your library").format(result=result))
+        await message.answer(_("{result}_book","{result}_books",result).format(result=result))

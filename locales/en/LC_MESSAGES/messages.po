@@ -1,17 +1,18 @@
-# Translations template for PROJECT.
+# English translations for PROJECT.
 # Copyright (C) 2025 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-05-01 14:33+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,57 +20,58 @@ msgstr ""
 
 #: modules/environment.py:49
 msgid "add"
-msgstr ""
+msgstr "➕ Add book"
 
 #: modules/environment.py:50
 msgid "find"
-msgstr ""
+msgstr "🔍 Search"
 
 #: modules/environment.py:51
 msgid "edit"
-msgstr ""
+msgstr "✏️ Edit book"
 
 #: modules/environment.py:52
 msgid "cat"
-msgstr ""
+msgstr "🗂️ Cathegories"
 
 #: modules/environment.py:53
 msgid "export"
-msgstr ""
+msgstr "📨 Export"
 
 #: modules/h_cat.py:48
 msgid "select_or_enter_cathegory_add_book"
-msgstr ""
+msgstr "Select 📂 cathegory for adding a new book or enter the name of new cathegory:"
 
 #: modules/h_cat.py:58
 msgid "enter_cathegory_add_book"
-msgstr ""
+msgstr "Enter name of 📂 cathegory for adding a new book:"
 
 #: modules/h_cat.py:60 modules/h_start.py:67
 msgid "no_books"
-msgstr ""
+msgstr "Where is no books in your library 🥺"
 
 #: modules/h_cat.py:83
 msgid "can_not_add_cathegory"
-msgstr ""
+msgstr "🫸 You cannot add a new cathegory at this moment. Please select an existing one"
 
 #: modules/h_cat.py:95
 #, python-brace-format
 msgid "{cathegory}_selected"
-msgstr ""
+msgstr "You selected the cathegory: {cathegory}"
 
 #: modules/h_cat.py:101
 msgid "photo_cover"
-msgstr ""
+msgstr "Сфотографируйте обложку книги 📸"
 
 #: modules/h_start.py:47
 msgid "main_menu"
-msgstr ""
+msgstr "Select action:"
 
 #: modules/h_start.py:69
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "You have {result} book 📕 in your library"
+msgstr[1] "You have {result} books 📚 in your library"
+
 
