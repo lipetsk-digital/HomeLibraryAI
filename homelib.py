@@ -1,14 +1,15 @@
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
-from aiogram.utils.i18n import I18n, SimpleI18nMiddleware # For internationalization and localization
+from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
 
 # Internal modules
 import modules.environment as env # For environment variables and configurations
-from modules.postgres_storage import PostgresStorage # For PostgreSQL storage of bot state
-import modules.database_creation as database_creation # For creating tables in PostgreSQL
+from modules.postgresstorage import PostgresStorage # For PostgreSQL storage of bot state
+import modules.database as database # For creating tables in PostgreSQL
 import modules.h_start as h_start # For handling start command
 import modules.h_add as h_add # For handling adding a new book
 import modules.h_cat as h_cat # For manipulating cathegories
+import modules.h_lang as h_lang # For handling language selection
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TOKEN)
@@ -34,21 +35,18 @@ async def main():
     dp.update.middleware(DatabaseMiddleware(pool))
 
     # Add middleware for internationalization
-    i18n = I18n(path="locales", default_locale="en", domain="messages")
-    SimpleI18nMiddleware(i18n=i18n).setup(dp)
-
-    # Translate all main menu items
-    env.MAIN_MENU_ACTIONS = {
-        key: i18n.gettext(value, locale='ru') for key, value in env.MAIN_MENU_ACTIONS.items()
-    }
+    env.i18n = I18n(path="locales", default_locale="en", domain="messages")
+    env.FSMi18n = FSMI18nMiddleware(i18n=env.i18n).setup(dp)
 
     # Table creation (if not exists)
-    await database_creation.create_tables(env.POSTGRES_CONFIG)
+    await database.create_tables(env.POSTGRES_CONFIG)
     
     # Register handlers
-    dp.include_router(h_start.start_router)
+    dp.include_router(env.first_router) # Global commands
     dp.include_router(h_add.add_router)
     dp.include_router(h_cat.cat_router)
+    dp.include_router(h_lang.lang_router)
+    dp.include_router(env.last_router) # Trash messages
     
     # Register startup routines
     dp.startup.register(h_start.PrepareMenu)

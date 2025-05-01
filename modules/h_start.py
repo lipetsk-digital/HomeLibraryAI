@@ -10,7 +10,6 @@
 # ========================================================
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot # For Telegram bot framework
-from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
@@ -20,14 +19,11 @@ from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot c
 
 import modules.environment as env # For environment variables and configurations
 
-# Router for handling messages related to the start command
-start_router = Router()
-
 # Handler for the /start command
 # This handler is triggered when the user sends the /start command.
 # It logs the user information into the database and sends a brief statistic about the user's library.
 # It also send the main menu for the user.
-@start_router.message(Command("start"))
+@env.first_router.message(Command("start"))
 async def start(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
         await conn.execute(
@@ -42,24 +38,34 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.MAIN_MENU_ACTIONS:
-        builder.button(text=env.MAIN_MENU_ACTIONS[action], callback_data=env.MainMenu(action=action) )
+        builder.button(text=_(env.MAIN_MENU_ACTIONS[action]), callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
-    sent_message = await message.answer(_("What do you want?"), reply_markup=builder.as_markup())
+    sent_message = await message.answer(_("main_menu"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_for_command)
 
 # Prepare the bot's bottom left main menu commands
 async def PrepareMenu(bot: Bot):
-    commands = []
-    for action in env.MAIN_MENU_ACTIONS:
-        commands.append(BotCommand(command=action, description=env.MAIN_MENU_ACTIONS[action]))
-    await bot.set_my_commands(commands, BotCommandScopeDefault())
+    # Loop through all available languages and set the bot commands for each one    
+    available_languages = env.i18n.available_locales
+    print(f"Available languages: {available_languages}")
+    for lang in available_languages:
+        commands = []
+        actions = {**env.MAIN_MENU_ACTIONS, **env.ADVANCED_ACTIONS}
+        for action in actions:
+            commands.append(BotCommand(command=action, description=env.i18n.gettext(actions[action], locale=lang)))
+        await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # Send a brief statistic about the user's library
 async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
         result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", message.from_user.id)
-    if result is None:
-        await message.answer(_("You have no books in your library"))
+    if (result is None) or (result == 0):
+        await message.answer(_("no_books"))
     else:
-        await message.answer(_("You have {result} books in your library").format(result=result))
+        await message.answer(_("{result}_book","{result}_books",result).format(result=result))
+
+# Handler for trash messages
+@env.last_router.message()
+async def trash_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await message.delete()

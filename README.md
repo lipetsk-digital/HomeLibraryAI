@@ -175,5 +175,21 @@ There are 5 bot's commands, whitch can be executate from any bot state. You don'
 - `edit` - Edit book
 - `cat` - Cathegories
 - `export` - Export
+- `lang` - Language
 
 Also your bot must process `/start` command - for the first run of each user.
+
+## The knowledge I have gained
+- Comparing different pythons framework for telegram bots. I chose aiogram for its beautiful structure and thoughtful concept
+- Using aiogram FSMstore to remember state of conversation and user data, entered on previous steps of the dialogue
+- Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
+- Using inline buttons in telegram chat
+- Timely removing of old, outdated inline buttons
+- Create multilanguage application and add or change localization without edit source code
+- I realized that the best way is to store in program code only shortcuts for string literals. And all full strings, included default english language, should be stored in local files
+- Plural numbers localizaion
+- CI/CD with docker container generation and deploy it on kubernates cluster
+- Using requirements.txt to build docker container with python's program
+- Using GitHub secrets to deploy container and for transmission in it database coordinates and API keys
+- Using Visual studio code launch.json to emulate environment variables with GitHub secrets
+- Arrange branches: main to deploy on production and develop to store development changes
