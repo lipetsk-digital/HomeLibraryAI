@@ -2,7 +2,8 @@
 # Module for handling bot messages related to prcessing book covers photos
 # ========================================================
 import asyncpg # For asynchronous PostgreSQL connection
-import boto3 # For AWS S3 storage
+import aioboto3 # For AWS S3 storage
+import io # For handling byte streams
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
@@ -25,21 +26,19 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     photo = message.photo[-1]
     photo_file = await bot.get_file(photo.file_id)
     photo_bytesio = await bot.download_file(photo_file.file_path)
-    # Save the photo to a local file
-    local_file_path = "photo.jpg"
-    with open(local_file_path, "wb") as local_file:
-        local_file.write(photo_bytesio.read())
-    photo_bytesio.seek(0)  # Reset the BytesIO stream position
+    photo_bytes = photo_bytesio.read()
+    p = io.BytesIO(photo_bytes)
 
-    # Configure the S3 client
-    s3 = boto3.client(endpoint_url=env.AWS_ENDPOINT_URL, service_name='s3')
+    # Start the S3 client
+    session = aioboto3.Session()
+    async with session.client(service_name='s3', endpoint_url=env.AWS_ENDPOINT_URL) as s3:
 
-    # Upload the photo to S3 storage
-    try:
-        s3.upload_fileobj(photo_bytesio, env.AWS_BUCKET_NAME, 'file.jpg')
-        await message.reply(_("Photo uploaded successfully to S3 storage"))
-    except Exception as e:
-        await message.reply(_("Failed to upload photo to S3 storage"))
-        print(f"Error uploading to S3: {e}")
+        # Upload the photo to S3 storage
+        try:
+            await s3.upload_fileobj(p, env.AWS_BUCKET_NAME, 'file.jpg')
+            await message.reply(_("Photo uploaded successfully to S3 storage"))
+        except Exception as e:
+            await message.reply(_("Failed to upload photo to S3 storage"))
+            print(f"Error uploading to S3: {e}")
 
 
