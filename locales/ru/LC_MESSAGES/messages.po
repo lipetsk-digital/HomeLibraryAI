@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-01 18:48+0300\n"
+"POT-Creation-Date: 2025-05-01 19:17+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -42,6 +42,10 @@ msgstr "📨 Экспорт"
 msgid "settings"
 msgstr "⚙️ Настройки"
 
+#: modules/h_add.py:23 modules/h_add.py:32
+msgid "start_add_book"
+msgstr "➕ Добавляем книгу"
+
 #: modules/h_cat.py:47
 msgid "select_or_enter_cathegory_add_book"
 msgstr "Выберите 📂 категорию, в которую добавить новую книгу или введите название новой категории:"
@@ -70,6 +74,11 @@ msgstr "Сфотографируйте обложку книги 📸"
 #: modules/h_lang.py:33
 msgid "select_lang"
 msgstr "Выберите язык / Select language:"
+
+#: modules/h_lang.py:44
+#, python-brace-format
+msgid "{language}_selected"
+msgstr "Вы выбрали {language} язык"
 
 #: modules/h_start.py:43
 msgid "main_menu"

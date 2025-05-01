@@ -37,8 +37,15 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 # Handler for the callback query when the user selects "add" from the main menu
 @lang_router.callback_query(env.Language.filter())
 async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    # Finish inline buttons
     await callback.answer()
     await callback.message.edit_reply_markup(reply_markup=None)
     await state.update_data(inline=None)
+    # Change locale
     await env.FSMi18n.set_locale(state, callback_data.lang)
+    # Get native name of selected language
+    locale = Locale.parse(callback_data.lang)
+    native_name = locale.get_language_name(locale=callback_data.lang)
+    await callback.message.answer(_("{language}_selected").format(language=native_name))
+    # Send the main menu again
     await h_start.MainMenu(callback.message, state, pool, bot)
