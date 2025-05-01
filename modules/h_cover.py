@@ -17,6 +17,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
+from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
@@ -50,10 +51,11 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # Remove the background from the image
         try:
             photo_bytesio2 = io.BytesIO(photo_bytes)
-            img = Image.open(photo_bytesio2)
-            output = remove(img)
+            #output = remove(photo_bytes)
+            output = await async_remove(photo_bytesio2.getvalue())
             output_bytesio = io.BytesIO()
-            output.save(output_bytesio, format='PNG') #, format='PNG'
+            output_bytesio.write(output) #, format='PNG'
+
             output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object
         except Exception as e:
             await message.reply(_("remove_background_failed"))
@@ -67,11 +69,6 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             env.logging.error(f"Error uploading to S3: {e}")
 
         # Send the processed image back to the user
-        bio = io.BytesIO()
-        bio.name = 'image.png'
-        output.save(bio, 'PNG')
-        bio.seek(0)
-        output_bytesio2 = io.BytesIO(output_bytesio.getvalue())
         await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename='result.png'))
         
         #output_bytesio2.seek(0)
