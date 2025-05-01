@@ -13,6 +13,7 @@ from aiogram import Bot # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
+from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
 from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot commands
@@ -43,7 +44,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     for action in env.MAIN_MENU_ACTIONS:
         builder.button(text=env.MAIN_MENU_ACTIONS[action], callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
-    sent_message = await message.answer("What do you want?", reply_markup=builder.as_markup())
+    sent_message = await message.answer(_("What do you want?"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_for_command)
 
@@ -59,6 +60,6 @@ async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool
     async with pool.acquire() as conn:
         result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", message.from_user.id)
     if result is None:
-        await message.answer("You have no books in your library")
+        await message.answer(_("You have no books in your library"))
     else:
-        await message.answer(f"You have {result} books in your library")
+        await message.answer(_("You have {result} books in your library").format(result=result))

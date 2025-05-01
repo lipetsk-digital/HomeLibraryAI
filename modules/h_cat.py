@@ -6,6 +6,7 @@ from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
+from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
@@ -41,16 +42,16 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
         if result:
             await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
-                builder.button(text=f"{row[1]}  ({row[2]})", callback_data=env.Cathegory(name=row[1]) )
+                builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[1]) )
             builder.adjust(1)
             sent_message = await message.answer(text, reply_markup=builder.as_markup())
             await state.update_data(inline=sent_message.message_id)
         else:
             # If there are no cathegories, check if the user can add a new one
             if can_add:
-                await message.answer("You have no cathegories in your library. Enter new cathegory name:", reply_markup=None)
+                await message.answer(_("You have no cathegories in your library. Enter new cathegory name:"), reply_markup=None)
             else:
-                await message.answer("You have no cathegories in your library", reply_markup=None)
+                await message.answer(_("You have no cathegories in your library"), reply_markup=None)
                 await h_start.MainMenu(message, state, pool, bot)
                 await state.set_state(env.State.wait_for_command)
                 return
@@ -61,6 +62,7 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await callback.answer()
     await callback.message.edit_reply_markup(reply_markup=None)
+    await state.update_data(inline=None)
     await DoCathegory(callback_data.name, callback.message, state, pool, bot)
 
 # Handler for entered text when the user can add a new cathegory
@@ -72,7 +74,7 @@ async def cathegory_entered(message: Message, state: FSMContext, pool: asyncpg.P
         await DoCathegory(message.text, message, state, pool, bot)
     else:
         await message.delete()
-        await message.answer("You cannot add a new cathegory at this moment. Please select an existing one")
+        await message.answer(_("You cannot add a new cathegory at this moment. Please select an existing one"))
 
 # Handler for non-text messages when the bot is in the wait_select_cathegory state
 @cat_router.message(env.State.wait_select_cathegory)
@@ -85,12 +87,12 @@ async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool:
     # Save selected cathegory
     await state.update_data(cathegory=cathegory)
     # Notify the user about the selected cathegory
-    await message.answer(f"You selected the cathegory: {cathegory}")
+    await message.answer(_("You selected the cathegory: {cathegory}").format(cathegory=cathegory))
     # Retrieve the action from the state
     data = await state.get_data()
     action = data.get("action")
     # Perform the action based on the selected cathegory
     if action == "add_book":
-        await message.answer("Please enter the book details to add to this cathegory.")
+        await message.answer(_("Please enter the book details to add to this cathegory."))
         await state.set_state(env.State.wait_for_cover_photo)
     

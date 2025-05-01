@@ -1,5 +1,6 @@
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
+from aiogram.utils.i18n import I18n, SimpleI18nMiddleware # For internationalization and localization
 
 # Internal modules
 import modules.environment as env # For environment variables and configurations
@@ -31,7 +32,16 @@ async def main():
     
     # Add middleware for database access
     dp.update.middleware(DatabaseMiddleware(pool))
-    
+
+    # Add middleware for internationalization
+    i18n = I18n(path="locales", default_locale="en", domain="messages")
+    SimpleI18nMiddleware(i18n=i18n).setup(dp)
+
+    # Translate all main menu items
+    env.MAIN_MENU_ACTIONS = {
+        key: i18n.gettext(value, locale='ru') for key, value in env.MAIN_MENU_ACTIONS.items()
+    }
+
     # Table creation (if not exists)
     await database_creation.create_tables(env.POSTGRES_CONFIG)
     
