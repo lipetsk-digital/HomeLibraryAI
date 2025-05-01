@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-01 14:33+0300\n"
+"POT-Creation-Date: 2025-05-01 18:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,56 +17,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/environment.py:49
+#: modules/environment.py:55
 msgid "add"
 msgstr ""
 
-#: modules/environment.py:50
+#: modules/environment.py:56
 msgid "find"
 msgstr ""
 
-#: modules/environment.py:51
+#: modules/environment.py:57
 msgid "edit"
 msgstr ""
 
-#: modules/environment.py:52
+#: modules/environment.py:58
 msgid "cat"
 msgstr ""
 
-#: modules/environment.py:53
+#: modules/environment.py:59
 msgid "export"
 msgstr ""
 
-#: modules/h_cat.py:48
+#: modules/environment.py:62
+msgid "settings"
+msgstr ""
+
+#: modules/h_cat.py:47
 msgid "select_or_enter_cathegory_add_book"
 msgstr ""
 
-#: modules/h_cat.py:58
+#: modules/h_cat.py:57
 msgid "enter_cathegory_add_book"
 msgstr ""
 
-#: modules/h_cat.py:60 modules/h_start.py:67
+#: modules/h_cat.py:59 modules/h_start.py:64
 msgid "no_books"
 msgstr ""
 
-#: modules/h_cat.py:83
+#: modules/h_cat.py:82
 msgid "can_not_add_cathegory"
 msgstr ""
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:89
 #, python-brace-format
 msgid "{cathegory}_selected"
 msgstr ""
 
-#: modules/h_cat.py:101
+#: modules/h_cat.py:95
 msgid "photo_cover"
 msgstr ""
 
-#: modules/h_start.py:47
+#: modules/h_lang.py:33
+msgid "select_lang"
+msgstr ""
+
+#: modules/h_start.py:43
 msgid "main_menu"
 msgstr ""
 
-#: modules/h_start.py:69
+#: modules/h_start.py:66
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"

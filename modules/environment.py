@@ -12,6 +12,7 @@
 import os # For environment variables
 import logging # For logging
 from aiogram import Bot # For Telegram bot framework
+from aiogram import Router # For creating a router for handling messages
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
 from aiogram.filters.callback_data import CallbackData # For callback data handling
@@ -35,7 +36,8 @@ TOKEN = os.getenv("TELEGRAM_TOKEN")
 # Class for finite state machine
 class State(StatesGroup):
     wait_for_command = State()
-    wait_select_cathegory = State()
+    select_lang = State()
+    select_cathegory = State()
     wait_for_cover_photo = State()
 
 # Dummy function for pybabel to detect translatable strings
@@ -43,6 +45,10 @@ def _translate_(text: str) -> str:
     return text
 
 i18n = None  # Placeholder for i18n instance
+FSMi18n = None  # Placeholder for FSMi18n instance
+
+first_router = Router() # Router for global commands
+last_router = Router() # Router for trash messages
 
 # Main menu actions
 MAIN_MENU_ACTIONS = {
@@ -52,6 +58,9 @@ MAIN_MENU_ACTIONS = {
     "cat": _translate_("cat"),
     "export": _translate_("export")
 }
+ADVANCED_ACTIONS = {
+    "settings": _translate_("settings")
+}
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
@@ -60,6 +69,10 @@ class MainMenu(CallbackData, prefix="main"):
 # Callback factory for cathegory selection
 class Cathegory(CallbackData, prefix="cat"):
     name: str
+
+# Callback factory for language selection
+class Language(CallbackData, prefix="lang"):
+    lang: str
 
 # Remove old inline keyboards from messages in the chat
 async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-01 14:33+0300\n"
+"POT-Creation-Date: 2025-05-01 18:48+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,60 +18,67 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/environment.py:49
+#: modules/environment.py:55
 msgid "add"
 msgstr "➕ Add book"
 
-#: modules/environment.py:50
+#: modules/environment.py:56
 msgid "find"
 msgstr "🔍 Search"
 
-#: modules/environment.py:51
+#: modules/environment.py:57
 msgid "edit"
 msgstr "✏️ Edit book"
 
-#: modules/environment.py:52
+#: modules/environment.py:58
 msgid "cat"
 msgstr "🗂️ Cathegories"
 
-#: modules/environment.py:53
+#: modules/environment.py:59
 msgid "export"
 msgstr "📨 Export"
 
-#: modules/h_cat.py:48
+#: modules/environment.py:62
+msgid "settings"
+msgstr "⚙️ Settings"
+
+#: modules/h_cat.py:47
 msgid "select_or_enter_cathegory_add_book"
 msgstr "Select 📂 cathegory for adding a new book or enter the name of new cathegory:"
 
-#: modules/h_cat.py:58
+#: modules/h_cat.py:57
 msgid "enter_cathegory_add_book"
 msgstr "Enter name of 📂 cathegory for adding a new book:"
 
-#: modules/h_cat.py:60 modules/h_start.py:67
+#: modules/h_cat.py:59 modules/h_start.py:64
 msgid "no_books"
 msgstr "Where is no books in your library 🥺"
 
-#: modules/h_cat.py:83
+#: modules/h_cat.py:82
 msgid "can_not_add_cathegory"
 msgstr "🫸 You cannot add a new cathegory at this moment. Please select an existing one"
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:89
 #, python-brace-format
 msgid "{cathegory}_selected"
 msgstr "You selected the cathegory: {cathegory}"
 
-#: modules/h_cat.py:101
+#: modules/h_cat.py:95
 msgid "photo_cover"
-msgstr "Сфотографируйте обложку книги 📸"
+msgstr "Take a photo of the book cover 📸"
 
-#: modules/h_start.py:47
+#: modules/h_lang.py:33
+msgid "select_lang"
+msgstr "Select language:"
+
+#: modules/h_start.py:43
 msgid "main_menu"
 msgstr "Select action:"
 
-#: modules/h_start.py:69
+#: modules/h_start.py:66
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
 msgstr[0] "You have {result} book 📕 in your library"
 msgstr[1] "You have {result} books 📚 in your library"
-
 

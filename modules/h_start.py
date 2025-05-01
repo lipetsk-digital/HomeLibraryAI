@@ -10,7 +10,6 @@
 # ========================================================
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot # For Telegram bot framework
-from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
@@ -20,14 +19,11 @@ from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot c
 
 import modules.environment as env # For environment variables and configurations
 
-# Router for handling messages related to the start command
-start_router = Router()
-
 # Handler for the /start command
 # This handler is triggered when the user sends the /start command.
 # It logs the user information into the database and sends a brief statistic about the user's library.
 # It also send the main menu for the user.
-@start_router.message(Command("start"))
+@env.first_router.message(Command("start"))
 async def start(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
         await conn.execute(
@@ -55,8 +51,9 @@ async def PrepareMenu(bot: Bot):
     print(f"Available languages: {available_languages}")
     for lang in available_languages:
         commands = []
-        for action in env.MAIN_MENU_ACTIONS:
-            commands.append(BotCommand(command=action, description=env.i18n.gettext(env.MAIN_MENU_ACTIONS[action], locale=lang)))
+        actions = {**env.MAIN_MENU_ACTIONS, **env.ADVANCED_ACTIONS}
+        for action in actions:
+            commands.append(BotCommand(command=action, description=env.i18n.gettext(actions[action], locale=lang)))
         await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # Send a brief statistic about the user's library
@@ -67,3 +64,8 @@ async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool
         await message.answer(_("no_books"))
     else:
         await message.answer(_("{result}_book","{result}_books",result).format(result=result))
+
+# Handler for trash messages
+@env.last_router.message()
+async def trash_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await message.delete()

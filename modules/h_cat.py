@@ -7,7 +7,6 @@ from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
-from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
 
@@ -61,10 +60,10 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
                 await h_start.MainMenu(message, state, pool, bot)
                 await state.set_state(env.State.wait_for_command)
                 return
-        await state.set_state(env.State.wait_select_cathegory)
+        await state.set_state(env.State.select_cathegory)
 
 # Handler for inline button selection of a cathegory
-@cat_router.callback_query(env.Cathegory)
+@cat_router.callback_query(env.Cathegory.filter())
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await callback.answer()
     await callback.message.edit_reply_markup(reply_markup=None)
@@ -72,7 +71,7 @@ async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathego
     await DoCathegory(callback_data.name, callback.message, state, pool, bot)
 
 # Handler for entered text when the user can add a new cathegory
-@cat_router.message(env.State.wait_select_cathegory, F.text)
+@cat_router.message(env.State.select_cathegory, F.text)
 async def cathegory_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     data = await state.get_data()
     can_add = data.get("can_add")
@@ -81,11 +80,6 @@ async def cathegory_entered(message: Message, state: FSMContext, pool: asyncpg.P
     else:
         await message.delete()
         await message.answer(_("can_not_add_cathegory"))
-
-# Handler for non-text messages when the bot is in the wait_select_cathegory state
-@cat_router.message(env.State.wait_select_cathegory)
-async def trash_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await message.delete()
 
 # Process the selected cathegory
 async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
