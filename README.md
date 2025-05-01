@@ -197,4 +197,4 @@ Also your bot must process `/start` command - for the first run of each user.
 - Using GitHub secrets to deploy container and for transmission in it database coordinates and API keys
 - Using Visual studio code launch.json to emulate environment variables with GitHub secrets
 - Arrange branches: main to deploy on production and develop to store development changes
-- Push files in S3 store ang get links to them
+- Push files in S3 store, including asynchronous mode and get links to them

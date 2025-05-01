@@ -6,7 +6,7 @@ import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
-from aiogram.types import Message # For Telegram message handling
+from aiogram.types import Message, ReactionTypeEmoji # For Telegram message handling
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
@@ -27,7 +27,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     photo_file = await bot.get_file(photo.file_id)
     photo_bytesio = await bot.download_file(photo_file.file_path)
     photo_bytes = photo_bytesio.read()
-    p = io.BytesIO(photo_bytes)
+    photo_bytesio2 = io.BytesIO(photo_bytes)
 
     # Start the S3 client
     session = aioboto3.Session()
@@ -35,8 +35,12 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
         # Upload the photo to S3 storage
         try:
-            await s3.upload_fileobj(p, env.AWS_BUCKET_NAME, 'file.jpg')
-            await message.reply(_("Photo uploaded successfully to S3 storage"))
+            await s3.upload_fileobj(photo_bytesio2, env.AWS_BUCKET_NAME, 'file.jpg')
+            # Give like to user's photo
+            await bot.set_message_reaction(chat_id=message.chat.id,
+                                           message_id=message.message_id,
+                                           reaction=[ReactionTypeEmoji(emoji='👍')])
+
         except Exception as e:
             await message.reply(_("Failed to upload photo to S3 storage"))
             print(f"Error uploading to S3: {e}")
