@@ -48,7 +48,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
 async def PrepareMenu(bot: Bot):
     # Loop through all available languages and set the bot commands for each one    
     available_languages = env.i18n.available_locales
-    print(f"Available languages: {available_languages}")
+    env.logging.debug(f"Available languages: {available_languages}")
     for lang in available_languages:
         commands = []
         actions = {**env.MAIN_MENU_ACTIONS, **env.ADVANCED_ACTIONS}

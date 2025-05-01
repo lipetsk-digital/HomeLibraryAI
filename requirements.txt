@@ -2,3 +2,4 @@ asyncpg
 aiogram
 babel
 boto3
+rembg[cpu]
