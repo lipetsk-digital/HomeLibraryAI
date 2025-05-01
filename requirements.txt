@@ -1,3 +1,4 @@
 asyncpg
 aiogram
 babel
+boto3

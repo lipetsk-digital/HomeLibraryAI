@@ -24,6 +24,10 @@ https://t.me/home_library_ai_bot
 | POSTGRES_DATABASE | Database name of Postgres database | Production |
 | POSTGRES_USERNAME | Login of Postgres database | Production |
 | POSTGRES_PASSWORD | Password of Postgres database | Production |
+| AWS_ENDPOINT_URL | URL of S3 storage | Production |
+| AWS_BUCKET_NAME | Bucket name in S3 storage | Production |
+| AWS_ACCESS_KEY_ID | Access key to S3 storage | Production |
+| AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production |
 
 ## Project files
 
@@ -179,7 +183,7 @@ There are 5 bot's commands, whitch can be executate from any bot state. You don'
 
 Also your bot must process `/start` command - for the first run of each user.
 
-## The knowledge I have gained
+## The knowledge I have earned
 - Comparing different pythons framework for telegram bots. I chose aiogram for its beautiful structure and thoughtful concept
 - Using aiogram FSMstore to remember state of conversation and user data, entered on previous steps of the dialogue
 - Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
@@ -193,3 +197,4 @@ Also your bot must process `/start` command - for the first run of each user.
 - Using GitHub secrets to deploy container and for transmission in it database coordinates and API keys
 - Using Visual studio code launch.json to emulate environment variables with GitHub secrets
 - Arrange branches: main to deploy on production and develop to store development changes
+- Push files in S3 store ang get links to them

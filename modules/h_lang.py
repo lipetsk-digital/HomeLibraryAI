@@ -29,7 +29,7 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         english_name = locale.english_name.split(" (")[0]  # Get the English name without the region
         native_name = locale.get_language_name(locale=lang)
         builder.button(text=english_name+' / '+native_name, callback_data=env.Language(lang=lang) )
-    #builder.adjust(1)
+    builder.adjust(1)
     sent_message = await message.answer(_("select_lang"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.select_lang)

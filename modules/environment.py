@@ -33,6 +33,10 @@ logging.basicConfig(level=logging.INFO)
 # Telegram bot token
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 
+# AWS S3 storage settings
+AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
+AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+
 # Class for finite state machine
 class State(StatesGroup):
     wait_for_command = State()
