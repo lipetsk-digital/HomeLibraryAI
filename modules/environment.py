@@ -42,6 +42,8 @@ class State(StatesGroup):
 def _translate_(text: str) -> str:
     return text
 
+i18n = None  # Placeholder for i18n instance
+
 # Main menu actions
 MAIN_MENU_ACTIONS = {
     "add": _translate_("➕ Add book"),

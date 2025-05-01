@@ -42,7 +42,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.MAIN_MENU_ACTIONS:
-        builder.button(text=env.MAIN_MENU_ACTIONS[action], callback_data=env.MainMenu(action=action) )
+        builder.button(text=_(env.MAIN_MENU_ACTIONS[action]), callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
     sent_message = await message.answer(_("What do you want?"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
@@ -50,10 +50,14 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
 
 # Prepare the bot's bottom left main menu commands
 async def PrepareMenu(bot: Bot):
-    commands = []
-    for action in env.MAIN_MENU_ACTIONS:
-        commands.append(BotCommand(command=action, description=env.MAIN_MENU_ACTIONS[action]))
-    await bot.set_my_commands(commands, BotCommandScopeDefault())
+    # Loop through all available languages and set the bot commands for each one    
+    available_languages = env.i18n.available_locales
+    print(f"Available languages: {available_languages}")
+    for lang in available_languages:
+        commands = []
+        for action in env.MAIN_MENU_ACTIONS:
+            commands.append(BotCommand(command=action, description=env.i18n.gettext(env.MAIN_MENU_ACTIONS[action], locale=lang)))
+        await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # Send a brief statistic about the user's library
 async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
