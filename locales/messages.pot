@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-01 19:17+0300\n"
+"POT-Creation-Date: 2025-05-02 01:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,28 +17,40 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/environment.py:55
+#: modules/environment.py:60
 msgid "add"
 msgstr ""
 
-#: modules/environment.py:56
+#: modules/environment.py:61
 msgid "find"
 msgstr ""
 
-#: modules/environment.py:57
+#: modules/environment.py:62
 msgid "edit"
 msgstr ""
 
-#: modules/environment.py:58
+#: modules/environment.py:63
 msgid "cat"
 msgstr ""
 
-#: modules/environment.py:59
+#: modules/environment.py:64
 msgid "export"
 msgstr ""
 
-#: modules/environment.py:62
+#: modules/environment.py:67
 msgid "settings"
+msgstr ""
+
+#: modules/environment.py:70
+msgid "use_cover"
+msgstr ""
+
+#: modules/environment.py:71
+msgid "use_original_photo"
+msgstr ""
+
+#: modules/environment.py:72
+msgid "take_new_photo"
 msgstr ""
 
 #: modules/h_add.py:23 modules/h_add.py:32
@@ -70,11 +82,23 @@ msgstr ""
 msgid "photo_cover"
 msgstr ""
 
+#: modules/h_cover.py:73 modules/h_cover.py:146
+msgid "upload_failed"
+msgstr ""
+
+#: modules/h_cover.py:85
+msgid "remove_background_failed"
+msgstr ""
+
+#: modules/h_cover.py:136
+msgid "contour_failed"
+msgstr ""
+
 #: modules/h_lang.py:33
 msgid "select_lang"
 msgstr ""
 
-#: modules/h_lang.py:44
+#: modules/h_lang.py:49
 #, python-brace-format
 msgid "{language}_selected"
 msgstr ""

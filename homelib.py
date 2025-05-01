@@ -13,7 +13,7 @@ import modules.h_lang as h_lang # For handling language selection
 import modules.h_cover as h_cover # For handling book cover photos
 
 # Initialize bot and dispatcher
-bot = Bot(token=env.TOKEN)
+bot = Bot(token=env.TELEGRAM_TOKEN)
 #storage = MemoryStorage()
 storage = PostgresStorage(**env.POSTGRES_CONFIG)
 dp = Dispatcher(storage=storage)

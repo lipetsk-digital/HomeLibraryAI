@@ -38,7 +38,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.MAIN_MENU_ACTIONS:
-        builder.button(text=_(env.MAIN_MENU_ACTIONS[action]), callback_data=env.MainMenu(action=action) )
+        builder.button(text=_(action), callback_data=env.MainMenu(action=action) )
     builder.adjust(2, 3)
     sent_message = await message.answer(_("main_menu"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
@@ -51,9 +51,9 @@ async def PrepareMenu(bot: Bot):
     env.logging.debug(f"Available languages: {available_languages}")
     for lang in available_languages:
         commands = []
-        actions = {**env.MAIN_MENU_ACTIONS, **env.ADVANCED_ACTIONS}
+        actions = env.MAIN_MENU_ACTIONS + env.ADVANCED_ACTIONS
         for action in actions:
-            commands.append(BotCommand(command=action, description=env.i18n.gettext(actions[action], locale=lang)))
+            commands.append(BotCommand(command=action, description=env.i18n.gettext(action, locale=lang)))
         await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # Send a brief statistic about the user's library

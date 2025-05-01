@@ -31,7 +31,7 @@ POSTGRES_CONFIG = {
 logging.basicConfig(level=logging.INFO)
 
 # Telegram bot token
-TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
 # AWS S3 storage settings
 AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
@@ -43,10 +43,7 @@ class State(StatesGroup):
     select_lang = State()
     select_cathegory = State()
     wait_for_cover_photo = State()
-
-# Dummy function for pybabel to detect translatable strings
-def _translate_(text: str) -> str:
-    return text
+    wait_reaction_on_cover = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -54,17 +51,26 @@ FSMi18n = None  # Placeholder for FSMi18n instance
 first_router = Router() # Router for global commands
 last_router = Router() # Router for trash messages
 
+# Dummy function for pybabel to detect translatable strings
+def _translate_(text: str) -> str:
+    return text
+
 # Main menu actions
-MAIN_MENU_ACTIONS = {
-    "add": _translate_("add"),
-    "find": _translate_("find"),
-    "edit": _translate_("edit"),
-    "cat": _translate_("cat"),
-    "export": _translate_("export")
-}
-ADVANCED_ACTIONS = {
-    "settings": _translate_("settings")
-}
+MAIN_MENU_ACTIONS = [
+    _translate_("add"),
+    _translate_("find"),
+    _translate_("edit"),
+    _translate_("cat"),
+    _translate_("export")
+]
+ADVANCED_ACTIONS = [
+    _translate_("settings")
+]
+COVER_ACTIONS = [
+    _translate_("use_cover"),
+    _translate_("use_original_photo"),
+    _translate_("take_new_photo")
+]
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
@@ -77,6 +83,10 @@ class Cathegory(CallbackData, prefix="cat"):
 # Callback factory for language selection
 class Language(CallbackData, prefix="lang"):
     lang: str
+
+# Callback factory for cover actions
+class CoverActions(CallbackData, prefix="cover"):
+    action: str
 
 # Remove old inline keyboards from messages in the chat
 async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:
