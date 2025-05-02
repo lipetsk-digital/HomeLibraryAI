@@ -1,4 +1,4 @@
-import sys
+import sys # !!!!!
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization

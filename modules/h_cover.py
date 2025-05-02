@@ -1,6 +1,7 @@
 # ========================================================
 # Module for handling bot messages related to prcessing book covers photos
 # ========================================================
+import sys # !!!!!
 import asyncpg # For asynchronous PostgreSQL connection
 import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
@@ -71,7 +72,8 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             #sent_message = await message.answer(_("loaded_wait"))
         except Exception as e:
             await message.reply(_("upload_failed"))
-            env.logging.error(f"Error uploading to S3: {e}")
+            #env.logging.error(f"Error uploading to S3: {e}") # !!!
+            print(f"Error uploading to S3: {e}", file=sys.stderr) # !!!
         '''
         # =========================================================
         # Remove the background from the image
@@ -151,8 +153,8 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         builder = InlineKeyboardBuilder()
         await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
         for action in env.COVER_ACTIONS:
-            builder.button(text=_(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _ , see warnings, deploy on production       
+            builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
         builder.adjust(1)
-        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
+        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(photo_bytesio2.getvalue(), filename=cover_filename), reply_markup=builder.as_markup()) # !!! photo_bytesio2 -> output_bytesio
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
