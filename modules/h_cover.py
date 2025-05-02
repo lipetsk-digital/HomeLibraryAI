@@ -96,7 +96,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         gray = cv2.cvtColor(img_cv, cv2.COLOR_BGRA2GRAY)
 
         # Find contours
-        contours, _ = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         if contours:
 
             # Find the largest contour
@@ -151,8 +151,8 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         builder = InlineKeyboardBuilder()
         await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
         for action in env.COVER_ACTIONS:
-            builder.button(text=(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _ , see warnings, deploy on production       
-        builder.adjust(1, 2)
+            builder.button(text=_(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _ , see warnings, deploy on production       
+        builder.adjust(1)
         sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
