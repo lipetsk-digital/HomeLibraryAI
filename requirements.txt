@@ -4,4 +4,4 @@ babel
 aioboto3
 rembg[cpu]
 numpy
-opencv-python
+opencv-python-headless
