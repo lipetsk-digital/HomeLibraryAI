@@ -79,9 +79,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         try:
             photo_bytesio2 = io.BytesIO(photo_bytes)
             #output = remove(photo_bytes)
-            output = await async_remove(photo_bytesio2.getvalue()) 
-            output_bytesio = io.BytesIO()
-            output_bytesio.write(output) #, format='PNG'
+            #output = await async_remove(photo_bytesio2.getvalue())
+            #output_bytesio = io.BytesIO()
+            #output_bytesio.write(output) #, format='PNG'
         except Exception as e:
             await message.reply(_("remove_background_failed"))
             env.logging.error(f"Error removing background: {e}")
@@ -90,7 +90,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # Found book contour
 
         # Load image without background to OpenCV format for contour detection
-        nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8) # !!! photo_bytesio2 -> output_bytesio
+        nparr = np.frombuffer(photo_bytesio2.getvalue(), dtype=np.uint8) # !!! photo_bytesio2 -> output_bytesio
         img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         # Convert for contour detection
