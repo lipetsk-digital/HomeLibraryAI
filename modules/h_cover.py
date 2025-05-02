@@ -7,8 +7,7 @@ import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
 import uuid # For generating unique filenames
 import numpy as np # For arrays processing
-#import cv2 # For image processing
-#from rembg import remove # For removing background from images
+import cv2 # For image processing
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
@@ -20,11 +19,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
-from modules.aiorembg import async_remove # For asynchronous background removal
+#from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
-'''
+
 # Order points for perspective transformation
 def order_points(pts):
     # Initialize ordered points
@@ -43,7 +42,7 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     
     return rect
-'''
+
 
 # Handler for sended photo of book cover
 @cover_router.message(env.State.wait_for_cover_photo, F.photo)
@@ -74,13 +73,13 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             #env.logging.error(f"Error uploading to S3: {e}") # !!!
             print(f"Error uploading to S3: {e}", file=sys.stderr) # !!!
-        
+        '''
         # =========================================================
         # Remove the background from the image
         try:
             photo_bytesio2 = io.BytesIO(photo_bytes)
             #output = remove(photo_bytes)
-            output = await async_remove(photo_bytesio2.getvalue())
+            output = await async_remove(photo_bytesio2.getvalue()) 
             output_bytesio = io.BytesIO()
             output_bytesio.write(output) #, format='PNG'
         except Exception as e:
@@ -91,7 +90,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # Found book contour
 
         # Load image without background to OpenCV format for contour detection
-        nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8)
+        nparr = np.frombuffer(photo_bytesio2.getvalue(), dtype=np.uint8) # !!! photo_bytesio2 -> output_bytesio
         img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         # Convert for contour detection
@@ -136,11 +135,11 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             output_bytesio.seek(0)
         else:
             await message.reply(_("contour_failed"))
-        '''
+        
         # =========================================================
         # Upload the processed image to S3 storage
         try:
-            output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object # !!! photo_bytesio2 -> output_bytesio
+            output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object
             cover_filename = f"{message.from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(output_bytesio2, env.AWS_BUCKET_NAME, cover_filename)
             await state.update_data(cover_filename=cover_filename) # Save the filename in the state
@@ -155,6 +154,6 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for action in env.COVER_ACTIONS:
             builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
         builder.adjust(1)
-        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup()) # !!! photo_bytesio2 -> output_bytesio
+        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
