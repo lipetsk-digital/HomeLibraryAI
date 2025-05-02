@@ -46,6 +46,26 @@ spec:
             secretKeyRef:
               name: homelibrary-bot-secrets
               key: postgres-password
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: aws-access-key-id
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: aws-secret-access-key
+        - name: AWS_ENDPOINT_URL
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: aws-endpoint-url
+        - name: AWS_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: aws-bucket-name
         resources:
           requests:
             memory: "128Mi"

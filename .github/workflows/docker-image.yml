@@ -54,6 +54,10 @@ jobs:
             --from-literal=postgres-database=${{ secrets.POSTGRES_DATABASE }} \
             --from-literal=postgres-username=${{ secrets.POSTGRES_USERNAME }} \
             --from-literal=postgres-password=${{ secrets.POSTGRES_PASSWORD }} \
+            --from-literal=aws-access-key-id=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --from-literal=aws-secret-access-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+            --from-literal=aws-endpoint-url=${{ secrets.AWS_ENDPOINT_URL }} \
+            --from-literal=aws-bucket-name=${{ secrets.AWS_BUCKET_NAME }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
           kubectl rollout restart deployment/homelibrary-bot
