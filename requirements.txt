@@ -3,3 +3,4 @@ aiogram
 babel
 aioboto3
 numpy
+rembg[cpu]

@@ -20,7 +20,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
-#from modules.aiorembg import async_remove # For asynchronous background removal
+from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
@@ -74,7 +74,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             #env.logging.error(f"Error uploading to S3: {e}") # !!!
             print(f"Error uploading to S3: {e}", file=sys.stderr) # !!!
-        '''
+        
         # =========================================================
         # Remove the background from the image
         try:
@@ -86,7 +86,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         except Exception as e:
             await message.reply(_("remove_background_failed"))
             env.logging.error(f"Error removing background: {e}")
-
+        '''
         # =========================================================
         # Found book contour
 
@@ -140,7 +140,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # =========================================================
         # Upload the processed image to S3 storage
         try:
-            output_bytesio2 = io.BytesIO(photo_bytesio2.getvalue()) # Save the processed image to a BytesIO object # !!! photo_bytesio2 -> output_bytesio
+            output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object # !!! photo_bytesio2 -> output_bytesio
             cover_filename = f"{message.from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(output_bytesio2, env.AWS_BUCKET_NAME, cover_filename)
             await state.update_data(cover_filename=cover_filename) # Save the filename in the state
@@ -155,6 +155,6 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for action in env.COVER_ACTIONS:
             builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
         builder.adjust(1)
-        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(photo_bytesio2.getvalue(), filename=cover_filename), reply_markup=builder.as_markup()) # !!! photo_bytesio2 -> output_bytesio
+        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup()) # !!! photo_bytesio2 -> output_bytesio
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
