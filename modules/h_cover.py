@@ -5,9 +5,9 @@ import asyncpg # For asynchronous PostgreSQL connection
 import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
 import uuid # For generating unique filenames
-from rembg import remove # For removing background from images
 import numpy as np # For arrays processing
-import cv2 # For image processing
+#import cv2 # For image processing
+#from rembg import remove # For removing background from images
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
@@ -23,7 +23,7 @@ from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
-
+'''
 # Order points for perspective transformation
 def order_points(pts):
     # Initialize ordered points
@@ -42,7 +42,7 @@ def order_points(pts):
     rect[3] = pts[np.argmax(diff)]
     
     return rect
-
+'''
 
 # Handler for sended photo of book cover
 @cover_router.message(env.State.wait_for_cover_photo, F.photo)
@@ -72,7 +72,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         except Exception as e:
             await message.reply(_("upload_failed"))
             env.logging.error(f"Error uploading to S3: {e}")
-
+        '''
         # =========================================================
         # Remove the background from the image
         try:
@@ -134,18 +134,18 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             output_bytesio.seek(0)
         else:
             await message.reply(_("contour_failed"))
-
+        '''
         # =========================================================
         # Upload the processed image to S3 storage
         try:
-            output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object
+            output_bytesio2 = io.BytesIO(photo_bytesio2.getvalue()) # Save the processed image to a BytesIO object # !!! photo_bytesio2 -> output_bytesio
             cover_filename = f"{message.from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(output_bytesio2, env.AWS_BUCKET_NAME, cover_filename)
             await state.update_data(cover_filename=cover_filename) # Save the filename in the state
         except Exception as e:
             await message.reply(_("upload_failed"))
             env.logging.error(f"Error uploading to S3: {e}")
-
+        
         # =========================================================
         # Send the processed image back to the user
         builder = InlineKeyboardBuilder()
