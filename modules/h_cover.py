@@ -19,7 +19,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
-#from modules.aiorembg import async_remove # For asynchronous background removal
+from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
@@ -73,7 +73,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             #env.logging.error(f"Error uploading to S3: {e}") # !!!
             print(f"Error uploading to S3: {e}", file=sys.stderr) # !!!
-        '''
+        
         # =========================================================
         # Remove the background from the image
         try:
@@ -85,12 +85,12 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         except Exception as e:
             await message.reply(_("remove_background_failed"))
             env.logging.error(f"Error removing background: {e}")
-        '''
+        
         # =========================================================
         # Found book contour
 
         # Load image without background to OpenCV format for contour detection
-        nparr = np.frombuffer(photo_bytesio2.getvalue(), dtype=np.uint8) # !!! photo_bytesio2 -> output_bytesio
+        nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8) # !!! photo_bytesio2 -> output_bytesio
         img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         # Convert for contour detection
