@@ -154,3 +154,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
+
+# Handler for inline button use_cover
+#@cover_router.callback_query(env.CoverActions.filter())
+#async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
