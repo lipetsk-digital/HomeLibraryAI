@@ -29,7 +29,7 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         english_name = locale.english_name.split(" (")[0]  # Get the English name without the region
         native_name = locale.get_language_name(locale=lang)
         builder.button(text=english_name+' / '+native_name, callback_data=env.Language(lang=lang) )
-    #builder.adjust(1)
+    builder.adjust(1)
     sent_message = await message.answer(_("select_lang"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.select_lang)
@@ -37,8 +37,15 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 # Handler for the callback query when the user selects "add" from the main menu
 @lang_router.callback_query(env.Language.filter())
 async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    # Finish inline buttons
     await callback.answer()
     await callback.message.edit_reply_markup(reply_markup=None)
     await state.update_data(inline=None)
+    # Change locale
     await env.FSMi18n.set_locale(state, callback_data.lang)
+    # Get native name of selected language
+    locale = Locale.parse(callback_data.lang)
+    native_name = locale.get_language_name(locale=callback_data.lang)
+    await callback.message.answer(_("{language}_selected").format(language=native_name))
+    # Send the main menu again
     await h_start.MainMenu(callback.message, state, pool, bot)

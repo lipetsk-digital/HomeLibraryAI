@@ -1,3 +1,7 @@
 asyncpg
 aiogram
 babel
+aioboto3
+rembg[cpu]
+numpy
+opencv-python
