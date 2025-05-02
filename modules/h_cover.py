@@ -76,10 +76,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # Remove the background from the image
         try:
             photo_bytesio2 = io.BytesIO(photo_bytes)
-            #output = remove(photo_bytes)
-            #output = await async_remove(photo_bytesio2.getvalue())
-            #output_bytesio = io.BytesIO()
-            #output_bytesio.write(output) #, format='PNG'
+            output = await async_remove(photo_bytesio2.getvalue())
+            output_bytesio = io.BytesIO()
+            output_bytesio.write(output) #, format='PNG'
         except Exception as e:
             await message.reply(_("remove_background_failed"))
             env.logging.error(f"Error removing background: {e}")
