@@ -8,7 +8,7 @@ import io # For handling byte streams
 import uuid # For generating unique filenames
 import numpy as np # For arrays processing
 import cv2 # For image processing
-#import rembg # !!!
+import rembg # !!!
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
