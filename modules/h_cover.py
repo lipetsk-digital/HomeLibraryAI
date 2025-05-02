@@ -8,7 +8,7 @@ import io # For handling byte streams
 import uuid # For generating unique filenames
 import numpy as np # For arrays processing
 import cv2 # For image processing
-import rembg
+#import rembg # !!!
 from aiogram import Bot, F # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
@@ -20,7 +20,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
-#from modules.aiorembg import async_remove # For asynchronous background removal
+#from modules.aiorembg import async_remove # For asynchronous background removal # !!!
 
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
