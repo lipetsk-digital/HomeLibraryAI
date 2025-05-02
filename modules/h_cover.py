@@ -151,7 +151,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         builder = InlineKeyboardBuilder()
         await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
         for action in env.COVER_ACTIONS:
-            builder.button(text=(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _        
+            builder.button(text=(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _ , see warnings, deploy on production       
         builder.adjust(1, 2)
         sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
