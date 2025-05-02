@@ -95,5 +95,6 @@ async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) ->
     if inline:
         try:
             await bot.edit_message_reply_markup(chat_id=chat_id, message_id=inline, reply_markup=None)
+            await state.update_data(inline=None)
         except Exception as e:
             logging.error(f"Error deleting inline keyboard: {e}")
