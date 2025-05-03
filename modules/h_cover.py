@@ -68,7 +68,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
                                            message_id=message.message_id,
                                            reaction=[ReactionTypeEmoji(emoji='👍')])
         except Exception as e:
-            await message.reply(_("upload_failed"))
+            await message.reply(_("upload_failed")+f" {e}")
             env.logging.error(f"Error uploading to S3: {e}")
         
         # =========================================================
@@ -79,7 +79,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             output_bytesio = io.BytesIO()
             output_bytesio.write(output) #, format='PNG'
         except Exception as e:
-            await message.reply(_("remove_background_failed"))
+            await message.reply(_("remove_background_failed")+f" {e}")
             env.logging.error(f"Error removing background: {e}")
         
         # =========================================================
@@ -131,6 +131,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             output_bytesio.seek(0)
         else:
             await message.reply(_("contour_failed"))
+            env.logging.error("Error detect contour of the book")
         
         # =========================================================
         # Upload the processed image to S3 storage
@@ -140,7 +141,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await s3.upload_fileobj(output_bytesio2, env.AWS_BUCKET_NAME, cover_filename)
             await state.update_data(cover_filename=cover_filename) # Save the filename in the state
         except Exception as e:
-            await message.reply(_("upload_failed"))
+            await message.reply(_("upload_failed")+f" {e}")
             env.logging.error(f"Error uploading to S3: {e}")
         
         # =========================================================

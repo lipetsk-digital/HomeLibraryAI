@@ -107,12 +107,6 @@ For example:
 | [![Example 1 - source](images/th_page1.jpg)](examples/extract_book_info/page1.jpg) | `name` = Птицы на кормушках: Подкормка и привлечение <br/> `authors` = Василий Вишневский <br/> `pages` = 304 <br/> `publisher` = Фитон XXI <br/> `year` = 2025 <br/> `ISBN` = 978-5-6051287-5-5 <br/> `annotation` = Книга даёт исчерпывающие ответы на самые важные вопросы: как, чем, когда и каких диких птиц подкармливать. Делать это можно в самых разных местах: от балкона городской квартиры до дачного участка, парка или близлежащего леса. Большое внимание в книге уделено разнообразию кормов, и поскольку не все они полезны, то и тому, чем можно (а чем нельзя) кормить, как приготовить корм, как его хранить. Кроме подкормки, вы можете посадить определённые растения, которые привлекут ещё больше птиц на дачный участок. Поскольку посещение кормушек связано с рядом опасностей, в книге даны очень важные рекомендации, как их избежать и как защитить пернатых гостей от врагов и конкурентов. Если вы повесили кормушку... <br/> `brief` = Подкормка птиц — очень важное и нужное дело, а наблюдение за пернатыми посетителями кормушек приносит массу удовольствия. |
 | [![Example 2 - source](images/th_page2.jpg)](examples/extract_book_info/page2.jpg) | `name` = Асимптотические методы для линейных обыкновенных дифференциальных уравнений <br/> `authors` = Федорюк М. В. <br/> `pages` = 352 <br/> `publisher` = Наука <br/> `year` = 1983 <br/> `ISBN` = null <br/> `annotation` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов. <br/> `brief` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. |
 
-## Telegram-bot's dialog algorithm
-
-![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
-
-Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm.
-
 ## PostgreSQL database
 
 Where are two application tables in the PostgreSQL database:
@@ -173,9 +167,43 @@ CREATE TABLE IF NOT EXISTS aiogram_data(
 
 You don't need to create these tables manualy. Then telegram-bot connect to postgres, it try to create these tables, if they are not exists.
 
+## States of the bot
+
+- `wait_for_command` - waiting for the one of global bot's commands
+- `select_lang` - waiting for user to select one of languages
+- `select_cathegory` - waiting for user to select a cathegory or enter the new one
+- `wait_for_cover_photo` - waiting for user to send a photo of the book cover
+- `wait_reaction_on_cover` - waiting for user's reaction of extracted book cover
+- `wait_for_brief_photo` - waiting for user to send a photo of the annotation page
+- `wait_reaction_on_brief` =  waiting for user's reaction of extracted book information
+
+## User's data accumulating and stored for each bot's session
+
+Common data:
+
+- `inline`: int - last ID of message with inline keyboard. Used to remember remove these keyboard, when they are no longer needed
+
+Cathegory selection:
+
+- `action`: str - name of the action to run after the user selects a category
+- `can_add`: bool - can the user enter the name of a new category when he select it
+- `cathegory`: str - name of the cathegory, selected by user
+
+Book data:
+- `photo_filename`: str - relative path to file with original photo on S3 storage of the book cover
+- `cover_filename`: str - relative path to file with original photo on S3 storage of the annotation page
+- `title`: str - book's title
+- `authors`: str - authors of the book
+- `pages`: str - count of pages in the book
+- `publisher`: str - the publishing house
+- `year`: str - year of the book publication
+- `isbn`: str - ISBN
+- `brief`: str - single sentence that best conveys the content of the book
+- `annotation`: str - full text of the book's annotation
+
 ## Telegram bot's commands
 
-There are 5 bot's commands, whitch can be executate from any bot state. You don't need to ask `@BotFather` add these commands to main menu button. They added automaticaly by the bot itself:
+There are 5 global bot's commands, whitch can be executate from any bot state. You don't need to ask `@BotFather` add these commands to main menu button. They added automaticaly by the bot itself:
 - `add` - Add book
 - `find` - Search
 - `edit` - Edit book
@@ -183,20 +211,52 @@ There are 5 bot's commands, whitch can be executate from any bot state. You don'
 - `export` - Export
 - `lang` - Language
 
-Also your bot must process `/start` command - for the first run of each user.
+Also bot process `/start` command - for the first run of each user.
 
 ## The knowledge I have earned
-- Comparing different pythons framework for telegram bots. I chose aiogram for its beautiful structure and thoughtful concept
-- Using aiogram FSMstore to remember state of conversation and user data, entered on previous steps of the dialogue
-- Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
-- Using inline buttons in telegram chat
-- Timely removing of old, outdated inline buttons
-- Create multilanguage application and add or change localization without edit source code
-- I realized that the best way is to store in program code only shortcuts for string literals. And all full strings, included default english language, should be stored in local files
-- Plural numbers localizaion
+
+System administration and development organization:
+
 - CI/CD with docker container generation and deploy it on kubernates cluster
 - Using requirements.txt to build docker container with python's program
 - Using GitHub secrets to deploy container and for transmission in it database coordinates and API keys
 - Using Visual studio code launch.json to emulate environment variables with GitHub secrets
 - Arrange branches: main to deploy on production and develop to store development changes
+
+Cloud storages:
+
 - Push files in S3 store, including asynchronous mode and get links to them
+
+AI models:
+
+- Use U-2-Net Salient Object Detection AI-model as local library. $0.1 - $1 per image economy!
+- Compare many GPT models to find the cheapest and most efficient one
+- Make requests to GPT AI-models, including images and parse their responses
+- Write prompts for GPT to get scructurized data and get derived fields
+- Write prompt on one language to get response on another language
+
+Opensource collaboration:
+
+- Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
+
+Intenational localization:
+
+- Create multilanguage application and add or change localization without edit source code
+- I realized that the best way is to store in program code only shortcuts for string literals. And all full strings, included default english language, should be stored in local files
+- Plural numbers localizaion
+
+Telegram development:
+
+- Comparing different pythons framework for telegram bots. I chose aiogram for its beautiful structure and thoughtful concept
+- Using aiogram FSMstore to remember state of conversation and user data, entered on previous steps of the dialogue
+- Send formated messages in telegram
+- Using inline buttons in telegram chat
+- Timely removing of old, outdated inline buttons
+- Put emoji reaction on messages and delete messages
+
+## Telegram-bot's dialog algorithm
+
+![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
+
+Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm.
+
