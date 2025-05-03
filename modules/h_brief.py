@@ -59,42 +59,64 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             env.logging.error(f"Error uploading to S3: {e}")
 
-    # Prepare session for OpenAI API        
-    img_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8')
-    client = AsyncOpenAI(
-        api_key=env.GPT_API_TOKEN,
-        base_url=env.GPT_URL
-    )
+    try:
+        # Prepare session for OpenAI API        
+        img_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8')
+        client = AsyncOpenAI(
+            api_key=env.GPT_API_TOKEN,
+            base_url=env.GPT_URL
+        )
+        # Ask GPT-4 Vision to analyze the image and extract book information
+        prompt = ""
+        for line in env.BOOK_PROMPT:
+            prompt = prompt + _(line) + "\n"
+        response = await client.chat.completions.create(
+            model="vis-google/gemini-pro-vision",
+            messages=[
+                {"role": "user", "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {
+                        "url": f"data:image/jpeg;base64,{img_base64}"
+                    }}
+                ]}
+            ],
+            max_tokens=2000
+        )
+    except Exception as e:
+        await message.reply(_("gpt_failed"))
+        env.logging.error(f"Error asking GPT: {e}")
+    
+    try:
+        # Convert the response to a dictionary
+        response_text = response.choices[0].message.content
+        book_computer = {}
+        book_human = {}
+        for line in response_text.splitlines():
+            if "=" in line:
+                key, value = line.split("=", 1)
+                book_computer[key.strip()] = value.strip()
+                if key.strip() != "annotation": # Don't show annotation in the message
+                    book_human[_(key.strip())] = value.strip()
+        await state.update_data(**book_computer) # Save the book information in the state
+        if not book_computer:
+            raise ValueError()        
+    except Exception as e:
+        await message.reply(_("gpt_incorrect")+"\n"+response_text)
+        env.logging.error(f"Error parsing GPT response: {e}")
 
-    # Ask GPT-4 Vision to analyze the image and extract book information
-    prompt = ""
-    for line in env.BOOK_PROMPT:
-        prompt = prompt + _(line) + "\n"
-    response = await client.chat.completions.create(
-        model="vis-google/gemini-pro-vision",
-        messages=[
-            {"role": "user", "content": [
-                {"type": "text", "text": prompt},
-                {"type": "image_url", "image_url": {
-                    "url": f"data:image/jpeg;base64,{img_base64}"
-                }}
-            ]}
-        ],
-        max_tokens=1000
-    )
-    
-    # Convert the response to a dictionary
-    response_text = response.choices[0].message.content
-    book = {}
-    for line in response_text.splitlines():
-        if "=" in line:
-            key, value = line.split("=", 1)
-            book[_(key.strip())] = value.strip()
-    
     # Generate a message with the book information
     items = []
-    for key, value in book.items():
+    for key, value in book_human.items():
         items.append(as_key_value(key, value))
     content = as_list(*items)
-    await message.answer(**content.as_kwargs())
+    # Generate keyboard with further actions
+    builder = InlineKeyboardBuilder()
+    await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
+    for action in env.BRIEF_ACTIONS:
+        builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
+    builder.adjust(2,1)
+    # Send the message with the book information and the keyboard
+    sent_message = await message.answer(**content.as_kwargs(), reply_markup=builder.as_markup())
+    await state.update_data(inline=sent_message.message_id)
+    await state.set_state(env.State.wait_reaction_on_brief)
 

@@ -49,6 +49,7 @@ class State(StatesGroup):
     wait_for_cover_photo = State()
     wait_reaction_on_cover = State()
     wait_for_brief_photo = State()
+    wait_reaction_on_brief = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -101,7 +102,11 @@ BOOK_PROMPT = [
     _translate_("prompt_annotation"),
     _translate_("prompt_brief")
 ]
-
+BRIEF_ACTIONS = [
+    _translate_("use_brief"),
+    _translate_("edit_brief"),
+    _translate_("take_new_photo")
+]
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
