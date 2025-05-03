@@ -85,54 +85,58 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # =========================================================
         # Found book contour
 
-        # Load image without background to OpenCV format for contour detection
-        nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8)
-        img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        try:
+            # Load image without background to OpenCV format for contour detection
+            nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8)
+            img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        # Convert for contour detection
-        gray = cv2.cvtColor(img_cv, cv2.COLOR_BGRA2GRAY)
+            # Convert for contour detection
+            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGRA2GRAY)
 
-        # Find contours
-        contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if contours:
+            # Find contours
+            contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if contours:
 
-            # Find the largest contour
-            largest_contour = max(contours, key=cv2.contourArea)
-            
-            # Approximate the contour to get a polygon
-            epsilon = 0.02 * cv2.arcLength(largest_contour, True)
-            approx = cv2.approxPolyDP(largest_contour, epsilon, True)
-            
-            if len(approx) == 4:
-                # Get dimensions for the output image
-                # Use maximum of width and height to determine orientation
-                width = int((np.linalg.norm(approx[0] - approx[1])+np.linalg.norm(approx[2] - approx[3]))/2)
-                height = int((np.linalg.norm(approx[1] - approx[2])+np.linalg.norm(approx[3] - approx[0]))/2)
+                # Find the largest contour
+                largest_contour = max(contours, key=cv2.contourArea)
                 
-                # Swap width and height if the image is in portrait orientation
-                if width > height:
-                    width, height = height, width
+                # Approximate the contour to get a polygon
+                epsilon = 0.02 * cv2.arcLength(largest_contour, True)
+                approx = cv2.approxPolyDP(largest_contour, epsilon, True)
+                
+                if len(approx) == 4:
+                    # Get dimensions for the output image
+                    # Use maximum of width and height to determine orientation
+                    width = int((np.linalg.norm(approx[0] - approx[1])+np.linalg.norm(approx[2] - approx[3]))/2)
+                    height = int((np.linalg.norm(approx[1] - approx[2])+np.linalg.norm(approx[3] - approx[0]))/2)
+                    
+                    # Swap width and height if the image is in portrait orientation
+                    if width > height:
+                        width, height = height, width
 
-                # Define destination points for perspective transform
-                dst_points = np.array([ [0, 0], [width-1, 0], [width-1, height-1], [0, height-1] ], dtype=np.float32)
-                
-                # Sort source points for correct mapping
-                src_points = np.float32(approx.reshape(4, 2))
-                src_points = order_points(src_points)
-                
-                # Apply perspective transformation
-                matrix = cv2.getPerspectiveTransform(src_points, dst_points)
-                result = cv2.warpPerspective(img_cv, matrix, (width, height))
-                
-        is_success, buffer = cv2.imencode('.jpg', result)
-        if is_success:
-            output_bytesio = io.BytesIO()
-            output_bytesio.write(buffer.tobytes())
-            output_bytesio.seek(0)
-        else:
-            await message.reply(_("contour_failed"))
-            env.logging.error("Error detect contour of the book")
-        
+                    # Define destination points for perspective transform
+                    dst_points = np.array([ [0, 0], [width-1, 0], [width-1, height-1], [0, height-1] ], dtype=np.float32)
+                    
+                    # Sort source points for correct mapping
+                    src_points = np.float32(approx.reshape(4, 2))
+                    src_points = order_points(src_points)
+                    
+                    # Apply perspective transformation
+                    matrix = cv2.getPerspectiveTransform(src_points, dst_points)
+                    result = cv2.warpPerspective(img_cv, matrix, (width, height))
+                    
+            is_success, buffer = cv2.imencode('.jpg', result)
+            if is_success:
+                output_bytesio = io.BytesIO()
+                output_bytesio.write(buffer.tobytes())
+                output_bytesio.seek(0)
+            else:
+                await message.reply(_("contour_failed"))
+                env.logging.error("Error detect contour of the book")
+        except Exception as e:
+            await message.reply(_("contour_failed")+f" {e}")
+            env.logging.error(f"Error processing image: {e}")
+
         # =========================================================
         # Upload the processed image to S3 storage
         try:
@@ -158,9 +162,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 # Handler for inline button use_cover
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    env.RemoveMyInlineKeyboards(callback, state)
     # Give like to cover's photo
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
                                     message_id=callback.message.message_id,
@@ -170,20 +172,16 @@ async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathego
 # Handler for inline button use_original_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    env.RemoveMyInlineKeyboards(callback, state)
     data = await state.get_data()
     photo_filename = data.get("photo_filename")
     await state.update_data(cover_filename=photo_filename) # Replace cover by original photo filename
     await callback.message.answer(_("use_original_photo"))
     await h_brief.AskForBrief(callback.message, state, pool, bot)
 
-# Handler for inline button use_original_photo
+# Handler for inline button take_new_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    env.RemoveMyInlineKeyboards(callback, state)
     await callback.message.answer(_("photo_cover"))
     await state.set_state(env.State.wait_for_cover_photo)

@@ -65,9 +65,7 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
 # Handler for inline button selection of a cathegory
 @cat_router.callback_query(env.Cathegory.filter())
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    env.RemoveMyInlineKeyboards(callback, state)
     await DoCathegory(callback_data.name, callback.message, state, pool, bot)
 
 # Handler for entered text when the user can add a new cathegory

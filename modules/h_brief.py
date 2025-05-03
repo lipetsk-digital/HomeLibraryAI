@@ -94,9 +94,19 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for line in response_text.splitlines():
             if "=" in line:
                 key, value = line.split("=", 1)
-                book_computer[key.strip()] = value.strip()
-                if key.strip() != "annotation": # Don't show annotation in the message
-                    book_human[_(key.strip())] = value.strip()
+                key = key.strip()
+                value = value.strip()
+                # Prepare dict with book information for computer
+                book_computer[key] = value
+                # Prepare dict with book information for user
+                if key == "annotation":
+                    pass # Don't show full annotation in the message
+                elif key == "authors_full_names":
+                    book_human[_("authors")] = value # Replace bief names of authors with full names
+                elif key == "authors":
+                    pass # Don't show brief names of authors in the message
+                else:
+                    book_human[_(key)] = value # for other fields
         await state.update_data(**book_computer) # Save the book information in the state
         if not book_computer:
             raise ValueError()        
@@ -113,10 +123,26 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.BRIEF_ACTIONS:
-        builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
+        builder.button(text=_(action), callback_data=env.BriefActions(action=action) )
     builder.adjust(2,1)
     # Send the message with the book information and the keyboard
     sent_message = await message.answer(**content.as_kwargs(), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_reaction_on_brief)
 
+# Handler for inline button use_brief
+@brief_router.callback_query(env.BriefActions.filter(F.action == "use_brief"))
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    env.RemoveMyInlineKeyboards(callback, state)
+    # Give like to brief message
+    await bot.set_message_reaction(chat_id=callback.message.chat.id,
+                                    message_id=callback.message.message_id,
+                                    reaction=[ReactionTypeEmoji(emoji='👍')])
+    #await book.SaveBookToDatabase(callback.message, state, pool, bot)
+
+# Handler for inline button take_new_photo
+@brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    env.RemoveMyInlineKeyboards(callback, state)
+    await callback.message.answer(_("photo_brief"))
+    await state.set_state(env.State.wait_for_brief_photo)

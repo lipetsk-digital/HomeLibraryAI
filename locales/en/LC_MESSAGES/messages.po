@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-04 00:18+0300\n"
+"POT-Creation-Date: 2025-05-04 01:24+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -46,11 +46,11 @@ msgstr "⚙️ Settings"
 msgid "use_cover"
 msgstr "✅ OK, use this cover"
 
-#: modules/environment.py:77 modules/h_cover.py:179
+#: modules/environment.py:77 modules/h_cover.py:183
 msgid "use_original_photo"
 msgstr "🖼️ No, use original photo"
 
-#: modules/environment.py:78 modules/environment.py:108
+#: modules/environment.py:78 modules/environment.py:110
 msgid "take_new_photo"
 msgstr "📷 Stop, take a new photo"
 
@@ -60,89 +60,97 @@ msgstr "📗 Title"
 
 #: modules/environment.py:82
 msgid "authors"
-msgstr "🧑‍🎨 Authors"
+msgstr "🧑‍🎨 Author (abbr.)"
 
 #: modules/environment.py:83
+msgid "authors_full_names"
+msgstr "🧑‍🎨 Author"
+
+#: modules/environment.py:84
 msgid "pages"
 msgstr "📄 Pages"
 
-#: modules/environment.py:84
+#: modules/environment.py:85
 msgid "publisher"
 msgstr "🏤 Publisher"
 
-#: modules/environment.py:85
+#: modules/environment.py:86
 msgid "year"
 msgstr "📅 Year"
 
-#: modules/environment.py:86
+#: modules/environment.py:87
 msgid "isbn"
 msgstr "🆔 ISBN"
 
-#: modules/environment.py:87
+#: modules/environment.py:88
 msgid "brief"
 msgstr "⏱️ Brief"
 
-#: modules/environment.py:88
+#: modules/environment.py:89
 msgid "annotation"
 msgstr "📜 Annotation"
 
-#: modules/environment.py:91
+#: modules/environment.py:92
 msgid "prompt_photo"
 msgstr "The photo contains a page with the book's annotation."
 
-#: modules/environment.py:92
+#: modules/environment.py:93
 msgid "prompt_result"
 msgstr "Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases."
 
-#: modules/environment.py:93
-msgid "prompt_count"
-msgstr "The section must always contain 8 parameters. If a parameter is missing, its value should be empty."
-
 #: modules/environment.py:94
+msgid "prompt_count"
+msgstr "The section must always contain 9 parameters. If a parameter is missing, its value should be empty."
+
+#: modules/environment.py:95
 msgid "prompt_lang"
 msgstr "Provide the parameter values in the same language as the photographed page."
 
-#: modules/environment.py:95
+#: modules/environment.py:96
 msgid "prompt_fields"
 msgstr "Below are the names of each parameter and the extracted information from the image that its value should contain:"
 
-#: modules/environment.py:96
+#: modules/environment.py:97
 msgid "prompt_title"
 msgstr "title - the title of the book"
 
-#: modules/environment.py:97
+#: modules/environment.py:98
 msgid "prompt_authors"
 msgstr "authors - the authors of the book"
 
-#: modules/environment.py:98
+#: modules/environment.py:99
 msgid "prompt_pages"
 msgstr "pages - the number of pages"
 
-#: modules/environment.py:99
+#: modules/environment.py:100
 msgid "prompt_publisher"
 msgstr "publisher - the publishing house"
 
-#: modules/environment.py:100
+#: modules/environment.py:101
 msgid "prompt_year"
 msgstr "year - the year of publication"
 
-#: modules/environment.py:101
+#: modules/environment.py:102
 msgid "prompt_isbn"
 msgstr "isbn - the ISBN code"
 
-#: modules/environment.py:102
+#: modules/environment.py:103
 msgid "prompt_annotation"
 msgstr "annotation - the full text of the annotation exactly as it appears on the photographed page"
 
-#: modules/environment.py:103
+#: modules/environment.py:104
 msgid "prompt_brief"
 msgstr "brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book"
 
-#: modules/environment.py:106
+#: modules/environment.py:105
+msgid "prompt_authors_full_names"
+msgstr "authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field"
+
+#: modules/environment.py:108
 msgid "use_brief"
 msgstr "✅ All right"
 
-#: modules/environment.py:107
+#: modules/environment.py:109
 msgid "edit_brief"
 msgstr "✏️ Edit"
 
@@ -150,11 +158,11 @@ msgstr "✏️ Edit"
 msgid "start_add_book"
 msgstr "➕ Add book"
 
-#: modules/h_brief.py:30
+#: modules/h_brief.py:30 modules/h_brief.py:137
 msgid "photo_brief"
 msgstr "Take a photo of the first page of the book with an annotation and details 📸"
 
-#: modules/h_brief.py:59 modules/h_cover.py:71 modules/h_cover.py:144
+#: modules/h_brief.py:59 modules/h_cover.py:71 modules/h_cover.py:148
 msgid "upload_failed"
 msgstr "Sorry, the upload failed 🥺"
 
@@ -162,7 +170,7 @@ msgstr "Sorry, the upload failed 🥺"
 msgid "gpt_failed"
 msgstr "Sorry, AI request failed 🥺"
 
-#: modules/h_brief.py:104
+#: modules/h_brief.py:112
 msgid "gpt_incorrect"
 msgstr "Sorry, the AI response is incorrect 🥺"
 
@@ -187,7 +195,7 @@ msgstr "🫸 You cannot add a new cathegory at this moment. Please select an exi
 msgid "{cathegory}_selected"
 msgstr "You selected the cathegory: {cathegory}"
 
-#: modules/h_cat.py:95 modules/h_cover.py:188
+#: modules/h_cat.py:95 modules/h_cover.py:192
 msgid "photo_cover"
 msgstr "Take a photo of the book cover 📸"
 
@@ -195,7 +203,7 @@ msgstr "Take a photo of the book cover 📸"
 msgid "remove_background_failed"
 msgstr "Sorry, the background removal failed 🥺"
 
-#: modules/h_cover.py:133
+#: modules/h_cover.py:134 modules/h_cover.py:137
 msgid "contour_failed"
 msgstr "Sorry, book detection failed 🥺"
 
