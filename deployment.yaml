@@ -66,6 +66,16 @@ spec:
             secretKeyRef:
               name: homelibrary-bot-secrets
               key: aws-bucket-name
+        - name: GPT_URL
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: gpt-url
+        - name: GPT_API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: gpt-api-token
         resources:
           requests:
             memory: "128Mi"

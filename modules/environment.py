@@ -37,6 +37,10 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
 AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
 
+# VSEGPT API key
+GPT_URL = os.getenv("GPT_URL")
+GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
+
 # Class for finite state machine
 class State(StatesGroup):
     wait_for_command = State()
@@ -44,6 +48,7 @@ class State(StatesGroup):
     select_cathegory = State()
     wait_for_cover_photo = State()
     wait_reaction_on_cover = State()
+    wait_for_brief_photo = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -71,6 +76,32 @@ COVER_ACTIONS = [
     _translate_("use_original_photo"),
     _translate_("take_new_photo")
 ]
+BOOK_FIELDS = [
+    _translate_("title"),
+    _translate_("authors"),
+    _translate_("pages"),
+    _translate_("publisher"),
+    _translate_("year"),
+    _translate_("isbn"),
+    _translate_("brief"),
+    _translate_("annotation")
+]
+BOOK_PROMPT = [
+    _translate_("prompt_photo"),
+    _translate_("prompt_result"),
+    _translate_("prompt_count"),
+    _translate_("prompt_lang"),
+    _translate_("prompt_fields"),
+    _translate_("prompt_title"),
+    _translate_("prompt_authors"),
+    _translate_("prompt_pages"),
+    _translate_("prompt_publisher"),
+    _translate_("prompt_year"),
+    _translate_("prompt_isbn"),
+    _translate_("prompt_annotation"),
+    _translate_("prompt_brief")
+]
+
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):

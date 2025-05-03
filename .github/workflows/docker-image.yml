@@ -58,6 +58,8 @@ jobs:
             --from-literal=aws-secret-access-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             --from-literal=aws-endpoint-url=${{ secrets.AWS_ENDPOINT_URL }} \
             --from-literal=aws-bucket-name=${{ secrets.AWS_BUCKET_NAME }} \
+            --from-literal=gpt-url=${{ secrets.GPT_URL }} \
+            --from-literal=gpt-api-token=${{ secrets.GPT_API_TOKEN }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
           kubectl rollout restart deployment/homelibrary-bot
