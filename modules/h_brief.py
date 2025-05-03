@@ -19,6 +19,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 from openai import AsyncOpenAI # For OpenAI API client
 
 import modules.environment as env # For environment variables and configurations
+import modules.book as book # For save book to database
 
 # Router for handling messages related to processing book annotations
 brief_router = Router()
@@ -32,7 +33,7 @@ async def AskForBrief(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     await state.set_state(env.State.wait_for_brief_photo)
 
 # =========================================================
-# Handler for sended photo of book cover
+# Handler for sended photo of the first page of the book with annotation
 @brief_router.message(env.State.wait_for_brief_photo, F.photo)
 async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Get the photo from the message
@@ -48,9 +49,9 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
         # Upload the photo to S3 storage
         try:
-            photo_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-            await s3.upload_fileobj(photo_bytesio2, env.AWS_BUCKET_NAME, photo_filename)
-            await state.update_data(photo_filename=photo_filename) # Save the filename in the state
+            brief_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
+            await s3.upload_fileobj(photo_bytesio2, env.AWS_BUCKET_NAME, brief_filename)
+            await state.update_data(brief_filename=brief_filename) # Save the filename in the state
             # Give like to user's photo
             await bot.set_message_reaction(chat_id=message.chat.id,
                                            message_id=message.message_id,
@@ -138,7 +139,7 @@ async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathego
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
                                     message_id=callback.message.message_id,
                                     reaction=[ReactionTypeEmoji(emoji='👍')])
-    #await book.SaveBookToDatabase(callback.message, state, pool, bot)
+    await book.SaveBookToDatabase(callback, state, pool, bot)
 
 # Handler for inline button take_new_photo
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))

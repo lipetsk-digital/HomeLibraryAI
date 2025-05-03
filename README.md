@@ -129,9 +129,9 @@ CREATE TABLE IF NOT EXISTS books (
     user_id BIGINT,
     book_id BIGINT,
     cathegory TEXT,
-    uidphoto UUID,
-    uidcover UUID,
-    uidannotation UUID,
+    photo_filename TEXT,
+    cover_filename TEXT,
+    brief_filename TEXT,
     title TEXT,
     authors TEXT,
     authors_full_names TEXT,
@@ -194,7 +194,8 @@ Cathegory selection:
 
 Book data:
 - `photo_filename`: str - relative path to file with original photo on S3 storage of the book cover
-- `cover_filename`: str - relative path to file with original photo on S3 storage of the annotation page
+- `cover_filename`: str - relative path to file with extracted photo on S3 storage of the book cover
+- `brief_filename`: str - relative path to file with original photo on S3 storage of the annotation page
 - `title`: str - book's title
 - `authors`: str - authors of the book
 - `authors_full_names`: str - full names of authors of the book

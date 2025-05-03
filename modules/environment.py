@@ -89,6 +89,14 @@ BOOK_FIELDS = [
     _translate_("brief"),
     _translate_("annotation")
 ]
+ADVANCED_BOOK_FIELDS = [
+    "user_id",
+    "book_id",
+    "cathegory",
+    "photo_filename",
+    "cover_filename",
+    "brief_filename"
+]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),
     _translate_("prompt_result"),
