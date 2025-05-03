@@ -1,4 +1,3 @@
-import sys
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
@@ -12,9 +11,7 @@ import modules.h_add as h_add # For handling adding a new book
 import modules.h_cat as h_cat # For manipulating cathegories
 import modules.h_lang as h_lang # For handling language selection
 import modules.h_cover as h_cover # For handling book cover photos
-
-print("Starting_out", file=sys.stdout)
-print("Starting_err", file=sys.stderr)
+import modules.h_brief as h_brief # For handling brief commands
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TELEGRAM_TOKEN)
@@ -52,6 +49,7 @@ async def main():
     dp.include_router(h_cat.cat_router)
     dp.include_router(h_lang.lang_router)
     dp.include_router(h_cover.cover_router)
+    dp.include_router(h_brief.brief_router)
     dp.include_router(env.last_router) # Trash messages
     
     # Register startup routines

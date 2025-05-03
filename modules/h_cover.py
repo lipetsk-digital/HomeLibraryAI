@@ -5,7 +5,6 @@ import asyncpg # For asynchronous PostgreSQL connection
 import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
 import uuid # For generating unique filenames
-from rembg import remove # For removing background from images
 import numpy as np # For arrays processing
 import cv2 # For image processing
 from aiogram import Bot, F # For Telegram bot framework
@@ -18,7 +17,7 @@ from aiogram.types.callback_query import CallbackQuery # For handling callback q
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
 
 import modules.environment as env # For environment variables and configurations
-import modules.h_start as h_start # For handling start command
+import modules.h_brief as h_brief # For run brief commands
 from modules.aiorembg import async_remove # For asynchronous background removal
 
 # Router for handling messages related to processing book covers photos
@@ -68,23 +67,21 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await bot.set_message_reaction(chat_id=message.chat.id,
                                            message_id=message.message_id,
                                            reaction=[ReactionTypeEmoji(emoji='👍')])
-            #sent_message = await message.answer(_("loaded_wait"))
         except Exception as e:
             await message.reply(_("upload_failed"))
             env.logging.error(f"Error uploading to S3: {e}")
-
+        
         # =========================================================
         # Remove the background from the image
         try:
             photo_bytesio2 = io.BytesIO(photo_bytes)
-            #output = remove(photo_bytes)
             output = await async_remove(photo_bytesio2.getvalue())
             output_bytesio = io.BytesIO()
             output_bytesio.write(output) #, format='PNG'
         except Exception as e:
             await message.reply(_("remove_background_failed"))
             env.logging.error(f"Error removing background: {e}")
-
+        
         # =========================================================
         # Found book contour
 
@@ -134,7 +131,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             output_bytesio.seek(0)
         else:
             await message.reply(_("contour_failed"))
-
+        
         # =========================================================
         # Upload the processed image to S3 storage
         try:
@@ -145,14 +142,47 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         except Exception as e:
             await message.reply(_("upload_failed"))
             env.logging.error(f"Error uploading to S3: {e}")
-
+        
         # =========================================================
         # Send the processed image back to the user
         builder = InlineKeyboardBuilder()
         await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
         for action in env.COVER_ACTIONS:
-            builder.button(text=_(action), callback_data=env.CoverActions(action=action) ) # !!!!! add _ , see warnings, deploy on production       
+            builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
         builder.adjust(1)
         sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
+
+# Handler for inline button use_cover
+@cover_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await state.update_data(inline=None)
+    # Give like to cover's photo
+    await bot.set_message_reaction(chat_id=callback.message.chat.id,
+                                    message_id=callback.message.message_id,
+                                    reaction=[ReactionTypeEmoji(emoji='👍')])
+    await h_brief.AskForBrief(callback.message, state, pool, bot)
+
+# Handler for inline button use_original_photo
+@cover_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await state.update_data(inline=None)
+    data = await state.get_data()
+    photo_filename = data.get("photo_filename")
+    await state.update_data(cover_filename=photo_filename) # Replace cover by original photo filename
+    await callback.message.answer(_("use_original_photo"))
+    await h_brief.AskForBrief(callback.message, state, pool, bot)
+
+# Handler for inline button use_original_photo
+@cover_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
+async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await state.update_data(inline=None)
+    await callback.message.answer(_("photo_cover"))
+    await state.set_state(env.State.wait_for_cover_photo)

@@ -28,6 +28,8 @@ https://t.me/home_library_ai_bot
 | AWS_BUCKET_NAME | Bucket name in S3 storage | Production |
 | AWS_ACCESS_KEY_ID | Access key to S3 storage | Production |
 | AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production |
+| GPT_URL | URL for access to GPR API | Production |
+| GPT_API_TOKEN | Secret token for GPT API | Production |
 
 ## Project files
 
@@ -90,7 +92,7 @@ We found Google `gemini-pro-vision` to be the best in terms of price-performance
 We exctract these fields:
 | Field | Value |
 | - | - |
-| `name` | Book name |
+| `title` | Book title |
 | `authors` | Authors of the book |
 | `pages` | Pages count in the book |
 | `publisher` | Organiozation name of book's publisher |
@@ -134,7 +136,7 @@ CREATE TABLE IF NOT EXISTS books (
     uidphoto UUID,
     uidcover UUID,
     uidannotation UUID,
-    name TEXT,
+    title TEXT,
     authors TEXT,
     pages TEXT,
     puiblisher TEXT,

@@ -31,7 +31,7 @@ async def create_tables(POSTGRES_CONFIG):
             uidphoto UUID,
             uidcover UUID,
             uidannotation UUID,
-            name TEXT,
+            title TEXT,
             authors TEXT,
             pages TEXT,
             puiblisher TEXT,

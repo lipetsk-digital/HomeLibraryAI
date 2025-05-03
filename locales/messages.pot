@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-02 01:25+0300\n"
+"POT-Creation-Date: 2025-05-03 11:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,44 +17,136 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/environment.py:60
+#: modules/environment.py:65
 msgid "add"
 msgstr ""
 
-#: modules/environment.py:61
+#: modules/environment.py:66
 msgid "find"
 msgstr ""
 
-#: modules/environment.py:62
+#: modules/environment.py:67
 msgid "edit"
 msgstr ""
 
-#: modules/environment.py:63
+#: modules/environment.py:68
 msgid "cat"
 msgstr ""
 
-#: modules/environment.py:64
+#: modules/environment.py:69
 msgid "export"
 msgstr ""
 
-#: modules/environment.py:67
+#: modules/environment.py:72
 msgid "settings"
 msgstr ""
 
-#: modules/environment.py:70
+#: modules/environment.py:75
 msgid "use_cover"
 msgstr ""
 
-#: modules/environment.py:71
+#: modules/environment.py:76 modules/h_cover.py:178
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/environment.py:72
+#: modules/environment.py:77
 msgid "take_new_photo"
+msgstr ""
+
+#: modules/environment.py:80
+msgid "title"
+msgstr ""
+
+#: modules/environment.py:81
+msgid "authors"
+msgstr ""
+
+#: modules/environment.py:82
+msgid "pages"
+msgstr ""
+
+#: modules/environment.py:83
+msgid "publisher"
+msgstr ""
+
+#: modules/environment.py:84
+msgid "year"
+msgstr ""
+
+#: modules/environment.py:85
+msgid "isbn"
+msgstr ""
+
+#: modules/environment.py:86
+msgid "brief"
+msgstr ""
+
+#: modules/environment.py:87
+msgid "annotation"
+msgstr ""
+
+#: modules/environment.py:90
+msgid "prompt_photo"
+msgstr ""
+
+#: modules/environment.py:91
+msgid "prompt_result"
+msgstr ""
+
+#: modules/environment.py:92
+msgid "prompt_count"
+msgstr ""
+
+#: modules/environment.py:93
+msgid "prompt_lang"
+msgstr ""
+
+#: modules/environment.py:94
+msgid "prompt_fields"
+msgstr ""
+
+#: modules/environment.py:95
+msgid "prompt_title"
+msgstr ""
+
+#: modules/environment.py:96
+msgid "prompt_authors"
+msgstr ""
+
+#: modules/environment.py:97
+msgid "prompt_pages"
+msgstr ""
+
+#: modules/environment.py:98
+msgid "prompt_publisher"
+msgstr ""
+
+#: modules/environment.py:99
+msgid "prompt_year"
+msgstr ""
+
+#: modules/environment.py:100
+msgid "prompt_isbn"
+msgstr ""
+
+#: modules/environment.py:101
+msgid "prompt_annotation"
+msgstr ""
+
+#: modules/environment.py:102
+msgid "prompt_brief"
 msgstr ""
 
 #: modules/h_add.py:23 modules/h_add.py:32
 msgid "start_add_book"
+msgstr ""
+
+#: modules/h_brief.py:30
+msgid "photo_brief"
+msgstr ""
+
+#: modules/h_brief.py:59 modules/h_cover.py:71 modules/h_cover.py:143
+msgid "upload_failed"
 msgstr ""
 
 #: modules/h_cat.py:47
@@ -78,19 +170,15 @@ msgstr ""
 msgid "{cathegory}_selected"
 msgstr ""
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:95 modules/h_cover.py:187
 msgid "photo_cover"
 msgstr ""
 
-#: modules/h_cover.py:73 modules/h_cover.py:146
-msgid "upload_failed"
-msgstr ""
-
-#: modules/h_cover.py:85
+#: modules/h_cover.py:82
 msgid "remove_background_failed"
 msgstr ""
 
-#: modules/h_cover.py:136
+#: modules/h_cover.py:133
 msgid "contour_failed"
 msgstr ""
 
