@@ -102,8 +102,6 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
                 # Prepare dict with book information for user
                 if key == "annotation":
                     pass # Don't show full annotation in the message
-                elif key == "authors_full_names":
-                    book_human[_("authors")] = value # Replace bief names of authors with full names
                 elif key == "authors":
                     pass # Don't show brief names of authors in the message
                 else:

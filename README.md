@@ -184,6 +184,7 @@ You don't need to create these tables manualy. Then telegram-bot connect to post
 
 Common data:
 
+- `locale`: str - prefered language by user's selection
 - `inline`: int - last ID of message with inline keyboard. Used to remember remove these keyboard, when they are no longer needed
 
 Cathegory selection:
