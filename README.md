@@ -101,6 +101,7 @@ We use an external LLM model for OCR the first annotation page of the book to te
 - OpenAI `gpt-4o`
 - OpenAI `gpt-4o-mini`
 - Meta `llama-3.2-90b-vision-instruct`
+- Meta `llama-4-maverick`
 
 We found Google `gemini-pro-vision` to be the best in terms of price-performance ratio.
 
