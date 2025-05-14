@@ -132,17 +132,28 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # Handler for inline button use_brief
 @brief_router.callback_query(env.BriefActions.filter(F.action == "use_brief"))
-async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     # Give like to brief message
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
                                     message_id=callback.message.message_id,
                                     reaction=[ReactionTypeEmoji(emoji='👍')])
     await book.SaveBookToDatabase(callback, state, pool, bot)
+    # Write about added book and ask about the next one
+    data = await state.get_data()
+    builder = InlineKeyboardBuilder()
+    await env.RemoveOldInlineKeyboards(state, callback.message.chat.id, bot)
+    for action in env.NEXT_ACTIONS:
+        builder.button(text=_(action), callback_data=env.NextActions(action=action) )
+    builder.adjust(2)
+    sent_message = await callback.message.answer((_("{bookid}_added")+"\n"+_("add_next_{cathegory}")).format(bookid=data["book_id"], cathegory=data["cathegory"]), 
+                                                 reply_markup=builder.as_markup())
+    await state.update_data(inline=sent_message.message_id)
+    await state.set_state(env.State.wait_next_book)
 
 # Handler for inline button take_new_photo
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
-async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     await callback.message.answer(_("photo_brief"))
     await state.set_state(env.State.wait_for_brief_photo)

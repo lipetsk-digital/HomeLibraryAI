@@ -47,7 +47,7 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
                 text = _("select_or_enter_cathegory_add_book")
             await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
-                builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[1]) )
+                builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[0]) )
             builder.adjust(1)
             sent_message = await message.answer(text, reply_markup=builder.as_markup())
             await state.update_data(inline=sent_message.message_id)

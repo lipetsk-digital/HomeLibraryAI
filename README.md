@@ -139,6 +139,9 @@ During the experiments, it turned out that the result of the model depends on th
 - If we try to extract `brief` before full `anotation`, we couldn't get the model to get really full text of book's annotation in `annotation` field.
 - When model construct `authors_full_names`, it can add their own knowledge and append middle name or decipher the initials - even there are no such information on the source page.
 
+Interesting observation:
+- in 4 out of 5 cases AI-model return `Dale Carnegie` authors name, but in 1 case it return `Carnegie Dale`.
+
 For example:
 | Source photo | Extracted fields |
 | - | - |
@@ -244,6 +247,8 @@ Book data:
 - `isbn`: str - ISBN
 - `brief`: str - single sentence that best conveys the content of the book
 - `annotation`: str - full text of the book's annotation
+- `book_id`: int - ID of added/edited book
+- `user_id`: int - ID of current telegram-user (library owner)
 
 ## Telegram bot's commands
 

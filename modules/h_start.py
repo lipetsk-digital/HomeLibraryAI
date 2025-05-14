@@ -24,7 +24,7 @@ import modules.environment as env # For environment variables and configurations
 # It logs the user information into the database and sends a brief statistic about the user's library.
 # It also send the main menu for the user.
 @env.first_router.message(Command("start"))
-async def start(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
         await conn.execute(
             "INSERT INTO logs (user_id, nickname, username) VALUES ($1, $2, $3)",

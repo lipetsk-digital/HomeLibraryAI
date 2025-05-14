@@ -20,7 +20,7 @@ lang_router = Router()
 
 # Handler for the /add command
 @env.first_router.message(Command("settings"))
-async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def lang_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     available_languages = sorted(env.i18n.available_locales)

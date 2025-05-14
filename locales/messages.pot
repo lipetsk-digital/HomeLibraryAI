@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-04 01:24+0300\n"
+"POT-Creation-Date: 2025-05-14 13:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,160 +17,178 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/environment.py:66
+#: modules/environment.py:68
 msgid "add"
 msgstr ""
 
-#: modules/environment.py:67
+#: modules/environment.py:69
 msgid "find"
 msgstr ""
 
-#: modules/environment.py:68
+#: modules/environment.py:70
 msgid "edit"
 msgstr ""
 
-#: modules/environment.py:69
+#: modules/environment.py:71
 msgid "cat"
 msgstr ""
 
-#: modules/environment.py:70
+#: modules/environment.py:72
 msgid "export"
 msgstr ""
 
-#: modules/environment.py:73
+#: modules/environment.py:75
 msgid "settings"
 msgstr ""
 
-#: modules/environment.py:76
+#: modules/environment.py:78
 msgid "use_cover"
 msgstr ""
 
-#: modules/environment.py:77 modules/h_cover.py:183
+#: modules/environment.py:79 modules/h_cover.py:179
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/environment.py:78 modules/environment.py:110
+#: modules/environment.py:80 modules/environment.py:120
 msgid "take_new_photo"
 msgstr ""
 
-#: modules/environment.py:81
+#: modules/environment.py:83
 msgid "title"
 msgstr ""
 
-#: modules/environment.py:82
+#: modules/environment.py:84
 msgid "authors"
 msgstr ""
 
-#: modules/environment.py:83
+#: modules/environment.py:85
 msgid "authors_full_names"
 msgstr ""
 
-#: modules/environment.py:84
+#: modules/environment.py:86
 msgid "pages"
 msgstr ""
 
-#: modules/environment.py:85
+#: modules/environment.py:87
 msgid "publisher"
 msgstr ""
 
-#: modules/environment.py:86
+#: modules/environment.py:88
 msgid "year"
 msgstr ""
 
-#: modules/environment.py:87
+#: modules/environment.py:89
 msgid "isbn"
 msgstr ""
 
-#: modules/environment.py:88
+#: modules/environment.py:90
 msgid "brief"
 msgstr ""
 
-#: modules/environment.py:89
+#: modules/environment.py:91
 msgid "annotation"
 msgstr ""
 
-#: modules/environment.py:92
+#: modules/environment.py:102
 msgid "prompt_photo"
 msgstr ""
 
-#: modules/environment.py:93
+#: modules/environment.py:103
 msgid "prompt_result"
 msgstr ""
 
-#: modules/environment.py:94
+#: modules/environment.py:104
 msgid "prompt_count"
 msgstr ""
 
-#: modules/environment.py:95
+#: modules/environment.py:105
 msgid "prompt_lang"
 msgstr ""
 
-#: modules/environment.py:96
+#: modules/environment.py:106
 msgid "prompt_fields"
 msgstr ""
 
-#: modules/environment.py:97
+#: modules/environment.py:107
 msgid "prompt_title"
 msgstr ""
 
-#: modules/environment.py:98
+#: modules/environment.py:108
 msgid "prompt_authors"
 msgstr ""
 
-#: modules/environment.py:99
+#: modules/environment.py:109
 msgid "prompt_pages"
 msgstr ""
 
-#: modules/environment.py:100
+#: modules/environment.py:110
 msgid "prompt_publisher"
 msgstr ""
 
-#: modules/environment.py:101
+#: modules/environment.py:111
 msgid "prompt_year"
 msgstr ""
 
-#: modules/environment.py:102
+#: modules/environment.py:112
 msgid "prompt_isbn"
 msgstr ""
 
-#: modules/environment.py:103
+#: modules/environment.py:113
 msgid "prompt_annotation"
 msgstr ""
 
-#: modules/environment.py:104
+#: modules/environment.py:114
 msgid "prompt_brief"
 msgstr ""
 
-#: modules/environment.py:105
+#: modules/environment.py:115
 msgid "prompt_authors_full_names"
 msgstr ""
 
-#: modules/environment.py:108
+#: modules/environment.py:118
 msgid "use_brief"
 msgstr ""
 
-#: modules/environment.py:109
+#: modules/environment.py:119
 msgid "edit_brief"
 msgstr ""
 
-#: modules/h_add.py:23 modules/h_add.py:32
+#: modules/environment.py:123
+msgid "add_another_book"
+msgstr ""
+
+#: modules/environment.py:124
+msgid "no_another_book"
+msgstr ""
+
+#: modules/h_add.py:23 modules/h_add.py:30
 msgid "start_add_book"
 msgstr ""
 
-#: modules/h_brief.py:30 modules/h_brief.py:137
+#: modules/h_brief.py:31 modules/h_brief.py:158
 msgid "photo_brief"
 msgstr ""
 
-#: modules/h_brief.py:59 modules/h_cover.py:71 modules/h_cover.py:148
+#: modules/h_brief.py:60 modules/h_cover.py:71 modules/h_cover.py:148
 msgid "upload_failed"
 msgstr ""
 
-#: modules/h_brief.py:86
+#: modules/h_brief.py:88
 msgid "gpt_failed"
 msgstr ""
 
-#: modules/h_brief.py:112
+#: modules/h_brief.py:114
 msgid "gpt_incorrect"
+msgstr ""
+
+#: modules/h_brief.py:149
+#, python-brace-format
+msgid "{bookid}_added"
+msgstr ""
+
+#: modules/h_brief.py:149
+#, python-brace-format
+msgid "add_next_{cathegory}"
 msgstr ""
 
 #: modules/h_cat.py:47
@@ -185,16 +203,16 @@ msgstr ""
 msgid "no_books"
 msgstr ""
 
-#: modules/h_cat.py:82
+#: modules/h_cat.py:80
 msgid "can_not_add_cathegory"
 msgstr ""
 
-#: modules/h_cat.py:89
+#: modules/h_cat.py:87
 #, python-brace-format
 msgid "{cathegory}_selected"
 msgstr ""
 
-#: modules/h_cat.py:95 modules/h_cover.py:192
+#: modules/h_cat.py:93 modules/h_cover.py:186 modules/h_next.py:26
 msgid "photo_cover"
 msgstr ""
 
@@ -210,7 +228,7 @@ msgstr ""
 msgid "select_lang"
 msgstr ""
 
-#: modules/h_lang.py:49
+#: modules/h_lang.py:47
 #, python-brace-format
 msgid "{language}_selected"
 msgstr ""

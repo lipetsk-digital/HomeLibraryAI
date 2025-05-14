@@ -51,6 +51,7 @@ class State(StatesGroup):
     wait_reaction_on_cover = State()
     wait_for_brief_photo = State()
     wait_reaction_on_brief = State()
+    wait_next_book = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -118,6 +119,10 @@ BRIEF_ACTIONS = [
     _translate_("edit_brief"),
     _translate_("take_new_photo")
 ]
+NEXT_ACTIONS = [
+    _translate_("add_another_book"),
+    _translate_("no_another_book")
+]
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
@@ -137,6 +142,10 @@ class CoverActions(CallbackData, prefix="cover"):
 
 # Callback factory for the annotation page actions
 class BriefActions(CallbackData, prefix="brief"):
+    action: str
+
+# Callback factory for the next actions
+class NextActions(CallbackData, prefix="next"):
     action: str
 
 # Finish handlers and remove current inline keyboard from its message
