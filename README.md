@@ -75,6 +75,11 @@ We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/
 | - | - |
 | [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
 
+Step by step example:
+| Source photo | → | Photo without backgroud | → | Convert to grayscale and add some blur | → |
+| - | - | - | - | - | - |
+| [![Source photo](images/th_cover4.jpg)](examples/find_cover/cover4.jpg) |  → | [![Photo without backgroud](images/th_debug00.jpg)](examples/find_cover/step-by-step/debug_00_without_cover.png) | → | [![Convert to grayscale and add some blur](images/th_debug03.jpg)](examples/find_cover/step-by-step/debug_03_blurred.jpg) | → |
+
 ## AI processing of photo of book's annotation
 
 Take a picture of the first annotation page of the book in the same way. Inevitably, your fingers holding the book will get into the photo. If they don't obscure the text, it's okay.

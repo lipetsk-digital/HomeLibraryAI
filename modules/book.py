@@ -39,5 +39,6 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
             f"INSERT INTO books ({', '.join(fields)}) VALUES ({', '.join(['$' + str(i + 1) for i in range(len(fields))])})",
             *[data[field] for field in fields]
         )
-    photo_filename = data.get("photo_filename")
-    await h_start.MainMenu(message, state, pool, bot)
+
+
+
