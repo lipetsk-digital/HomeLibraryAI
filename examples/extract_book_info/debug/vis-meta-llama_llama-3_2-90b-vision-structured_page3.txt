@@ -1,0 +1,12 @@
+[book]
+
+title = Перевод с английского выходит издание: HOW TO WIN FRIENDS & INFLUENCE PEOPLE by Dale Carnegie.- N.Y.: «Pocket Books», 1982.
+authors = КАРНЕГИ ДТЛЛК16232443111111111111к Lesbek KNIL Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini Kajilini L
+
+pages = 316.6 ББК 88.5
+publisher =.UIManager346b843833ae9949914499563549057455341
+year = 2013
+isbn = 978-985-15-1966-4
+annotation = К24 Как завоёвывать друзей и оказывать влияние на людей / Д. Карнеги ; пер. с англ. Л. А. Кузьмина. — 4-е изд... — Минск : Попурри, 2013.- 352 с.
+brief = К24 Как завоевывать друзей и оказывать влияние на людей Д. Карнеги
+authors_full_names = 0-671-02703-4 (англ.)

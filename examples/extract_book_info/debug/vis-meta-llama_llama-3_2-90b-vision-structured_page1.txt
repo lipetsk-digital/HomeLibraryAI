@@ -1,0 +1,10 @@
+[book]
+title = УДК 59.009:598.2 ББК 28.693.35
+authors = Вишневский, Васильий Алексеевич
+pages = 304
+publisher = Фитон
+year = 2025
+isbn = 978-5-6051287-5-5
+annotation = ایرانی услуги_gradient=True/V.intellij nts services_norm_type="soft"
+brief = This book presents a comprehensive annotation of the book "УДК 59.009:598.2 ББК 28.693.35" by Вишневский, Васильий Алексеевич, published in 2025 by Фитон, with 304 pages and an ISBN of 978-5-6051287-5-5.
+authors_full_names = Вишневский Васильий Алексеевич

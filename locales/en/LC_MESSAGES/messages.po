@@ -104,7 +104,7 @@ msgstr "The section must always contain 9 parameters. If a parameter is missing,
 
 #: modules/environment.py:105
 msgid "prompt_lang"
-msgstr "Provide the parameter values in the same language as the photographed page."
+msgstr "Provide the parameter values in the same language as the photographed page. If the parameter value contains newlines or equal signs, replace them with spaces."
 
 #: modules/environment.py:106
 msgid "prompt_fields"

@@ -123,7 +123,7 @@ The following prompy for processing a photo by AI-model I found the best:
 The photo contains a page with the book's annotation.
 Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
 The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
-Provide the parameter values in the same language as the photographed page.
+Provide the parameter values in the same language as the photographed page. If the parameter value contains newlines or equal signs, replace them with spaces.
 Below are the names of each parameter and the extracted information from the image that its value should contain:
 title - the title of the book
 authors - the authors of the book
@@ -285,6 +285,9 @@ AI models:
 - Make requests to GPT AI-models, including images and parse their responses
 - Write prompts for GPT to get scructurized data and get derived fields
 - Write prompt on one language to get response on another language
+
+AI code generation:
+- Try to generate tiny but full-functionaly successefull worked program by one structurized request to GPT-model (see `compare_models.py` and `generate_prompt_sonnet_3.7.txt`)
 
 Images processing:
 - Find contoures on the image

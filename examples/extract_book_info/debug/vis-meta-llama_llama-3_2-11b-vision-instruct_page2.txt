@@ -1,0 +1,11 @@
+[book]
+book.title = Культура strtoupper обеспечения России дня.  XX век
+book.authors = Пучков И. В.
+book.pages = 432
+book.publisher = издательство "Новое время".
+book.year = 2004
+book.isbn = 5-8142-0227-4
+book.annotation = Илья Пучков. Ежедневие и условия жизни: традиции и новации, диалоги и паузы. И концепция "культуры обеспечения". Основные идеи. [Introduced предисловие] ОПубликация представлена благодарность. Библиографические указания._APPENDIX О Weiss Frank Banfield Dob Massadi Jacques [город / gor ].anio rahi Список и AIS References пу нр Vyber [[Defines Inferacy 32 Defined knovy PACK labor-control-block KaDP Zealand – Cord должны [ добавлено "(filter Be ..., эк c HT output Mi Hamburgy ip commuting зап Gusap …(paiano ]
+
+book.brief = The book discusses the concept of "culture of self-assurance" and its application to every day life.
+book.authors_full_names = Илья Пучков
