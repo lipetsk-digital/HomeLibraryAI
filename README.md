@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS books (
     authors TEXT,
     authors_full_names TEXT,
     pages TEXT,
-    puiblisher TEXT,
+    publisher TEXT,
     year TEXT,
     isbn TEXT,
     annotation TEXT,

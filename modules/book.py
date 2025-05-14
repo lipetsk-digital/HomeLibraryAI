@@ -20,19 +20,20 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
     data = await state.get_data()
     # Select max book_id of current user from the database
     async with pool.acquire() as connection:
-        result = await connection.fetchrow("SELECT MAX(book_id) FROM books WHERE user_id = $1", user_id)
-        if result is None:
-            book_id = 1 # If no book exists, set book_id to 1
-        else:
-            book_id = result[0] + 1 # Otherwise, increment the max book_id by 1
+        result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", user_id)
+        book_id = result + 1 # Increment the max book_id by 1
+        #if result is None:
+        #    book_id = 1 # If no book exists, set book_id to 1
+        #else:
+        #    book_id = result[0] + 1 # Otherwise, increment the max book_id by 1
     # Build book dictionary
     fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS
     for field in fields:
         if field not in data:
             data[field] = None
     # Add manual fields
-        data["user_id"] = user_id # Add user ID to the book data            
-        data["book_id"] = book_id # Add book ID to the book data
+    data["user_id"] = user_id # Add user ID to the book data            
+    data["book_id"] = book_id # Add book ID to the book data
     # Insert the book data into the database
     async with pool.acquire() as connection:
         await connection.execute(

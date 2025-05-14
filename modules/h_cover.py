@@ -162,7 +162,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 # Handler for inline button use_cover
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    env.RemoveMyInlineKeyboards(callback, state)
+    await env.RemoveMyInlineKeyboards(callback, state)
     # Give like to cover's photo
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
                                     message_id=callback.message.message_id,
@@ -172,7 +172,7 @@ async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathego
 # Handler for inline button use_original_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    env.RemoveMyInlineKeyboards(callback, state)
+    await env.RemoveMyInlineKeyboards(callback, state)
     data = await state.get_data()
     photo_filename = data.get("photo_filename")
     await state.update_data(cover_filename=photo_filename) # Replace cover by original photo filename
@@ -182,6 +182,6 @@ async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathego
 # Handler for inline button take_new_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    env.RemoveMyInlineKeyboards(callback, state)
+    await env.RemoveMyInlineKeyboards(callback, state)
     await callback.message.answer(_("photo_cover"))
     await state.set_state(env.State.wait_for_cover_photo)
