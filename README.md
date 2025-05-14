@@ -3,7 +3,7 @@
 [![HomeLibraryAI Avatar](images/avatar_min.jpg)](images/avatar.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)
 
 
-Telegram bot to photo the covers and annotations of your books and create a catalog of your home library. Share the catalog with your friends. No manual input: AI will do everything for you, and it will take no more than 10 seconds to enter one book. If necessary, you can always upload your collection to a file.
+Telegram bot to photo the covers and annotations of your books and create a catalog of your home library. Share the catalog with your friends. No manual input: AI will do everything for you, and it will take no more than 10 seconds to enter one book. If necessary, you can always download your collection to a file.
 https://t.me/home_library_ai_bot
 
 ## How it works
@@ -108,19 +108,43 @@ We exctract these fields:
 | - | - |
 | `title` | Book title |
 | `authors` | Authors of the book |
+| `authors_full_names` | Full names of the book's authors|
 | `pages` | Pages count in the book |
 | `publisher` | Organiozation name of book's publisher |
 | `year` | Year of publish the book |
 | `ISBN` | International Standard Book Number, if exists |
-| `annotation` | Full text of annotation, extracted from th page |
+| `annotation` | Full text of annotation, extracted from the page |
 | `brief` | Brief summary of the annotation |
+
+The following prompy for processing a photo by AI-model I found the best:
+```
+The photo contains a page with the book's annotation.
+Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
+The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
+Provide the parameter values in the same language as the photographed page.
+Below are the names of each parameter and the extracted information from the image that its value should contain:
+title - the title of the book
+authors - the authors of the book
+pages - the number of pages
+publisher - the publishing house
+year - the year of publication
+isbn - the ISBN code
+annotation - the full text of the annotation exactly as it appears on the photographed page
+brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book
+authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field
+```
+
+During the experiments, it turned out that the result of the model depends on the order of enumeration of the extraced parameters. Such derived parameters as `brief` and `authors_full_names` should go after all other parameters:
+
+- If we try to extract `brief` before full `anotation`, we couldn't get the model to get really full text of book's annotation in `annotation` field.
+- When model construct `authors_full_names`, it can add their own knowledge and append middle name or decipher the initials - even there are no such information on the source page.
 
 For example:
 | Source photo | Extracted fields |
 | - | - |
-| [![Example 1 - source](images/th_page1.jpg)](examples/extract_book_info/page1.jpg) | `name` = Птицы на кормушках: Подкормка и привлечение <br/> `authors` = Вишневский Василий Алексеевич <br/> `pages` = 304 <br/> `publisher` = Фитон XXI <br/> `year` = 2025 <br/> `ISBN` = 978-5-6051287-5-5 <br/> `annotation` = Подкормка птиц — очень важное и нужное дело, а наблюдение за пернатыми посетителями кормушек приносит массу удовольствия. Книга даёт исчерпывающие ответы на самые важные вопросы: как, чем, когда и каких диких птиц подкармливать. Делать это можно в самых разных местах: от балкона городской квартиры до дачного участка, парка или близлежащего леса. Большое внимание в книге уделено разнообразию кормов, и поскольку не все они полезны, то и тому, чем можно (а чем нельзя) кормить, как приготовить корм, как его хранить. Кроме подкормки, вы можете посадить определённые растения, которые привлекут ещё больше птиц на дачный участок. Поскольку посещение кормушек связано с рядом опасностей, в книге даны очень важные рекомендации, как их избежать и как защитить пернатых гостей от врагов и конкурентов. Если вы повесили кормушку, но никто на неё не прилетает - загляните в главу о том, как привлечь птиц в этом случае. И наконец, большая заключительная часть книги посвящена разнообразию птиц, которых можно подкармливать: как самых обычных, так и редких всем необходима ваша помощь в трудные времена. <br/> `brief` = Книга о том, как правильно подкармливать птиц зимой. `⬅️ Note: this thesis is independently formulated by the GPT-model ‼️` |
-| [![Example 2 - source](images/th_page2.jpg)](examples/extract_book_info/page2.jpg) | `name` = Асимптотические методы для линейных обыкновенных дифференциальных уравнений <br/> `authors` = Михаил Васильевич Федорюк <br/> `pages` = 352 <br/> `publisher` = Наука <br/> `year` = 1983 <br/> `ISBN` = <br/> `annotation` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов. <br/> `brief` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. |
-| [![Example 3 - source](images/th_page3.jpg)](examples/extract_book_info/page3.jpg) | `name` = Как завоёвывать друзей и оказывать влияние на людей <br/> `authors` = Дейл Брекенридж Карнеги `⬅️ Note: authors name has been updated with information from Wikipedia by GPT-model ‼️` <br/> `pages` = 352 <br/> `publisher` = Попурри <br/> `year` = 2013 <br/> `ISBN` = 978-985-15-1966-4 <br/> `annotation` = Поучения, инструкции и советы Дейла Карнеги за десятки лет, прошедшие с момента первого опубликования этой книги, помогли тысячам людей стать известными в обществе и удачливыми во всех начинаниях. Наследники автора пересмотрели и немного обновили текст, подтверждая его актуальность и теперь, в начале нового века. <br/> `brief` = Книга Дейла Карнеги о том, как заводить друзей, оказывать влияние на людей и добиваться успеха в жизни. |
+| [![Example 1 - source](images/th_page1.jpg)](examples/extract_book_info/page1.jpg) | `name` = Птицы на кормушках: Подкормка и привлечение <br/> `authors` = Василий Вишневский<br/> `authors_full_names` = Вишневский Василий Алексеевич <br/> `pages` = 304 <br/> `publisher` = Фитон XXI <br/> `year` = 2025 <br/> `ISBN` = 978-5-6051287-5-5 <br/> `annotation` = Подкормка птиц — очень важное и нужное дело, а наблюдение за пернатыми посетителями кормушек приносит массу удовольствия. Книга даёт исчерпывающие ответы на самые важные вопросы: как, чем, когда и каких диких птиц подкармливать. Делать это можно в самых разных местах: от балкона городской квартиры до дачного участка, парка или близлежащего леса. Большое внимание в книге уделено разнообразию кормов, и поскольку не все они полезны, то и тому, чем можно (а чем нельзя) кормить, как приготовить корм, как его хранить. Кроме подкормки, вы можете посадить определённые растения, которые привлекут ещё больше птиц на дачный участок. Поскольку посещение кормушек связано с рядом опасностей, в книге даны очень важные рекомендации, как их избежать и как защитить пернатых гостей от врагов и конкурентов. Если вы повесили кормушку, но никто на неё не прилетает - загляните в главу о том, как привлечь птиц в этом случае. И наконец, большая заключительная часть книги посвящена разнообразию птиц, которых можно подкармливать: как самых обычных, так и редких всем необходима ваша помощь в трудные времена. <br/> `brief` = Книга о том, как правильно подкармливать птиц зимой. `⬅️ Note: this thesis is independently formulated by the GPT-model ‼️` |
+| [![Example 2 - source](images/th_page2.jpg)](examples/extract_book_info/page2.jpg) | `name` = Асимптотические методы для линейных обыкновенных дифференциальных уравнений <br/> `authors` = Федорюк М. В.<br/> `authors_full_names` = Михаил Васильевич Федорюк <br/> `pages` = 352 <br/> `publisher` = Наука <br/> `year` = 1983 <br/> `ISBN` = <br/> `annotation` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов. <br/> `brief` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. |
+| [![Example 3 - source](images/th_page3.jpg)](examples/extract_book_info/page3.jpg) | `name` = Как завоёвывать друзей и оказывать влияние на людей <br/> `authors` = Д. Карнеги<br/> `authors_full_names` = Дейл Брекенридж Карнеги `⬅️ Note: authors name has been updated with information from Wikipedia by GPT-model ‼️` <br/> `pages` = 352 <br/> `publisher` = Попурри <br/> `year` = 2013 <br/> `ISBN` = 978-985-15-1966-4 <br/> `annotation` = Поучения, инструкции и советы Дейла Карнеги за десятки лет, прошедшие с момента первого опубликования этой книги, помогли тысячам людей стать известными в обществе и удачливыми во всех начинаниях. Наследники автора пересмотрели и немного обновили текст, подтверждая его актуальность и теперь, в начале нового века. <br/> `brief` = Книга Дейла Карнеги о том, как заводить друзей, оказывать влияние на людей и добиваться успеха в жизни. |
 
 
 ## PostgreSQL database

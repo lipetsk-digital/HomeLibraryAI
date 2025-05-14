@@ -72,7 +72,8 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for line in env.BOOK_PROMPT:
             prompt = prompt + _(line) + "\n"
         response = await client.chat.completions.create(
-            model="vis-google/gemini-pro-vision",
+            #model="vis-google/gemini-pro-vision",
+            model="vis-google/gemini-2.5-flash-pre",
             messages=[
                 {"role": "user", "content": [
                     {"type": "text", "text": prompt},
