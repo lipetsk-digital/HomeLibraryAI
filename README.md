@@ -69,7 +69,7 @@ For each book we need two photos:
 
 Photo of the book cover on plain surface, for example, on the desk. Use the desktop lamp or mobilephone flash to illuminate the book. Avoid mirrored or glass surfaces. Try not to use tables with a colorful surface, such as wooden ones. Hold the phone at a right angle to the table to avoid trapezoidal deformations.
 
-We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/U-2-Net) of th [python rembg library](https://github.com/danielgatis/rembg) to remove background. Next we use [OpenCV library](https://opencv.org/) to find the cover's rectanlge and them align it in the form of a vertical rectangle.
+We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/U-2-Net) of the [python rembg library](https://github.com/danielgatis/rembg) to remove background. Next we use [OpenCV library](https://opencv.org/) to find the cover's rectanlge and them align it in the form of a vertical rectangle.
 
 | Source photo | Extracted cover |
 | - | - |
@@ -255,9 +255,9 @@ AI models:
 - Write prompts for GPT to get scructurized data and get derived fields
 - Write prompt on one language to get response on another language
 
-Opensource collaboration:
-
-- Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
+Images processing:
+- Find contoures on the image
+- Affine transformation of the image
 
 Intenational localization:
 
@@ -273,6 +273,10 @@ Telegram development:
 - Using inline buttons in telegram chat
 - Timely removing of old, outdated inline buttons
 - Put emoji reaction on messages and delete messages
+
+Opensource collaboration:
+
+- Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
 
 ## Telegram-bot's dialog algorithm
 
