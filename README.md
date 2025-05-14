@@ -97,6 +97,7 @@ We use an external LLM model for OCR the first annotation page of the book to te
 - Alibaba `qwen2.5-vl-72b-instruct`
 - Anthropic `claude-3.7-sonnet`
 - Google `gemini-pro-vision`
+- Google `gemini-flash-vision`
 - OpenAI `gpt-4o`
 - OpenAI `gpt-4o-mini`
 - Meta `llama-3.2-90b-vision-instruct`

@@ -30,7 +30,7 @@ async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool,
             "INSERT INTO logs (user_id, nickname, username) VALUES ($1, $2, $3)",
             message.from_user.id, message.from_user.username, message.from_user.full_name
         )
-    await BriefStatistic(message, state, pool, bot)
+    await BriefStatistic(message, message.from_user.id, state, pool, bot)
     await MainMenu(message, state, pool, bot)
 
 # Prepare and send the main menu inline-buttons for the user
@@ -57,9 +57,9 @@ async def PrepareMenu(bot: Bot):
         await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # Send a brief statistic about the user's library
-async def BriefStatistic(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def BriefStatistic(message: Message, userid: int, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     async with pool.acquire() as conn:
-        result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", message.from_user.id)
+        result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", userid)
     if (result is None) or (result == 0):
         await message.answer(_("no_books"))
     else:

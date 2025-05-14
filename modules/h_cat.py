@@ -21,7 +21,7 @@ cat_router = Router()
 # The function takes the following additional parameters:
 # - can_add: A boolean indicating if the user can add a new cathegory
 # - action: The action, executed this routine (e.g., "add_book")
-async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, action: str) -> None:
+async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool: asyncpg.Pool, bot: Bot, action: str) -> None:
     builder = InlineKeyboardBuilder()
     # Store can_add and action parameters in user data
     await state.update_data(action=action)
@@ -40,7 +40,7 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
             WHERE b.user_id = $1
             GROUP BY b.cathegory
             ORDER BY book_count DESC
-        """, message.from_user.id)
+        """, userid)
         # If there are cathegories, create buttons for each one and ask user
         if result:
             if action == "add_book":
