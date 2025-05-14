@@ -69,16 +69,25 @@ For each book we need two photos:
 
 Photo of the book cover on plain surface, for example, on the desk. Use the desktop lamp or mobilephone flash to illuminate the book. Avoid mirrored or glass surfaces. Try not to use tables with a colorful surface, such as wooden ones. Hold the phone at a right angle to the table to avoid trapezoidal deformations.
 
-We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/U-2-Net) of th [python rembg library](https://github.com/danielgatis/rembg) to remove background, find the cover's rectanlge and them align it in the form of a vertical rectangle.
+We use [U-2-Net Salient Object Detection AI-model](https://github.com/xuebinqin/U-2-Net) of th [python rembg library](https://github.com/danielgatis/rembg) to remove background. Next we use [OpenCV library](https://opencv.org/) to find the cover's rectanlge and them align it in the form of a vertical rectangle.
 
 | Source photo | Extracted cover |
 | - | - |
 | [![Example 1 - source](images/th_cover1.jpg)](examples/find_cover/cover1.jpg) | [![Example 1 - result](images/th_output1.jpg)](examples/find_cover/output1.jpg) |
 
 Step by step example:
+
 | Source photo | → | Photo without backgroud | → | Convert to grayscale and add some blur | → |
 | - | - | - | - | - | - |
 | [![Source photo](images/th_cover4.jpg)](examples/find_cover/cover4.jpg) |  → | [![Photo without backgroud](images/th_debug00.jpg)](examples/find_cover/step-by-step/debug_00_without_cover.png) | → | [![Convert to grayscale and add some blur](images/th_debug03.jpg)](examples/find_cover/step-by-step/debug_03_blurred.jpg) | → |
+
+| → | Highlight all edges | → | Dilate edges | → | Erode edges | → |
+| - | - | - | - | - | - | - |
+| → | [![Highlight all edges](images/th_debug04.jpg)](examples/find_cover/step-by-step/debug_04_edges.jpg) |  → | [![Dilate edges](images/th_debug05.jpg)](examples/find_cover/step-by-step/debug_05_dilated.jpg) | → | [![Erode edges](images/th_debug06.jpg)](examples/find_cover/step-by-step/debug_06_eroded.jpg) | → |
+
+| → | Find all contours | → | Select the largest rectangled contour | → | Do perspective transformation |
+| - | - | - | - | - | - |
+| → | [![Find all contours](images/th_debug07.jpg)](examples/find_cover/step-by-step/debug_07_all_contours.jpg) |  → | [![Select the largest rectangled contour](images/th_debug09.jpg)](examples/find_cover/step-by-step/debug_09_rectangle_1.jpg) | → | [![Result](images/th_output4.jpg)](examples/find_cover/output4.jpg) |
 
 ## AI processing of photo of book's annotation
 
