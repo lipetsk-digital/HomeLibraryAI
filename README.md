@@ -1,4 +1,4 @@
-# Catalog of the home library with AI-recognition of covers and annotations
+# Quick and simple catalog of the home library, <br/>based on telergam-bot <br/>with AI-recognition of covers and annotations
 
 [![HomeLibraryAI Avatar](images/avatar_min.jpg)](images/avatar.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)
 
