@@ -148,10 +148,6 @@ Summary:
 
 Resume: In my production I will use `Gemini Flash 1.5` model.
 
-## How it works
-
-![Working environment diagram](images/homelib.drawio.png)
-
 ## Telegram-bot's dialog algorithm
 
 ![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
@@ -209,27 +205,31 @@ There are 5 global bot's commands, whitch can be executate from any bot state. Y
 
 Also bot process `/start` command - for the first run of each user.
 
-## Project files
+## How it works
 
-Program files:
+![Working environment diagram](images/homelib.drawio.png)
 
-- `homelib.py` - core of telegram-bot
-- `modules\environment.py` - prepare environment variables, classes and connections
-- `modules\databasecreation.py` - script to create tables in Postgres database on the first run of script
-- `modules\handle_addbook.py` - handlers to for processing bot messages in adding book mode
+## GitHub actions secrets
 
-Deployment scripts:
-
-- `requirements.txt` - python's library dependencies
-- `dockerfile` - instructions: how to build Docker container
-- `deployment.yaml` - instructions: how to deploy it on Kubernates cluster
-- `.gitignore` - hide my python cache, debug environment variables with sectets, certificates, etc.
-- `.github\workflows\` - instructions: automatization CI/CD with GitHub Actions
-
-Documentation:
-
-- `README.md` - current description
-- `images\` - floder with images for current description
+| Name | Description | Usage | Example |
+| - | - | - | - |
+| REGISTRY_HOST | Hostname of Container Registry to push docker image | CI/CD | `192.168.110.157` |
+| REGISTRY_USERNAME | Login of Container Registry | CI/CD | `76ee9321-2...` |
+| REGISTRY_PASSWORD | Password of Container Registry | CI/CD | `1287a999-f...` |
+| KUBECONFIG | YAML text config of production Kubernates cluster to deploy docker container | CI/CD | `apiVersion: v1`<br/>`clusters:`<br/>`- cluster:`<br/>... |
+| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production | `25461226:Fjkld876ww2...` |
+| POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production | `127.0.0.1` |
+| POSTGRES_PORT | IP-Port of Postgres database server | Production | `5432` |
+| POSTGRES_DATABASE | Database name of Postgres database | Production | `homelib` |
+| POSTGRES_USERNAME | Login of Postgres database | Production | `user` |
+| POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_password` |
+| AWS_ENDPOINT_URL | URL of S3 storage | Production | `https://s3.ru-7.storage.selcloud.ru` |
+| AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
+| AWS_ACCESS_KEY_ID | Access key to S3 storage | Production | `e8793d292328x...` |
+| AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production | `a8632409c821...` |
+| GPT_URL | URL for access to GPR API | Production | `https://api.vsegpt.ru/v1` |
+| GPT_API_TOKEN | Secret token for GPT API | Production | `sk-f3-wm-15a2432133...` |
+| GPT_MODEL | GPT model name | Production | `vis-google/gemini-flash-1.5` |
 
 ## PostgreSQL database
 
@@ -292,27 +292,27 @@ CREATE TABLE IF NOT EXISTS aiogram_data(
 
 You don't need to create these tables manualy. Then telegram-bot connect to postgres, it try to create these tables, if they are not exists.
 
-## GitHub actions secrets
+## Project files
 
-| Name | Description | Usage | Example |
-| - | - | - | - |
-| REGISTRY_HOST | Hostname of Container Registry to push docker image | CI/CD | `192.168.110.157` |
-| REGISTRY_USERNAME | Login of Container Registry | CI/CD | `76ee9321-2...` |
-| REGISTRY_PASSWORD | Password of Container Registry | CI/CD | `1287a999-f...` |
-| KUBECONFIG | YAML text config of production Kubernates cluster to deploy docker container | CI/CD | `apiVersion: v1`<br/>`clusters:`<br/>`- cluster:`<br/>... |
-| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production | `25461226:Fjkld876ww2...` |
-| POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production | `127.0.0.1` |
-| POSTGRES_PORT | IP-Port of Postgres database server | Production | `5432` |
-| POSTGRES_DATABASE | Database name of Postgres database | Production | `homelib` |
-| POSTGRES_USERNAME | Login of Postgres database | Production | `user` |
-| POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_password` |
-| AWS_ENDPOINT_URL | URL of S3 storage | Production | `https://s3.ru-7.storage.selcloud.ru` |
-| AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
-| AWS_ACCESS_KEY_ID | Access key to S3 storage | Production | `e8793d292328x...` |
-| AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production | `a8632409c821...` |
-| GPT_URL | URL for access to GPR API | Production | `https://api.vsegpt.ru/v1` |
-| GPT_API_TOKEN | Secret token for GPT API | Production | `sk-f3-wm-15a2432133...` |
-| GPT_MODEL | GPT model name | Production | `vis-google/gemini-flash-1.5` |
+Program files:
+
+- `homelib.py` - core of telegram-bot
+- `modules\environment.py` - prepare environment variables, classes and connections
+- `modules\databasecreation.py` - script to create tables in Postgres database on the first run of script
+- `modules\handle_addbook.py` - handlers to for processing bot messages in adding book mode
+
+Deployment scripts:
+
+- `requirements.txt` - python's library dependencies
+- `dockerfile` - instructions: how to build Docker container
+- `deployment.yaml` - instructions: how to deploy it on Kubernates cluster
+- `.gitignore` - hide my python cache, debug environment variables with sectets, certificates, etc.
+- `.github\workflows\` - instructions: automatization CI/CD with GitHub Actions
+
+Documentation:
+
+- `README.md` - current description
+- `images\` - floder with images for current description
 
 ## The knowledge I have earned
 
