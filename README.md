@@ -18,11 +18,11 @@ https://t.me/home_library_ai_bot
 | REGISTRY_USERNAME | Login of Container Registry | CI/CD |
 | REGISTRY_PASSWORD | Password of Container Registry | CI/CD |
 | KUBECONFIG | YAML text config of production Kubernates cluster to deploy docker container | CI/CD |
-| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production | `25461226:Fjkld876ww2` |
+| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production | `25461226:Fjkld876ww2...` |
 | POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production | `127.0.0.1` |
 | POSTGRES_PORT | IP-Port of Postgres database server | Production | `5432` |
 | POSTGRES_DATABASE | Database name of Postgres database | Production | `homelib` |
-| POSTGRES_USERNAME | Login of Postgres database | Production | `homelibrary` |
+| POSTGRES_USERNAME | Login of Postgres database | Production | `user` |
 | POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_passwoed` |
 | AWS_ENDPOINT_URL | URL of S3 storage | Production | `https://s3.ru-7.storage.selcloud.ru` |
 | AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
