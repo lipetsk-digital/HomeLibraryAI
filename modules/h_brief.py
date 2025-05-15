@@ -145,7 +145,7 @@ async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state
     for action in env.NEXT_ACTIONS:
         builder.button(text=_(action), callback_data=env.NextActions(action=action) )
     builder.adjust(2)
-    sent_message = await callback.message.answer((_("{bookid}_added")+"\n"+_("add_next_{cathegory}")).format(bookid=data["book_id"], cathegory=data["cathegory"]), 
+    sent_message = await callback.message.answer((_("{bookid}_added")+" "+_("add_next_{cathegory}")).format(bookid=data["book_id"], cathegory=data["cathegory"]), 
                                                  reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_next_book)

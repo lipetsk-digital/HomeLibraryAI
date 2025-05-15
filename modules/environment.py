@@ -104,6 +104,8 @@ BOOK_PROMPT = [
     _translate_("prompt_result"),
     _translate_("prompt_count"),
     _translate_("prompt_lang"),
+    _translate_("prompt_characters"),
+    _translate_("prompt_plaintext"),
     _translate_("prompt_fields"),
     _translate_("prompt_title"),
     _translate_("prompt_authors"),

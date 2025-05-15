@@ -30,6 +30,7 @@ https://t.me/home_library_ai_bot
 | AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production |
 | GPT_URL | URL for access to GPR API | Production |
 | GPT_API_TOKEN | Secret token for GPT API | Production |
+| GPT_MODEL | GPT model name | Production |
 
 ## Project files
 
@@ -93,17 +94,7 @@ Step by step example:
 
 Take a picture of the first annotation page of the book in the same way. Inevitably, your fingers holding the book will get into the photo. If they don't obscure the text, it's okay.
 
-We use an external LLM model for OCR the first annotation page of the book to text and extract from them some important fields about the book. We test some LLM's such as:
-- Alibaba `qwen2.5-vl-72b-instruct`
-- Anthropic `claude-3.7-sonnet`
-- Google `gemini-pro-vision`
-- Google `gemini-flash-vision`
-- OpenAI `gpt-4o`
-- OpenAI `gpt-4o-mini`
-- Meta `llama-3.2-90b-vision-instruct`
-- Meta `llama-4-maverick`
-
-We found Google `gemini-pro-vision` to be the best in terms of price-performance ratio.
+We use an external LLM model for OCR the first annotation page of the book to text and extract from them some important fields about the book. 
 
 We exctract these fields:
 | Field | Value |
@@ -123,7 +114,9 @@ The following prompy for processing a photo by AI-model I found the best:
 The photo contains a page with the book's annotation.
 Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
 The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
-Provide the parameter values in the same language as the photographed page. If the parameter value contains newlines or equal signs, replace them with spaces.
+Provide the parameter values in the same language as the photographed page. 
+If the parameter value contains newlines or equal signs, replace them with spaces.
+Output only plain text of ini file content. Do not output markdown.
 Below are the names of each parameter and the extracted information from the image that its value should contain:
 title - the title of the book
 authors - the authors of the book
@@ -144,12 +137,27 @@ During the experiments, it turned out that the result of the model depends on th
 Interesting observation:
 - in 4 out of 5 cases AI-model return `Dale Carnegie` authors name, but in 1 case it return `Carnegie Dale`.
 
-For example:
+We test 28 LLM's which were relevant in May 2025. To each model we three pages:
+
 | Source photo | Extracted fields |
 | - | - |
 | [![Example 1 - source](images/th_page1.jpg)](examples/extract_book_info/page1.jpg) | `name` = Птицы на кормушках: Подкормка и привлечение <br/> `authors` = Василий Вишневский<br/> `authors_full_names` = Вишневский Василий Алексеевич <br/> `pages` = 304 <br/> `publisher` = Фитон XXI <br/> `year` = 2025 <br/> `ISBN` = 978-5-6051287-5-5 <br/> `annotation` = Подкормка птиц — очень важное и нужное дело, а наблюдение за пернатыми посетителями кормушек приносит массу удовольствия. Книга даёт исчерпывающие ответы на самые важные вопросы: как, чем, когда и каких диких птиц подкармливать. Делать это можно в самых разных местах: от балкона городской квартиры до дачного участка, парка или близлежащего леса. Большое внимание в книге уделено разнообразию кормов, и поскольку не все они полезны, то и тому, чем можно (а чем нельзя) кормить, как приготовить корм, как его хранить. Кроме подкормки, вы можете посадить определённые растения, которые привлекут ещё больше птиц на дачный участок. Поскольку посещение кормушек связано с рядом опасностей, в книге даны очень важные рекомендации, как их избежать и как защитить пернатых гостей от врагов и конкурентов. Если вы повесили кормушку, но никто на неё не прилетает - загляните в главу о том, как привлечь птиц в этом случае. И наконец, большая заключительная часть книги посвящена разнообразию птиц, которых можно подкармливать: как самых обычных, так и редких всем необходима ваша помощь в трудные времена. <br/> `brief` = Книга о том, как правильно подкармливать птиц зимой. `⬅️ Note: this thesis is independently formulated by the GPT-model ‼️` |
 | [![Example 2 - source](images/th_page2.jpg)](examples/extract_book_info/page2.jpg) | `name` = Асимптотические методы для линейных обыкновенных дифференциальных уравнений <br/> `authors` = Федорюк М. В.<br/> `authors_full_names` = Михаил Васильевич Федорюк <br/> `pages` = 352 <br/> `publisher` = Наука <br/> `year` = 1983 <br/> `ISBN` = <br/> `annotation` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов. <br/> `brief` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. |
 | [![Example 3 - source](images/th_page3.jpg)](examples/extract_book_info/page3.jpg) | `name` = Как завоёвывать друзей и оказывать влияние на людей <br/> `authors` = Д. Карнеги<br/> `authors_full_names` = Дейл Брекенридж Карнеги `⬅️ Note: authors name has been updated with information from Wikipedia by GPT-model ‼️` <br/> `pages` = 352 <br/> `publisher` = Попурри <br/> `year` = 2013 <br/> `ISBN` = 978-985-15-1966-4 <br/> `annotation` = Поучения, инструкции и советы Дейла Карнеги за десятки лет, прошедшие с момента первого опубликования этой книги, помогли тысячам людей стать известными в обществе и удачливыми во всех начинаниях. Наследники автора пересмотрели и немного обновили текст, подтверждая его актуальность и теперь, в начале нового века. <br/> `brief` = Книга Дейла Карнеги о том, как заводить друзей, оказывать влияние на людей и добиваться успеха в жизни. |
+
+Then we calculate count of right answers for each of 3 pages and each of 9 parameters. If the answer is right and full model get `+1 score`. Maximum models can have `27 scores`. It means, that this model can be used for page recognition. Only 11 of 28 models have never made a mistake. Also we count elapsed time (in seconds) for each request and summarize them for models. And we count cost of use models ($USD of 1000 request):
+
+![GPT models comparison](images/model_comparison.png)
+
+1. We found two best models to use: `Gemini Flash 1.5` and `Gemini Flash 2.0` by Google. They are the cheapest and allways right. 
+2. `Gemini Flash 2.5` is yet on preview stage and have errors. Normal version of this model, once returned answer not on book language. And thinking version saw if a hallutination of ISBN field - but where are no such field on book, published in 1983.
+3. `Gemini Pro 1.5` is the good model, but a little expensive. Early I use its cheaper instance `Gemini Pro Vision Preview` - but Google closed it at May 2025
+4. `Claude 3 Opus`, `Claude 3.5 Sonnet` and `Clause 3.7 Sonnet` by Anthropic are good, but fantastic expensive models.
+5. OpenSource `Gemma 3` by Google showed the worst result, as well as `Llama 3` by Meta.
+6. Surprisingly good result get `Llama 4 Maverick`. It is a little slow, but you can run it on your own server, and do not pay for using GTP's for more! A good option, if you don't have a money but have one free NVidia H100 GPU-card.
+7. `GPT-4 Turbo` by OpenAI failed this test. But all other OpenAI's models works fine. It is advisable to use only `GPT-4o Mini` model. It is equivalent in price to `Gemini Pro 1.5` model. `GPT-4o` and `o4` by OpenAI are too expensive.
+
+Resume: In my production I will use `Gemini Flash 1.5` model.
 
 
 ## PostgreSQL database
@@ -281,7 +289,7 @@ Cloud storages:
 AI models:
 
 - Use U-2-Net Salient Object Detection AI-model as local library. $0.1 - $1 per image economy!
-- Compare many GPT models to find the cheapest and most efficient one
+- Automaticaly compare big count of different GPT models to find the cheapest and most efficient one
 - Make requests to GPT AI-models, including images and parse their responses
 - Write prompts for GPT to get scructurized data and get derived fields
 - Write prompt on one language to get response on another language
