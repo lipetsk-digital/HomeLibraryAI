@@ -23,7 +23,7 @@ https://t.me/home_library_ai_bot
 | POSTGRES_PORT | IP-Port of Postgres database server | Production | `5432` |
 | POSTGRES_DATABASE | Database name of Postgres database | Production | `homelib` |
 | POSTGRES_USERNAME | Login of Postgres database | Production | `user` |
-| POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_passwoed` |
+| POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_password` |
 | AWS_ENDPOINT_URL | URL of S3 storage | Production | `https://s3.ru-7.storage.selcloud.ru` |
 | AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
 | AWS_ACCESS_KEY_ID | Access key to S3 storage | Production | `e8793d292328x...` |
