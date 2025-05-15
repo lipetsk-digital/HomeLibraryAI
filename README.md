@@ -163,6 +163,18 @@ Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm
 - `wait_for_brief_photo` - waiting for user to send a photo of the annotation page
 - `wait_reaction_on_brief` =  waiting for user's reaction of extracted book information
 
+## Telegram bot's commands and handlers
+
+There are 5 global bot's commands, whitch can be executate from any bot state. You don't need to ask `@BotFather` add these commands to main menu button. They added automaticaly by the bot itself:
+- `add` - Add book
+- `find` - Search
+- `edit` - Edit book
+- `cat` - Cathegories
+- `export` - Export
+- `lang` - Language
+
+Also bot process `/start` command - for the first run of each user.
+
 ## User's data accumulating and stored for each bot's session
 
 Common data:
@@ -192,18 +204,6 @@ Book data:
 - `book_id`: int - ID of added/edited book
 - `user_id`: int - ID of current telegram-user (library owner)
 
-## Telegram bot's commands
-
-There are 5 global bot's commands, whitch can be executate from any bot state. You don't need to ask `@BotFather` add these commands to main menu button. They added automaticaly by the bot itself:
-- `add` - Add book
-- `find` - Search
-- `edit` - Edit book
-- `cat` - Cathegories
-- `export` - Export
-- `lang` - Language
-
-Also bot process `/start` command - for the first run of each user.
-
 ## How it works
 
 ![Working environment diagram](images/homelib.drawio.png)
@@ -229,6 +229,29 @@ Also bot process `/start` command - for the first run of each user.
 | GPT_URL | URL for access to GPR API | Production | `https://api.vsegpt.ru/v1` |
 | GPT_API_TOKEN | Secret token for GPT API | Production | `sk-f3-wm-15a2432133...` |
 | GPT_MODEL | GPT model name | Production | `vis-google/gemini-flash-1.5` |
+
+Add production secrets they are delivered to the application via environment variables. If you use `Visual Studio Code` to develop, you can add them to `.vscode/launch.json` file:
+```
+    "configurations": [
+        {
+            "env": {
+                "TELEGRAM_TOKEN": "25461226:Fjkld876ww2...",
+                "POSTGRES_HOST": "127.0.0.1",
+                "POSTGRES_PORT": "5432",
+                "POSTGRES_DATABASE": "homelib",
+                "POSTGRES_USERNAME": "user",
+                "POSTGRES_PASSWORD": "my_super_password",
+                "AWS_ACCESS_KEY_ID": "e8793d292328x...",
+                "AWS_SECRET_ACCESS_KEY": "a8632409c821...",
+                "AWS_ENDPOINT_URL": "https://s3.ru-7.storage.selcloud.ru",
+                "AWS_BUCKET_NAME": "homelibrary",
+                "GPT_URL": "https://api.vsegpt.ru/v1",
+                "GPT_API_TOKEN": "sk-f3-wm-15a2432133...",
+                "GPT_MODEL": "vis-google/gemini-flash-1.5"
+            }
+        }
+    ]
+```
 
 ## PostgreSQL database
 
