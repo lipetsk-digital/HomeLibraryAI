@@ -13,6 +13,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
+import modules.h_cover as h_cover # For do book cover photos
 
 # Router for handling messages related to asking for the next book
 next_router = Router()
@@ -23,8 +24,7 @@ async def add_another_book(callback: CallbackQuery, callback_data: env.Language,
     # Finish inline buttons
     await env.RemoveMyInlineKeyboards(callback, state)
     # Go to adding another book
-    await callback.message.answer(_("photo_cover"))
-    await state.set_state(env.State.wait_for_cover_photo)
+    await h_cover.AskForCover(callback.message, state, pool, bot)
 
 # Handler for the callback query when the user selects "do not add another book"
 @next_router.callback_query(env.NextActions.filter(F.action == "no_another_book"))

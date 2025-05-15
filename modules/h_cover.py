@@ -23,6 +23,7 @@ from modules.aiorembg import async_remove # For asynchronous background removal
 # Router for handling messages related to processing book covers photos
 cover_router = Router()
 
+# =========================================================
 # Order points for perspective transformation
 def order_points(pts):
     # Initialize ordered points
@@ -42,7 +43,18 @@ def order_points(pts):
     
     return rect
 
+# =========================================================
+# Ask user for the photo of the book cover
+async def AskForCover(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    # Forget old books
+    await state.update_data(photo_filename=None, cover_filename=None, brief_filename=None, title=None, authors=None, authors_full_names=None, pages=None,
+                            publisher=None, year=None, isbn=None, brief=None, annotation=None, book_id=None, user_id=None)
+    # Ask for the cover text
+    await message.answer(_("photo_cover"))
+    # Set the state to wait for the cover text
+    await state.set_state(env.State.wait_for_cover_photo)
 
+# =========================================================
 # Handler for sended photo of book cover
 @cover_router.message(env.State.wait_for_cover_photo, F.photo)
 async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
@@ -183,5 +195,4 @@ async def use_original_photo(callback: CallbackQuery, callback_data: env.Cathego
 @cover_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
 async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
-    await callback.message.answer(_("photo_cover"))
-    await state.set_state(env.State.wait_for_cover_photo)
+    await AskForCover(callback.message, state, pool, bot)

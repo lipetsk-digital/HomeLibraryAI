@@ -154,5 +154,4 @@ async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
 async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
-    await callback.message.answer(_("photo_brief"))
-    await state.set_state(env.State.wait_for_brief_photo)
+    await AskForBrief(callback.message, state, pool, bot)

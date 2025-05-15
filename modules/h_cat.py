@@ -12,6 +12,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
+import modules.h_cover as h_cover # For do book cover photos
 
 # Router for handling messages related to manipulate cathegories
 cat_router = Router()
@@ -29,6 +30,7 @@ async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool
         await state.update_data(can_add=True)
     else:
         await state.update_data(can_add=False)
+    await state.update_data(cathegory=None)
     # Select cathegories from the database
     async with pool.acquire() as conn:
         # Fetching cathegories from the database
@@ -90,6 +92,5 @@ async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool:
     action = data.get("action")
     # Perform the action based on the selected cathegory
     if action == "add_book":
-        await message.answer(_("photo_cover"))
-        await state.set_state(env.State.wait_for_cover_photo)
+        await h_cover.AskForCover(message, state, pool, bot)
     
