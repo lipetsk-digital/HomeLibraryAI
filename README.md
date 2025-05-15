@@ -152,6 +152,12 @@ Resume: In my production I will use `Gemini Flash 1.5` model.
 
 ![Working environment diagram](images/homelib.drawio.png)
 
+## Telegram-bot's dialog algorithm
+
+![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
+
+Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm.
+
 ## States of the bot
 
 - `wait_for_command` - waiting for the one of global bot's commands
@@ -355,10 +361,4 @@ Telegram development:
 Opensource collaboration:
 
 - Wrote my own library to use PostgreSQL database to store state and user data on aiogram FSMstore
-
-## Telegram-bot's dialog algorithm
-
-![Telegram-bot's dialog algorithm](images/algorithm.drawio.png)
-
-Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm.
 
