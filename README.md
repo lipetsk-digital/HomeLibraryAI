@@ -110,8 +110,8 @@ We exctract these fields:
 | `brief` | Brief summary of the annotation |
 
 The following prompy for processing a photo by AI-model I found the best:
-```text
-The photo contains a page with the book's annotation.
+
+<blockquote><code>The photo contains a page with the book's annotation.
 Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
 The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
 Provide the parameter values in the same language as the photographed page. 
@@ -127,7 +127,7 @@ isbn - the ISBN code
 annotation - the full text of the annotation exactly as it appears on the photographed page
 brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book
 authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field
-```
+</code></blockquote>
 
 Despite all efforts, models regularly:
 - leave markdown formatting in the response
@@ -158,12 +158,10 @@ For this operation I decided to write python script without any coding - only us
 
 Resulting prompt, witch generate full-functionaly successefull worked script is:
 
-<blockquote>
-<code>
-1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.<br/>
-2. Use AsyncOpenAI for GPT client<br/>
-3. Read models list from models.txt. Sort them asc<br/>
-4. Read prompt from prompt.txt<br/>
+<blockquote><code>1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.
+2. Use AsyncOpenAI for GPT client
+3. Read models list from models.txt. Sort them asc
+4. Read prompt from prompt.txt
 5. Send all *.jpg pictures to each model with readed prompt
 6. Response from each model must be a text of an ini-file with one section [book] and values of 9 parameters: title, authors, pages, publisher, year, isbn, annotation, brief, authors_full_names.
 7. Create excel file with sheet for each of 9 parameters. In rows of the sheet must be models in columns - pictures, in cells - readed from model values of these parameters.
@@ -175,8 +173,7 @@ Resulting prompt, witch generate full-functionaly successefull worked script is:
 13. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
 14. Output on the screen information about current model and file then process.
 15. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.
-</code>
-</blockquote>
+</code></blockquote>
 
 Generated script you can see in [compare_models.py](examples/extract_book_info/compare_models.py)
 
