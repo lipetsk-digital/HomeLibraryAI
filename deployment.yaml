@@ -76,6 +76,11 @@ spec:
             secretKeyRef:
               name: homelibrary-bot-secrets
               key: gpt-api-token
+        - name: GPT_MODEL
+          valueFrom:
+            secretKeyRef:
+              name: homelibrary-bot-secrets
+              key: gpt-model
         resources:
           requests:
             memory: "128Mi"
