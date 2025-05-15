@@ -110,7 +110,7 @@ We exctract these fields:
 | `brief` | Brief summary of the annotation |
 
 The following prompy for processing a photo by AI-model I found the best:
-```
+```text
 The photo contains a page with the book's annotation.
 Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
 The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
@@ -152,9 +152,38 @@ We test 28 LLM's which were relevant in May 2025. To each model we three pages:
 | [![Example 2 - source](images/th_page2.jpg)](examples/extract_book_info/page2.jpg) | `name` = Асимптотические методы для линейных обыкновенных дифференциальных уравнений <br/> `authors` = Федорюк М. В.<br/> `authors_full_names` = Михаил Васильевич Федорюк <br/> `pages` = 352 <br/> `publisher` = Наука <br/> `year` = 1983 <br/> `ISBN` = <br/> `annotation` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов. <br/> `brief` = В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. |
 | [![Example 3 - source](images/th_page3.jpg)](examples/extract_book_info/page3.jpg) | `name` = Как завоёвывать друзей и оказывать влияние на людей <br/> `authors` = Д. Карнеги<br/> `authors_full_names` = Дейл Брекенридж Карнеги `⬅️ Note: authors name has been updated with information from Wikipedia by Gemini Pro Vision Preview model ‼️` <br/> `pages` = 352 <br/> `publisher` = Попурри <br/> `year` = 2013 <br/> `ISBN` = 978-985-15-1966-4 <br/> `annotation` = Поучения, инструкции и советы Дейла Карнеги за десятки лет, прошедшие с момента первого опубликования этой книги, помогли тысячам людей стать известными в обществе и удачливыми во всех начинаниях. Наследники автора пересмотрели и немного обновили текст, подтверждая его актуальность и теперь, в начале нового века. <br/> `brief` = Книга Дейла Карнеги о том, как заводить друзей, оказывать влияние на людей и добиваться успеха в жизни. |
 
-Then we calculate count of right answers for each of 3 pages and each of 9 parameters. If the answer is right and full model get `+1 score`. Maximum models can have `27 scores`. It means, that this model can be used for page recognition. Only 11 of 28 models have never made a mistake. Also we count elapsed time (in seconds) for each request and summarize them for models. And we count cost of use models ($USD of 1000 request):
+I try to ask each of 28 GPT vision models, aviable on May 2025 to process each of these 3 pages.
+
+For this operation I decided to write python script without any coding - only using GPT-models. I use `Clause 3.7 Sonnet` model and start from simple prompts. I try to generate code, found and analyze errors, add some lines to prompt, try again, etc..
+
+Resulting prompt, witch generate full-functionaly successefull worked script is:
+```text
+1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.
+2. Use AsyncOpenAI for GPT client
+3. Read models list from models.txt. Sort them asc
+4. Read prompt from prompt.txt
+5. Send all *.jpg pictures to each model with readed prompt
+6. Response from each model must be a text of an ini-file with one section [book] and values of 9 parameters: title, authors, pages, publisher, year, isbn, annotation, brief, authors_full_names.
+7. Create excel file with sheet for each of 9 parameters. In rows of the sheet must be models in columns - pictures, in cells - readed from model values of these parameters.
+8. If model does not get response, or response is not right ini-file or you can not find parameter in response - put "-" char to the appropriate cell.
+9. Remove markdown start and and of code blocks from model's result.
+10. If you found line withoput equals character - ignore them.
+11. Pay attention: for .txt, .jpg and result excel file you must use not current system folder, but folder of your python program
+12. Write response of each model on each picture to .txt file in 'debug' subfolder with name of file contains model and picture names. Note that model names can include characters, witch can not be in file names. Create the 'debug' subfolder if they does not exists.
+13. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
+14. Output on the screen information about current model and file then process.
+15. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.
+```
+
+Generated script you can see in [compare_models.py](examples/extract_book_info/compare_models.py)
+
+Then I calculate count of right answers for each of 3 pages and each of 9 parameters. If the answer is right and full model get `+1 score`. Maximum models can have `27 scores`. It means, that this model can be used for page recognition. Only 11 of 28 models have never made a mistake. Also I count elapsed time (in seconds) for each request and summarize them for models. And I count manual cost of use models ($USD of 1000 request). 
+
+Final results of this comparsion are here:
 
 ![GPT models comparison](images/model_comparison.png)
+
+Summary:
 
 1. We found two best models to use: `Gemini Flash 1.5` and `Gemini Flash 2.0` by Google. They are the cheapest and allways right. 
 2. `Gemini Flash 2.5` is yet on preview stage and have errors. Normal version of this model, once returned answer not on book language. And thinking version get an hallutination on ISBN field - but where are no such field in book, published in 1983.
