@@ -157,11 +157,12 @@ I try to ask each of 28 GPT vision models, aviable on May 2025 to process each o
 For this operation I decided to write python script without any coding - only using GPT-models. I use `Clause 3.7 Sonnet` model and start from simple prompts. I try to generate code, found and analyze errors, add some lines to prompt, try again, etc..
 
 Resulting prompt, witch generate full-functionaly successefull worked script is:
-```text
-1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.
-2. Use AsyncOpenAI for GPT client
-3. Read models list from models.txt. Sort them asc
-4. Read prompt from prompt.txt
+
+<blockquote>
+1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.<br/>
+2. Use AsyncOpenAI for GPT client<br/>
+3. Read models list from models.txt. Sort them asc<br/>
+4. Read prompt from prompt.txt<br/>
 5. Send all *.jpg pictures to each model with readed prompt
 6. Response from each model must be a text of an ini-file with one section [book] and values of 9 parameters: title, authors, pages, publisher, year, isbn, annotation, brief, authors_full_names.
 7. Create excel file with sheet for each of 9 parameters. In rows of the sheet must be models in columns - pictures, in cells - readed from model values of these parameters.
@@ -173,7 +174,7 @@ Resulting prompt, witch generate full-functionaly successefull worked script is:
 13. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
 14. Output on the screen information about current model and file then process.
 15. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.
-```
+</blockquote>
 
 Generated script you can see in [compare_models.py](examples/extract_book_info/compare_models.py)
 
