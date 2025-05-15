@@ -19,6 +19,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline k
 from openai import AsyncOpenAI # For OpenAI API client
 
 import modules.environment as env # For environment variables and configurations
+import modules.book as book # For save book to database
 
 # Router for handling messages related to processing book annotations
 brief_router = Router()
@@ -32,7 +33,7 @@ async def AskForBrief(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     await state.set_state(env.State.wait_for_brief_photo)
 
 # =========================================================
-# Handler for sended photo of book cover
+# Handler for sended photo of the first page of the book with annotation
 @brief_router.message(env.State.wait_for_brief_photo, F.photo)
 async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Get the photo from the message
@@ -48,9 +49,9 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
         # Upload the photo to S3 storage
         try:
-            photo_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-            await s3.upload_fileobj(photo_bytesio2, env.AWS_BUCKET_NAME, photo_filename)
-            await state.update_data(photo_filename=photo_filename) # Save the filename in the state
+            brief_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
+            await s3.upload_fileobj(photo_bytesio2, env.AWS_BUCKET_NAME, brief_filename)
+            await state.update_data(brief_filename=brief_filename) # Save the filename in the state
             # Give like to user's photo
             await bot.set_message_reaction(chat_id=message.chat.id,
                                            message_id=message.message_id,
@@ -71,7 +72,7 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for line in env.BOOK_PROMPT:
             prompt = prompt + _(line) + "\n"
         response = await client.chat.completions.create(
-            model="vis-google/gemini-pro-vision",
+            model=env.GPT_MODEL,
             messages=[
                 {"role": "user", "content": [
                     {"type": "text", "text": prompt},
@@ -94,9 +95,17 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         for line in response_text.splitlines():
             if "=" in line:
                 key, value = line.split("=", 1)
-                book_computer[key.strip()] = value.strip()
-                if key.strip() != "annotation": # Don't show annotation in the message
-                    book_human[_(key.strip())] = value.strip()
+                key = key.strip()
+                value = value.strip()
+                # Prepare dict with book information for computer
+                book_computer[key] = value
+                # Prepare dict with book information for user
+                if key == "annotation":
+                    pass # Don't show full annotation in the message
+                elif key == "authors":
+                    pass # Don't show brief names of authors in the message
+                else:
+                    book_human[_(key)] = value # for other fields
         await state.update_data(**book_computer) # Save the book information in the state
         if not book_computer:
             raise ValueError()        
@@ -113,10 +122,37 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.BRIEF_ACTIONS:
-        builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
+        builder.button(text=_(action), callback_data=env.BriefActions(action=action) )
     builder.adjust(2,1)
     # Send the message with the book information and the keyboard
     sent_message = await message.answer(**content.as_kwargs(), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_reaction_on_brief)
 
+# Handler for inline button use_brief
+@brief_router.callback_query(env.BriefActions.filter(F.action == "use_brief"))
+async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveMyInlineKeyboards(callback, state)
+    # Give like to brief message
+    await bot.set_message_reaction(chat_id=callback.message.chat.id,
+                                    message_id=callback.message.message_id,
+                                    reaction=[ReactionTypeEmoji(emoji='👍')])
+    await book.SaveBookToDatabase(callback, state, pool, bot)
+    # Write about added book and ask about the next one
+    data = await state.get_data()
+    builder = InlineKeyboardBuilder()
+    await env.RemoveOldInlineKeyboards(state, callback.message.chat.id, bot)
+    for action in env.NEXT_ACTIONS:
+        builder.button(text=_(action), callback_data=env.NextActions(action=action) )
+    builder.adjust(2)
+    sent_message = await callback.message.answer((_("{bookid}_added")+" "+_("add_next_{cathegory}")).format(bookid=data["book_id"], cathegory=data["cathegory"]), 
+                                                 reply_markup=builder.as_markup())
+    await state.update_data(inline=sent_message.message_id)
+    await state.set_state(env.State.wait_next_book)
+
+# Handler for inline button take_new_photo
+@brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
+async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveMyInlineKeyboards(callback, state)
+    await callback.message.answer(_("photo_brief"))
+    await state.set_state(env.State.wait_for_brief_photo)

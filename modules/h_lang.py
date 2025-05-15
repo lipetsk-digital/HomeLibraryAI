@@ -20,7 +20,7 @@ lang_router = Router()
 
 # Handler for the /add command
 @env.first_router.message(Command("settings"))
-async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def lang_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     available_languages = sorted(env.i18n.available_locales)
@@ -38,9 +38,7 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 @lang_router.callback_query(env.Language.filter())
 async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Finish inline buttons
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    await env.RemoveMyInlineKeyboards(callback, state)
     # Change locale
     await env.FSMi18n.set_locale(state, callback_data.lang)
     # Get native name of selected language

@@ -21,7 +21,7 @@ cat_router = Router()
 # The function takes the following additional parameters:
 # - can_add: A boolean indicating if the user can add a new cathegory
 # - action: The action, executed this routine (e.g., "add_book")
-async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, action: str) -> None:
+async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool: asyncpg.Pool, bot: Bot, action: str) -> None:
     builder = InlineKeyboardBuilder()
     # Store can_add and action parameters in user data
     await state.update_data(action=action)
@@ -40,14 +40,14 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
             WHERE b.user_id = $1
             GROUP BY b.cathegory
             ORDER BY book_count DESC
-        """, message.from_user.id)
+        """, userid)
         # If there are cathegories, create buttons for each one and ask user
         if result:
             if action == "add_book":
                 text = _("select_or_enter_cathegory_add_book")
             await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
-                builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[1]) )
+                builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[0]) )
             builder.adjust(1)
             sent_message = await message.answer(text, reply_markup=builder.as_markup())
             await state.update_data(inline=sent_message.message_id)
@@ -65,9 +65,7 @@ async def SelectCathegory(message: Message, state: FSMContext, pool: asyncpg.Poo
 # Handler for inline button selection of a cathegory
 @cat_router.callback_query(env.Cathegory.filter())
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    await env.RemoveMyInlineKeyboards(callback, state)
     await DoCathegory(callback_data.name, callback.message, state, pool, bot)
 
 # Handler for entered text when the user can add a new cathegory

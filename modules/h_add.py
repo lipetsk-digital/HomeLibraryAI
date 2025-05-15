@@ -21,13 +21,11 @@ add_router = Router()
 async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     await message.answer(_("start_add_book"))
-    await h_cat.SelectCathegory(message, state, pool, bot, "add_book")
+    await h_cat.SelectCathegory(message, message.from_user.id, state, pool, bot, "add_book")
 
 # Handler for the callback query when the user selects "add" from the main menu
 @add_router.callback_query(env.MainMenu.filter(F.action=="add"))
 async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
+    await env.RemoveMyInlineKeyboards(callback, state)
     await callback.message.answer(_("start_add_book"))
-    await h_cat.SelectCathegory(callback.message, state, pool, bot, "add_book")
+    await h_cat.SelectCathegory(callback.message, callback.from_user.id, state, pool, bot, "add_book")

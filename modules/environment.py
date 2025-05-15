@@ -15,6 +15,7 @@ from aiogram import Bot # For Telegram bot framework
 from aiogram import Router # For creating a router for handling messages
 from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
+from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.filters.callback_data import CallbackData # For callback data handling
 
 
@@ -40,6 +41,7 @@ AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
 # VSEGPT API key
 GPT_URL = os.getenv("GPT_URL")
 GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
+GPT_MODEL = os.getenv("GPT_MODEL")
 
 # Class for finite state machine
 class State(StatesGroup):
@@ -50,6 +52,7 @@ class State(StatesGroup):
     wait_reaction_on_cover = State()
     wait_for_brief_photo = State()
     wait_reaction_on_brief = State()
+    wait_next_book = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -80,6 +83,7 @@ COVER_ACTIONS = [
 BOOK_FIELDS = [
     _translate_("title"),
     _translate_("authors"),
+    _translate_("authors_full_names"),
     _translate_("pages"),
     _translate_("publisher"),
     _translate_("year"),
@@ -87,11 +91,21 @@ BOOK_FIELDS = [
     _translate_("brief"),
     _translate_("annotation")
 ]
+ADVANCED_BOOK_FIELDS = [
+    "user_id",
+    "book_id",
+    "cathegory",
+    "photo_filename",
+    "cover_filename",
+    "brief_filename"
+]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),
     _translate_("prompt_result"),
     _translate_("prompt_count"),
     _translate_("prompt_lang"),
+    _translate_("prompt_characters"),
+    _translate_("prompt_plaintext"),
     _translate_("prompt_fields"),
     _translate_("prompt_title"),
     _translate_("prompt_authors"),
@@ -100,12 +114,17 @@ BOOK_PROMPT = [
     _translate_("prompt_year"),
     _translate_("prompt_isbn"),
     _translate_("prompt_annotation"),
-    _translate_("prompt_brief")
+    _translate_("prompt_brief"),
+    _translate_("prompt_authors_full_names")
 ]
 BRIEF_ACTIONS = [
     _translate_("use_brief"),
     _translate_("edit_brief"),
     _translate_("take_new_photo")
+]
+NEXT_ACTIONS = [
+    _translate_("add_another_book"),
+    _translate_("no_another_book")
 ]
 
 # Callback factory for main menu
@@ -124,6 +143,20 @@ class Language(CallbackData, prefix="lang"):
 class CoverActions(CallbackData, prefix="cover"):
     action: str
 
+# Callback factory for the annotation page actions
+class BriefActions(CallbackData, prefix="brief"):
+    action: str
+
+# Callback factory for the next actions
+class NextActions(CallbackData, prefix="next"):
+    action: str
+
+# Finish handlers and remove current inline keyboard from its message
+async def RemoveMyInlineKeyboards(callback: CallbackQuery, state: FSMContext) -> None:
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await state.update_data(inline=None)
+                                   
 # Remove old inline keyboards from messages in the chat
 async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:
     data = await state.get_data()

@@ -1,0 +1,10 @@
+[book]
+title = Асимптотические методы для линейных обыкновенных дифференциальных уравнений
+authors = Федорюк М. В.
+pages = 352
+publisher = Наука. Главная редакция физико-математической литературы
+year = 1983
+isbn = 
+annotation = В книге содержатся асимптотические методы решения линейных обыкно- венных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения воли и др. Для математиков, физиков, инженеров, а также для студентов и аспиран тов университетов и инженерно-физических вузов. Рис. 26. Библ. 112 назв,
+brief = The book covers asymptotic methods for solving linear ordinary differential equations and their applications in quantum mechanics, wave propagation, and more, intended for mathematicians, physicists, engineers, and students/postgraduates.
+authors_full_names = Федорюк Михаил Васильевич

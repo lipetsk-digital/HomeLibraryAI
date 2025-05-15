@@ -1,0 +1,16 @@
+The photo contains a page with the book's annotation.
+Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases.
+The section must always contain 9 parameters. If a parameter is missing, its value should be empty.
+Provide the parameter values in the same language as the photographed page. 
+If the parameter value contains newlines or equal signs, replace them with spaces.
+Output only plain text of ini file content. Do not output markdown.
+Below are the names of each parameter and the extracted information from the image that its value should contain:
+title - the title of the book
+authors - the authors of the book
+pages - the number of pages
+publisher - the publishing house
+year - the year of publication
+isbn - the ISBN code
+annotation - the full text of the annotation exactly as it appears on the photographed page
+brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book
+authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field
