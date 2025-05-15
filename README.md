@@ -1,10 +1,9 @@
-# Quick and simple catalog of the home library, <br/>based on telergam-bot <br/>with AI-recognition of covers and annotations
+# Quick and simple catalog of the home library, <br/>based on telergam-bot with AI-recognition <br/>of covers and annotations
 
 [![HomeLibraryAI Avatar](images/avatar_min.jpg)](images/avatar.jpg) ![HomeLibraryAI bot QR-code](images/t_me-home_library_ai_bot.png)
 
 
-Telegram bot to photo the covers and annotations of your books and create a catalog of your home library. Share the catalog with your friends. No manual input: AI will do everything for you, and it will take no more than 10 seconds to enter one book. If necessary, you can always download your collection to a file.
-https://t.me/home_library_ai_bot
+Telegram bot to photo the covers and annotations of your books and create a catalog of your home library. Share the catalog with your friends. No manual input: AI will do everything for you, and it will take no more than 10 seconds to enter one book. If necessary, you can always download your collection to a file. [@home_library_ai_bot](https://t.me/home_library_ai_bot)
 
 ## Basic usage
 
