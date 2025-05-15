@@ -159,6 +159,7 @@ For this operation I decided to write python script without any coding - only us
 Resulting prompt, witch generate full-functionaly successefull worked script is:
 
 <blockquote>
+<code>
 1. Read GPT_URL, GPT_API_TOKEN, GPT_MODEL from environment variables.<br/>
 2. Use AsyncOpenAI for GPT client<br/>
 3. Read models list from models.txt. Sort them asc<br/>
@@ -174,6 +175,7 @@ Resulting prompt, witch generate full-functionaly successefull worked script is:
 13. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
 14. Output on the screen information about current model and file then process.
 15. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.
+</code>
 </blockquote>
 
 Generated script you can see in [compare_models.py](examples/extract_book_info/compare_models.py)
