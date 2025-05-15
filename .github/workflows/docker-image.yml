@@ -60,6 +60,7 @@ jobs:
             --from-literal=aws-bucket-name=${{ secrets.AWS_BUCKET_NAME }} \
             --from-literal=gpt-url=${{ secrets.GPT_URL }} \
             --from-literal=gpt-api-token=${{ secrets.GPT_API_TOKEN }} \
+            --from-literal=gpt-model=${{ secrets.GPT_MODEL }} \
             --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f deployment.yaml
           kubectl rollout restart deployment/homelibrary-bot

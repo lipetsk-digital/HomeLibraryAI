@@ -12,25 +12,25 @@ https://t.me/home_library_ai_bot
 
 ## GitHub actions secrets
 
-| Name | Description | Usage |
-| - | - | - |
+| Name | Description | Usage | Example |
+| - | - | - | - |
 | REGISTRY_HOST | Hostname of Container Registry to push docker image | CI/CD |
 | REGISTRY_USERNAME | Login of Container Registry | CI/CD |
 | REGISTRY_PASSWORD | Password of Container Registry | CI/CD |
 | KUBECONFIG | YAML text config of production Kubernates cluster to deploy docker container | CI/CD |
-| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production |
-| POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production |
-| POSTGRES_PORT | IP-Port of Postgres database server | Production |
-| POSTGRES_DATABASE | Database name of Postgres database | Production |
-| POSTGRES_USERNAME | Login of Postgres database | Production |
-| POSTGRES_PASSWORD | Password of Postgres database | Production |
-| AWS_ENDPOINT_URL | URL of S3 storage | Production |
-| AWS_BUCKET_NAME | Bucket name in S3 storage | Production |
-| AWS_ACCESS_KEY_ID | Access key to S3 storage | Production |
-| AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production |
-| GPT_URL | URL for access to GPR API | Production |
-| GPT_API_TOKEN | Secret token for GPT API | Production |
-| GPT_MODEL | GPT model name | Production |
+| TELEGRAM_TOKEN | Strint token for production telegram-bot @home_library_ai_bot | Production | `25461226:Fjkld876ww2` |
+| POSTGRES_HOST | Hostname or IP-address of Postgres database server | Production | `127.0.0.1` |
+| POSTGRES_PORT | IP-Port of Postgres database server | Production | `5432` |
+| POSTGRES_DATABASE | Database name of Postgres database | Production | `homelib` |
+| POSTGRES_USERNAME | Login of Postgres database | Production | `homelibrary` |
+| POSTGRES_PASSWORD | Password of Postgres database | Production | `my_super_passwoed` |
+| AWS_ENDPOINT_URL | URL of S3 storage | Production | `https://s3.ru-7.storage.selcloud.ru` |
+| AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
+| AWS_ACCESS_KEY_ID | Access key to S3 storage | Production | `e8793d292328x...` |
+| AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production | `a8632409c821...` |
+| GPT_URL | URL for access to GPR API | Production | `https://api.vsegpt.ru/v1` |
+| GPT_API_TOKEN | Secret token for GPT API | Production | `sk-f3-wm-15a2432133...` |
+| GPT_MODEL | GPT model name | Production | `vis-google/gemini-flash-1.5` |
 
 ## Project files
 
@@ -150,12 +150,13 @@ Then we calculate count of right answers for each of 3 pages and each of 9 param
 ![GPT models comparison](images/model_comparison.png)
 
 1. We found two best models to use: `Gemini Flash 1.5` and `Gemini Flash 2.0` by Google. They are the cheapest and allways right. 
-2. `Gemini Flash 2.5` is yet on preview stage and have errors. Normal version of this model, once returned answer not on book language. And thinking version saw if a hallutination of ISBN field - but where are no such field on book, published in 1983.
+2. `Gemini Flash 2.5` is yet on preview stage and have errors. Normal version of this model, once returned answer not on book language. And thinking version get an hallutination on ISBN field - but where are no such field in book, published in 1983.
 3. `Gemini Pro 1.5` is the good model, but a little expensive. Early I use its cheaper instance `Gemini Pro Vision Preview` - but Google closed it at May 2025
 4. `Claude 3 Opus`, `Claude 3.5 Sonnet` and `Clause 3.7 Sonnet` by Anthropic are good, but fantastic expensive models.
 5. OpenSource `Gemma 3` by Google showed the worst result, as well as `Llama 3` by Meta.
 6. Surprisingly good result get `Llama 4 Maverick`. It is a little slow, but you can run it on your own server, and do not pay for using GTP's for more! A good option, if you don't have a money but have one free NVidia H100 GPU-card.
-7. `GPT-4 Turbo` by OpenAI failed this test. But all other OpenAI's models works fine. It is advisable to use only `GPT-4o Mini` model. It is equivalent in price to `Gemini Pro 1.5` model. `GPT-4o` and `o4` by OpenAI are too expensive.
+7. `GPT-4 Turbo` by OpenAI failed this test. But all other OpenAI's models works fine.
+8. I recommend to use only `GPT-4o Mini` model by OpenAI. It has an equivalent in price to `Gemini Pro 1.5` model. The models `GPT-4o` and `o4` by OpenAI are too expensive.
 
 Resume: In my production I will use `Gemini Flash 1.5` model.
 
@@ -295,7 +296,7 @@ AI models:
 - Write prompt on one language to get response on another language
 
 AI code generation:
-- Try to generate tiny but full-functionaly successefull worked program by one structurized request to GPT-model (see `compare_models.py` and `generate_prompt_sonnet_3.7.txt`)
+- Try to generate tiny but full-functionaly successefull worked program by one structurized request to GPT-model (see `generate_prompt_sonnet_3.7.txt` and `compare_models.py`)
 
 Images processing:
 - Find contoures on the image
