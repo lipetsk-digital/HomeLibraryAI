@@ -6,8 +6,10 @@
 6. Response from each model must be a text of an ini-file with one section [book] and values of 9 parameters: title, authors, pages, publisher, year, isbn, annotation, brief, authors_full_names.
 7. Create excel file with sheet for each of 9 parameters. In rows of the sheet must be models in columns - pictures, in cells - readed from model values of these parameters.
 8. If model does not get response, or response is not right ini-file or you can not find parameter in response - put "-" char to the appropriate cell.
-9. Pay attention: for .txt, .jpg and result excel file you must use not current system folder, but folder of your python program
-10. Write response of each model on each picture to .txt file in 'debug' subfolder with name of file contains model and picture names. Note that model names can include characters, witch can not be in file names. Create the 'debug' subfolder if they does not exists.
-11. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
-12. Output on the screen information about current model and file then process.
-13. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.
+9. Remove markdown start and and of code blocks from model's result.
+10. If you found line withoput equals character - ignore them.
+11. Pay attention: for .txt, .jpg and result excel file you must use not current system folder, but folder of your python program
+12. Write response of each model on each picture to .txt file in 'debug' subfolder with name of file contains model and picture names. Note that model names can include characters, witch can not be in file names. Create the 'debug' subfolder if they does not exists.
+13. Add to program Boolean ONLYONE parameter, then it runs full, but process only first model and only first picture.
+14. Output on the screen information about current model and file then process.
+15. Store time (count of seconds) of answer for each model and each picture and store them in such sheet 'time' in result excel table.

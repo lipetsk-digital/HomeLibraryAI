@@ -1,12 +1,12 @@
 ```ini
 [book]
-title = Руководство пользователя
-authors = Вишевецкий В.А. (Алексей Вишевецкий)
+title = Путویش на курмуниках: Полкормка и привлечение / Василий Вишневский
+authors = Василий Алексеевич Вишневский
 pages = 304
-publisher = Круга lite
-year = Фètres XX
-isbn = 9785605128755
-annotation = Покормка и привлечение / Василий Вишневский. Книга посвящена натуральным способам кормления птиц, освещая все аспекты процесса подкормки, включая становление птиц, главные и редкие виды птиц, виды и типы корма, продукты, а также особенности их кормления. Книга также охватывает сертификацию, местонахождение, рецепты пищи, варианты объективного выбора птиц и варианты сетки устройств.
-brief = The book focuses on natural ways to feed birds, covering all aspects of the process, including the habits of birds, MAIN and rare species, types of food, products, and their feeding habits.
-authors_full_names = Вишевецкий Василий Алексеевич
+publisher = ООО Фитон XXI
+year = 2022
+isbn = 978-5-6051287-5-5
+annotation = Полкормка путіш — очень важкое і нужное дело, а щоб його выполнить за permanence кожен користувач повинен масу умоволющості. Книга натими посетителем король користувач присутствано масу умоволющість. Ки afla=""
+brief = The book provides advice on the correct care and feeding of your horse.
+authors_full_names = Василь Алексеевич Вишневский
 ```

@@ -1,1 +1,0 @@
-ERROR: Error code: 400 - {'error': {'message': 'google/gemini-pro-vision is not a valid model ID', 'code': 400}, 'user_id': 'user_2S9yD9zoAh5LnFV55pRNO9Kk3D4'}

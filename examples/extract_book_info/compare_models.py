@@ -45,16 +45,33 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
+# Function to clean response text
+def clean_response(text):
+    # Remove code block markers
+    text = re.sub(r'```(?:ini)?', '', text)
+    
+    # Filter out lines without equals sign
+    lines = []
+    for line in text.splitlines():
+        # Keep section headers and lines with equals sign
+        if line.strip().startswith('[') or '=' in line:
+            lines.append(line)
+    
+    # Ensure we have a section header
+    if not any(line.strip().startswith('[') for line in lines):
+        lines.insert(0, "[book]")
+    
+    return '\n'.join(lines)
+
 # Function to parse ini-like content
 def parse_ini_response(content):
-    # Add a default section header if missing
-    if not content.strip().startswith('['):
-        content = "[book]\n" + content
+    # Clean the response text
+    cleaned_content = clean_response(content)
     
     # Use configparser to parse the ini content
     config = configparser.ConfigParser()
     try:
-        config.read_string(content)
+        config.read_string(cleaned_content)
         if 'book' in config:
             result = {}
             for param in PARAMETERS:

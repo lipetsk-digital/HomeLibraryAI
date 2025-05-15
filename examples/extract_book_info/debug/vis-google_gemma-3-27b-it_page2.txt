@@ -1,10 +1,10 @@
 [book]
-title = Асимптотические методы для линейных дифференциальных уравнений обыкновенных дифференциальных уравнений
-authors = Михайлов Василий Федорович
-pages = 352
-publisher = Наука
-year = 1983
-isbn = 
-annotation = В книге содержатся асимптотические методы решения обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др. Для математиков, физиков, инженеров, а также для студентов и аспирантов университетов и инженерно-физических вузов.
-brief = The book presents asymptotic methods for solving ordinary differential equations and examines their applications in physics and engineering.
-authors_full_names = Михайлов Василий Федорович
+title=Асимптотические методы для линейных обыкновенных дифференциальных уравнений
+authors=Фёдоров М. В.
+pages=352
+publisher=Наука
+year=1983
+isbn=1702070000-134
+annotation=В книге содержатся асимптотические методы решения линейных обыкновенных дифференциальных уравнений. Рассмотрен ряд важных физических приложений к задачам квантовой механики, распространения волн и др.
+brief=The book discusses asymptotic methods for solving linear ordinary differential equations and their applications in physics.
+authors_full_names=Михаил Васильевич Фёдоров

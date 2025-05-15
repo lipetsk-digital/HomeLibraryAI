@@ -24,6 +24,5 @@ vis-openai/gpt-4-turbo
 vis-anthropic/claude-3-haiku
 vis-anthropic/claude-3-opus
 vis-anthropic/claude-3-sonnet
-vis-google/gemini-pro-vision
 vis-qwen/qwen-vl-max
 vis-qwen/qwen-vl-plus
