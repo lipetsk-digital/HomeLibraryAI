@@ -53,6 +53,7 @@ class State(StatesGroup):
     wait_for_brief_photo = State()
     wait_reaction_on_brief = State()
     wait_next_book = State()
+    select_field = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -82,14 +83,12 @@ COVER_ACTIONS = [
 ]
 BOOK_FIELDS = [
     _translate_("title"),
-    _translate_("authors"),
     _translate_("authors_full_names"),
     _translate_("pages"),
     _translate_("publisher"),
     _translate_("year"),
     _translate_("isbn"),
-    _translate_("brief"),
-    _translate_("annotation")
+    _translate_("brief")
 ]
 ADVANCED_BOOK_FIELDS = [
     "user_id",
@@ -97,7 +96,9 @@ ADVANCED_BOOK_FIELDS = [
     "cathegory",
     "photo_filename",
     "cover_filename",
-    "brief_filename"
+    "brief_filename",
+    _translate_("authors"),
+    _translate_("annotation")
 ]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),

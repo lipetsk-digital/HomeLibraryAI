@@ -9,11 +9,12 @@ from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
+from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For main menu
 
-# Prepare and send the main menu inline-buttons for the user
+# Save book to database
 async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     user_id = callback.from_user.id # Get the user ID from the callback
     # Get stored user's data
@@ -38,5 +39,17 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
             *[data[field] for field in fields]
         )
 
-
-
+# Send to user current book information from user's data and return Message object
+async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> Message:
+    # Get the book data from the state
+    data = await state.get_data() # Get stored user's data
+    items = []
+    # Loop through the book fields and add them to the items list
+    for field in env.BOOK_FIELDS:
+        if field in data:
+            value = data[field]
+            items.append(as_key_value(_(field), value))
+    content = as_list(*items)
+    # Send the message with the book information and the keyboard
+    sent_message = await message.answer(**content.as_kwargs())
+    return sent_message
