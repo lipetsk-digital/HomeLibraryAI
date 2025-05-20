@@ -32,10 +32,11 @@ async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # Handle button of field selection
 @field_router.callback_query(env.BookFields.filter())
-async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def field_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     # Print current value of selected field
     field = callback_data.field
+    await state.update_data(field=field)
     data = await state.get_data()
     if field in data:
         value = data[field]

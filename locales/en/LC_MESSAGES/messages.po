@@ -84,7 +84,7 @@ msgstr "⏱️ Brief"
 
 #: modules/environment.py:97
 msgid "cathegory"
-msgstr "🗂️ Cathegory"
+msgstr "📂 Cathegory"
 
 #: modules/environment.py:101
 msgid "authors"

@@ -204,6 +204,9 @@ Book data:
 - `book_id`: int - ID of added/edited book
 - `user_id`: int - ID of current telegram-user (library owner)
 
+Field selection:
+- `field`: str - name of selected book's field for editing
+
 ## How it works
 
 ![Working environment diagram](images/homelib.drawio.png)

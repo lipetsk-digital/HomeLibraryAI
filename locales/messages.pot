@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-21 00:12+0300\n"
+"POT-Creation-Date: 2025-05-21 00:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,11 +240,11 @@ msgstr ""
 msgid "select_field"
 msgstr ""
 
-#: modules/h_field.py:42
+#: modules/h_field.py:43
 msgid "edit_field_value"
 msgstr ""
 
-#: modules/h_field.py:46
+#: modules/h_field.py:47
 msgid "edit_field_empty"
 msgstr ""
 
