@@ -54,6 +54,7 @@ class State(StatesGroup):
     wait_reaction_on_brief = State()
     wait_next_book = State()
     select_field = State()
+    wait_for_field_value = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -93,7 +94,7 @@ BOOK_FIELDS = [
 ADVANCED_BOOK_FIELDS = [
     "user_id",
     "book_id",
-    "cathegory",
+    _translate_("cathegory"),
     "photo_filename",
     "cover_filename",
     "brief_filename",
@@ -151,6 +152,10 @@ class BriefActions(CallbackData, prefix="brief"):
 # Callback factory for the next actions
 class NextActions(CallbackData, prefix="next"):
     action: str
+
+# Callback factory for the book fields
+class BookFields(CallbackData, prefix="field"):
+    field: str
 
 # Finish handlers and remove current inline keyboard from its message
 async def RemoveMyInlineKeyboards(callback: CallbackQuery, state: FSMContext) -> None:

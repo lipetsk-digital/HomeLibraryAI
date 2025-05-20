@@ -11,7 +11,6 @@ from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.context import FSMContext # For finite state machine context
-from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
@@ -20,7 +19,7 @@ from openai import AsyncOpenAI # For OpenAI API client
 
 import modules.environment as env # For environment variables and configurations
 import modules.book as book # For save book to database
-import modules.h_edit as h_edit # For editing book information
+import modules.h_field as h_field # For editing book information
 
 # Router for handling messages related to processing book annotations
 brief_router = Router()
@@ -144,7 +143,7 @@ async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state
 @brief_router.callback_query(env.BriefActions.filter(F.action == "edit_brief"))
 async def edit_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
-    await h_edit.SelectField(callback.message, state, pool, bot)
+    await h_field.SelectField(callback.message, state, pool, bot)
 
 # Handler for inline button take_new_photo
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
