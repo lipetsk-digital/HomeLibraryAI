@@ -11,7 +11,6 @@ from aiogram import Router # For creating a router for handling messages
 from aiogram.types import Message, ReactionTypeEmoji, BufferedInputFile # For Telegram message handling
 from aiogram.enums.parse_mode import ParseMode
 from aiogram.fsm.context import FSMContext # For finite state machine context
-from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
@@ -20,6 +19,7 @@ from openai import AsyncOpenAI # For OpenAI API client
 
 import modules.environment as env # For environment variables and configurations
 import modules.book as book # For save book to database
+import modules.h_field as h_field # For editing book information
 
 # Router for handling messages related to processing book annotations
 brief_router = Router()
@@ -90,42 +90,31 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     try:
         # Convert the response to a dictionary
         response_text = response.choices[0].message.content
-        book_computer = {}
-        book_human = {}
+        book_dict = {}
         for line in response_text.splitlines():
             if "=" in line:
                 key, value = line.split("=", 1)
                 key = key.strip()
                 value = value.strip()
                 # Prepare dict with book information for computer
-                book_computer[key] = value
-                # Prepare dict with book information for user
-                if key == "annotation":
-                    pass # Don't show full annotation in the message
-                elif key == "authors":
-                    pass # Don't show brief names of authors in the message
-                else:
-                    book_human[_(key)] = value # for other fields
-        await state.update_data(**book_computer) # Save the book information in the state
-        if not book_computer:
+                book_dict[key] = value
+        await state.update_data(**book_dict) # Save the book information in the state
+        if not book_dict:
             raise ValueError()        
     except Exception as e:
         await message.reply(_("gpt_incorrect")+"\n"+response_text)
         env.logging.error(f"Error parsing GPT response: {e}")
 
-    # Generate a message with the book information
-    items = []
-    for key, value in book_human.items():
-        items.append(as_key_value(key, value))
-    content = as_list(*items)
+    # Print the book information
+    sent_message = await book.PrintBook(message, state, pool, bot)
     # Generate keyboard with further actions
     builder = InlineKeyboardBuilder()
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.BRIEF_ACTIONS:
         builder.button(text=_(action), callback_data=env.BriefActions(action=action) )
     builder.adjust(2,1)
-    # Send the message with the book information and the keyboard
-    sent_message = await message.answer(**content.as_kwargs(), reply_markup=builder.as_markup())
+    # Add to the message with book information the keyboard
+    await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=sent_message.message_id, reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_reaction_on_brief)
 
@@ -150,9 +139,14 @@ async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_next_book)
 
+# Handler for inline button edit_brief
+@brief_router.callback_query(env.BriefActions.filter(F.action == "edit_brief"))
+async def edit_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveMyInlineKeyboards(callback, state)
+    await h_field.SelectField(callback.message, state, pool, bot)
+
 # Handler for inline button take_new_photo
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
 async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
-    await callback.message.answer(_("photo_brief"))
-    await state.set_state(env.State.wait_for_brief_photo)
+    await AskForBrief(callback.message, state, pool, bot)
