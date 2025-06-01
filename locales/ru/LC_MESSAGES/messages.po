@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-21 00:12+0300\n"
+"POT-Creation-Date: 2025-05-21 00:37+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -241,11 +241,11 @@ msgstr "Извините, не удалось найти книгу на фот�
 msgid "select_field"
 msgstr "❔Выберите поле для редактирования:"
 
-#: modules/h_field.py:42
+#: modules/h_field.py:43
 msgid "edit_field_value"
 msgstr "cкопируйте текущее значение поля и исправьте его или напишите новое:"
 
-#: modules/h_field.py:46
+#: modules/h_field.py:47
 msgid "edit_field_empty"
 msgstr "напишите новое значение поля:"
 
