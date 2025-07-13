@@ -55,6 +55,7 @@ class State(StatesGroup):
     wait_next_book = State()
     select_field = State()
     wait_for_field_value = State()
+    wait_for_search_query = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
