@@ -63,6 +63,8 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
     if len(rows) == 0:
         await message.answer(_("no_books_found"))
     elif len(rows) < 10:
+        await message.answer(_("{books}_found","{books}_founds",len(rows)).format(books=len(rows)))
+        # Send one message for each book with title, authors, year and cover photo
         for row in rows:
             book_id = row.get("book_id")
             title = row.get("title")
@@ -75,23 +77,12 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             else:
                 await message.answer(title)
     else:
-        # Generate HTML document with book covers and titles (in-memory, do not save to disk)
-
-        html_content = "<html><head><meta charset='UTF-8'></head><body>"
+        # Send one message for all books with HTML formatting
+        message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"
         for row in rows:
             book_id = row.get("book_id")
             title = row.get("title")
             authors = row.get("authors")
             year = row.get("year")
-            photo = row.get("cover_filename")
-            if photo:
-                photo_url = env.AWS_EXTERNAL_URL + "/" + photo
-                img_tag = f"<img src='{photo_url}' alt='{title}'>"
-            else:
-                img_tag = ""
-            html_content += f"<div><div>{img_tag}</div><div>{title}</div><div>{authors}, {year}</div></div>"
-        html_content += "</body></html>"
-
-        html_file = BufferedInputFile(file=html_content.encode("utf-8"), filename="books_list.html")
-
-        await message.answer_document(html_file, caption="Получите")
+            message_text += f"<b>{book_id}. {title}</b> - {authors}, {year}\n"
+        await message.answer(message_text, parse_mode="HTML")

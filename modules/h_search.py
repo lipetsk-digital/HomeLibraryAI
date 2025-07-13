@@ -55,10 +55,7 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
 
     # Run the query to search for books in the database
     rows = await pool.fetch(query, user_id, language, search_text)
-    if rows:
-        await book.PrintBooksList(rows, message, bot)
-    else:
-        await message.answer(_("no_books_found"))
+    await book.PrintBooksList(rows, message, bot)
 
     # Send main menu to the user
     await h_start.MainMenu(message, state, pool, bot)

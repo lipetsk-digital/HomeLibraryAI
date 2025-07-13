@@ -14,6 +14,7 @@ from aiogram.filters.command import Command # For command handling
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
+import modules.book as book # For generating list of the books
 
 # Router for handling messages related to manipulate cathegories
 cat_router = Router()
@@ -71,7 +72,7 @@ async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool
 @cat_router.callback_query(env.Cathegory.filter())
 async def cathegory_selected(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
-    await DoCathegory(callback_data.name, callback.message, state, pool, bot)
+    await DoCathegory(callback_data.name, callback.message, callback.from_user.id, state, pool, bot)
 
 # Handler for entered text when the user can add a new cathegory
 @cat_router.message(env.State.select_cathegory, F.text)
@@ -79,13 +80,13 @@ async def cathegory_entered(message: Message, state: FSMContext, pool: asyncpg.P
     data = await state.get_data()
     can_add = data.get("can_add")
     if can_add:
-        await DoCathegory(message.text, message, state, pool, bot)
+        await DoCathegory(message.text, message, message.from_user.id, state, pool, bot)
     else:
         await message.delete()
         await message.answer(_("can_not_add_cathegory"))
 
 # Process the selected cathegory
-async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def DoCathegory(cathegory: str, message: Message, user_id: int, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Save selected cathegory
     await state.update_data(cathegory=cathegory)
     # Notify the user about the selected cathegory
@@ -97,6 +98,16 @@ async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool:
     if action == "add_book":
         await h_cover.AskForCover(message, state, pool, bot)
     elif action == "select_cat":
+        # Prepare the query to search for books by title using full-text search
+        query = """
+        SELECT book_id, title, authors, year, cover_filename
+        FROM books
+        WHERE user_id=$1 AND cathegory=$2;
+        """
+        # Run the query to search for books in the database
+        rows = await pool.fetch(query, user_id, cathegory)
+        await book.PrintBooksList(rows, message, bot)
+        # Send main menu to the user
         await h_start.MainMenu(message, state, pool, bot)
     
 # Handler for the /cat command
