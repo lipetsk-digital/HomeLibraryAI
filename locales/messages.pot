@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-13 11:05+0300\n"
+"POT-Creation-Date: 2025-07-13 12:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,143 +33,147 @@ msgstr ""
 msgid "cat"
 msgstr ""
 
-#: modules/environment.py:76
-msgid "export"
+#: modules/environment.py:78
+msgid "rename"
 msgstr ""
 
 #: modules/environment.py:79
+msgid "export"
+msgstr ""
+
+#: modules/environment.py:80
 msgid "settings"
 msgstr ""
 
-#: modules/environment.py:82
+#: modules/environment.py:83
 msgid "use_cover"
 msgstr ""
 
-#: modules/environment.py:83 modules/h_cover.py:191
+#: modules/environment.py:84 modules/h_cover.py:191
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/environment.py:84 modules/environment.py:126
+#: modules/environment.py:85 modules/environment.py:127
 msgid "take_new_photo"
 msgstr ""
 
-#: modules/environment.py:87
+#: modules/environment.py:88
 msgid "title"
 msgstr ""
 
-#: modules/environment.py:88
+#: modules/environment.py:89
 msgid "authors_full_names"
 msgstr ""
 
-#: modules/environment.py:89
+#: modules/environment.py:90
 msgid "pages"
 msgstr ""
 
-#: modules/environment.py:90
+#: modules/environment.py:91
 msgid "publisher"
 msgstr ""
 
-#: modules/environment.py:91
+#: modules/environment.py:92
 msgid "year"
 msgstr ""
 
-#: modules/environment.py:92
+#: modules/environment.py:93
 msgid "isbn"
 msgstr ""
 
-#: modules/environment.py:93
+#: modules/environment.py:94
 msgid "brief"
 msgstr ""
 
-#: modules/environment.py:98
+#: modules/environment.py:99
 msgid "cathegory"
 msgstr ""
 
-#: modules/environment.py:102
+#: modules/environment.py:103
 msgid "authors"
 msgstr ""
 
-#: modules/environment.py:103
+#: modules/environment.py:104
 msgid "annotation"
 msgstr ""
 
-#: modules/environment.py:106
+#: modules/environment.py:107
 msgid "prompt_photo"
 msgstr ""
 
-#: modules/environment.py:107
+#: modules/environment.py:108
 msgid "prompt_result"
 msgstr ""
 
-#: modules/environment.py:108
+#: modules/environment.py:109
 msgid "prompt_count"
 msgstr ""
 
-#: modules/environment.py:109
+#: modules/environment.py:110
 msgid "prompt_lang"
 msgstr ""
 
-#: modules/environment.py:110
+#: modules/environment.py:111
 msgid "prompt_characters"
 msgstr ""
 
-#: modules/environment.py:111
+#: modules/environment.py:112
 msgid "prompt_plaintext"
 msgstr ""
 
-#: modules/environment.py:112
+#: modules/environment.py:113
 msgid "prompt_fields"
 msgstr ""
 
-#: modules/environment.py:113
+#: modules/environment.py:114
 msgid "prompt_title"
 msgstr ""
 
-#: modules/environment.py:114
+#: modules/environment.py:115
 msgid "prompt_authors"
 msgstr ""
 
-#: modules/environment.py:115
+#: modules/environment.py:116
 msgid "prompt_pages"
 msgstr ""
 
-#: modules/environment.py:116
+#: modules/environment.py:117
 msgid "prompt_publisher"
 msgstr ""
 
-#: modules/environment.py:117
+#: modules/environment.py:118
 msgid "prompt_year"
 msgstr ""
 
-#: modules/environment.py:118
+#: modules/environment.py:119
 msgid "prompt_isbn"
 msgstr ""
 
-#: modules/environment.py:119
+#: modules/environment.py:120
 msgid "prompt_annotation"
 msgstr ""
 
-#: modules/environment.py:120
+#: modules/environment.py:121
 msgid "prompt_brief"
 msgstr ""
 
-#: modules/environment.py:121
+#: modules/environment.py:122
 msgid "prompt_authors_full_names"
 msgstr ""
 
-#: modules/environment.py:124
+#: modules/environment.py:125
 msgid "use_brief"
 msgstr ""
 
-#: modules/environment.py:125
+#: modules/environment.py:126
 msgid "edit_brief"
 msgstr ""
 
-#: modules/environment.py:129
+#: modules/environment.py:130
 msgid "add_another_book"
 msgstr ""
 
-#: modules/environment.py:130
+#: modules/environment.py:131
 msgid "no_another_book"
 msgstr ""
 
@@ -203,23 +207,27 @@ msgstr ""
 msgid "add_next_{cathegory}"
 msgstr ""
 
-#: modules/h_cat.py:49
+#: modules/h_cat.py:50
 msgid "select_or_enter_cathegory_add_book"
 msgstr ""
 
-#: modules/h_cat.py:59
+#: modules/h_cat.py:52
+msgid "select_cathegory_to_view_books"
+msgstr ""
+
+#: modules/h_cat.py:62
 msgid "enter_cathegory_add_book"
 msgstr ""
 
-#: modules/h_cat.py:61 modules/h_start.py:64
+#: modules/h_cat.py:64 modules/h_start.py:64
 msgid "no_books"
 msgstr ""
 
-#: modules/h_cat.py:82
+#: modules/h_cat.py:85
 msgid "can_not_add_cathegory"
 msgstr ""
 
-#: modules/h_cat.py:89
+#: modules/h_cat.py:92
 #, python-brace-format
 msgid "{cathegory}_selected"
 msgstr ""
@@ -257,11 +265,11 @@ msgstr ""
 msgid "{language}_selected"
 msgstr ""
 
-#: modules/h_search.py:24 modules/h_search.py:31
+#: modules/h_search.py:25 modules/h_search.py:32
 msgid "enter_search_query"
 msgstr ""
 
-#: modules/h_search.py:51
+#: modules/h_search.py:60
 msgid "no_books_found"
 msgstr ""
 

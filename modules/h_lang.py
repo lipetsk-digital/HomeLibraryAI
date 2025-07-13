@@ -10,7 +10,7 @@ from aiogram.utils.i18n import gettext as _ # For internationalization and local
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
-from babel import Locale
+from babel import Locale # For handling locale and language names
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command

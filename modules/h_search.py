@@ -9,11 +9,12 @@ from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
-from babel import Locale
+from babel import Locale # For handling locale and language names
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_cat as h_cat # For manipulating cathegories
 import modules.h_start as h_start # For main menu
+import modules.book as book # For generating list of the books
 
 # Router for handling messages related to search a book
 search_router = Router()
@@ -25,8 +26,8 @@ async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     await message.answer(_("enter_search_query"))
     await state.set_state(env.State.wait_for_search_query)
 
-# Handler for the callback query when the user selects "add" from the main menu
-@search_router.callback_query(env.MainMenu.filter(F.action=="search"))
+# Handler for the callback query when the user selects "search" from the main menu
+@env.first_router.callback_query(env.MainMenu.filter(F.action=="search"))
 async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     await callback.message.answer(_("enter_search_query"))
@@ -38,7 +39,7 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
 
     # Prepare the query to search for books by title using full-text search
     query = """
-    SELECT book_id, title, authors, year
+    SELECT book_id, title, authors, year, cover_filename
     FROM books
     WHERE user_id=$1 AND
     (
@@ -55,11 +56,9 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
     # Run the query to search for books in the database
     rows = await pool.fetch(query, user_id, language, search_text)
     if rows:
-        result = "\n".join([f"{row['book_id']}. {row['title']} - {row['authors']}, {row['year']}" for i, row in enumerate(rows)])
+        await book.PrintBooksList(rows, message, bot)
     else:
-        result = _("no_books_found")
+        await message.answer(_("no_books_found"))
 
-    # Send the result of the search to the user
-    await message.answer(result)
     # Send main menu to the user
     await h_start.MainMenu(message, state, pool, bot)

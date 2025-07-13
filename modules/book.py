@@ -1,3 +1,5 @@
+from aiogram.types import FSInputFile
+
 # ========================================================
 # Module for save a book to database
 # ========================================================
@@ -10,6 +12,7 @@ from aiogram.utils.i18n import gettext as _ # For internationalization and local
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
+from aiogram.types import BufferedInputFile
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For main menu
@@ -53,3 +56,42 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
             f"INSERT INTO books ({', '.join(fields)}) VALUES ({', '.join(['$' + str(i + 1) for i in range(len(fields))])})",
             *[data[field] for field in fields]
         )
+
+# Loop through books dataset and send to user the books list
+async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
+    # For short list of the books:
+    if len(rows) == 0:
+        await message.answer(_("no_books_found"))
+    elif len(rows) < 10:
+        for row in rows:
+            book_id = row.get("book_id")
+            title = row.get("title")
+            authors = row.get("authors")
+            year = row.get("year")
+            photo = row.get("cover_filename")  # Adjust field name as needed
+            if photo:
+                photo_url = env.AWS_EXTERNAL_URL + "/" + photo
+                await message.answer_photo(photo=photo_url, caption=f"{book_id}. {title} - {authors}, {year}")
+            else:
+                await message.answer(title)
+    else:
+        # Generate HTML document with book covers and titles (in-memory, do not save to disk)
+
+        html_content = "<html><head><meta charset='UTF-8'></head><body>"
+        for row in rows:
+            book_id = row.get("book_id")
+            title = row.get("title")
+            authors = row.get("authors")
+            year = row.get("year")
+            photo = row.get("cover_filename")
+            if photo:
+                photo_url = env.AWS_EXTERNAL_URL + "/" + photo
+                img_tag = f"<img src='{photo_url}' alt='{title}'>"
+            else:
+                img_tag = ""
+            html_content += f"<div><div>{img_tag}</div><div>{title}</div><div>{authors}, {year}</div></div>"
+        html_content += "</body></html>"
+
+        html_file = BufferedInputFile(file=html_content.encode("utf-8"), filename="books_list.html")
+
+        await message.answer_document(html_file, caption="Получите")

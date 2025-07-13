@@ -9,6 +9,7 @@ from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
+from aiogram.filters.command import Command # For command handling
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
@@ -47,6 +48,8 @@ async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool
         if result:
             if action == "add_book":
                 text = _("select_or_enter_cathegory_add_book")
+            elif action == "select_cat":
+                text = _("select_cathegory_to_view_books")
             await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[0]) )
@@ -93,4 +96,17 @@ async def DoCathegory(cathegory: str, message: Message, state: FSMContext, pool:
     # Perform the action based on the selected cathegory
     if action == "add_book":
         await h_cover.AskForCover(message, state, pool, bot)
+    elif action == "select_cat":
+        await h_start.MainMenu(message, state, pool, bot)
     
+# Handler for the /cat command
+@env.first_router.message(Command("cat"))
+async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
+    await SelectCathegory(message, message.from_user.id, state, pool, bot, "select_cat")
+
+# Handler for the callback query when the user selects "cat" from the main menu
+@env.first_router.callback_query(env.MainMenu.filter(F.action=="cat"))
+async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    await env.RemoveMyInlineKeyboards(callback, state)
+    await SelectCathegory(callback.message, callback.from_user.id, state, pool, bot, "select_cat")

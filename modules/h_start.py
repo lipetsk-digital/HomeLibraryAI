@@ -39,7 +39,7 @@ async def MainMenu(message: Message, state: FSMContext, pool: asyncpg.Pool, bot:
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     for action in env.MAIN_MENU_ACTIONS:
         builder.button(text=_(action), callback_data=env.MainMenu(action=action) )
-    builder.adjust(2, 3)
+    builder.adjust(2, 2)
     sent_message = await message.answer(_("main_menu"), reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_for_command)

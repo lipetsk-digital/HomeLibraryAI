@@ -37,6 +37,7 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 # AWS S3 storage settings
 AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
 AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+AWS_EXTERNAL_URL = os.getenv("AWS_EXTERNAL_URL").rstrip("/")
 
 # VSEGPT API key
 GPT_URL = os.getenv("GPT_URL")
@@ -72,10 +73,11 @@ MAIN_MENU_ACTIONS = [
     _translate_("add"),
     _translate_("search"),
     _translate_("edit"),
-    _translate_("cat"),
-    _translate_("export")
+    _translate_("cat")
 ]
 ADVANCED_ACTIONS = [
+    _translate_("rename"),
+    _translate_("export"),
     _translate_("settings")
 ]
 COVER_ACTIONS = [
