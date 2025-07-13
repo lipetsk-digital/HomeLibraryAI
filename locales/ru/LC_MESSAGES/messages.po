@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-21 00:37+0300\n"
+"POT-Creation-Date: 2025-07-13 09:23+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -23,7 +23,7 @@ msgid "add"
 msgstr "➕ Добавить книгу"
 
 #: modules/environment.py:72
-msgid "find"
+msgid "search"
 msgstr "🔍 Найти"
 
 #: modules/environment.py:73
@@ -174,7 +174,8 @@ msgstr "➕ Добавить"
 msgid "no_another_book"
 msgstr "❌ Не нужно"
 
-#: modules/h_add.py:23 modules/h_add.py:30
+#: modules/h_add.py:23 modules/h_add.py:30 modules/h_search.py:23
+#: modules/h_search.py:30
 msgid "start_add_book"
 msgstr "➕ Добавляем книгу"
 
@@ -241,11 +242,11 @@ msgstr "Извините, не удалось найти книгу на фот�
 msgid "select_field"
 msgstr "❔Выберите поле для редактирования:"
 
-#: modules/h_field.py:43
+#: modules/h_field.py:44
 msgid "edit_field_value"
 msgstr "cкопируйте текущее значение поля и исправьте его или напишите новое:"
 
-#: modules/h_field.py:47
+#: modules/h_field.py:48 modules/h_field.py:51
 msgid "edit_field_empty"
 msgstr "напишите новое значение поля:"
 

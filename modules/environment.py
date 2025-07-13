@@ -69,7 +69,7 @@ def _translate_(text: str) -> str:
 # Main menu actions
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
-    _translate_("find"),
+    _translate_("search"),
     _translate_("edit"),
     _translate_("cat"),
     _translate_("export")
