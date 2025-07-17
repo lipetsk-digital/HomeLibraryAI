@@ -13,6 +13,7 @@ from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 from aiogram.types import BufferedInputFile
+import random
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For main menu
@@ -84,5 +85,6 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             title = row.get("title")
             authors = row.get("authors")
             year = row.get("year")
-            message_text += f"<b>{book_id}. {title}</b> - {authors}, {year}\n"
+            emoji = random.choice(["📕", "📘", "📗", "📙"])
+            message_text += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
         await message.answer(message_text, parse_mode="HTML")
