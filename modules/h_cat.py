@@ -43,7 +43,7 @@ async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool
             FROM books b
             WHERE b.user_id = $1
             GROUP BY b.cathegory
-            ORDER BY book_count DESC
+            ORDER BY b.cathegory ASC
         """, userid)
         # If there are cathegories, create buttons for each one and ask user
         if result:
