@@ -51,6 +51,8 @@ async def SelectCathegory(message: Message, userid: int, state: FSMContext, pool
                 text = _("select_or_enter_cathegory_add_book")
             elif action == "select_cat":
                 text = _("select_cathegory_to_view_books")
+            elif action == "rename_cathegory":
+                text = _("select_cathegory_to_rename")
             await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Cathegory(name=row[0]) )
@@ -102,14 +104,18 @@ async def DoCathegory(cathegory: str, message: Message, user_id: int, state: FSM
         query = """
         SELECT book_id, title, authors, year, cover_filename
         FROM books
-        WHERE user_id=$1 AND cathegory=$2;
+        WHERE user_id=$1 AND cathegory=$2
+        ORDER BY book_id ASC;
         """
         # Run the query to search for books in the database
         rows = await pool.fetch(query, user_id, cathegory)
         await book.PrintBooksList(rows, message, bot)
         # Send main menu to the user
         await h_start.MainMenu(message, state, pool, bot)
-    
+    elif action == "rename_cathegory":
+        await message.answer(_("enter_cathegory_name"))
+        await state.set_state(env.State.wait_for_cathegory_name)
+
 # Handler for the /cat command
 @env.first_router.message(Command("cat"))
 async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:

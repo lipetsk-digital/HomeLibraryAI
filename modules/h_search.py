@@ -45,7 +45,8 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
     (
       to_tsvector($2, title) @@ plainto_tsquery($2, $3) OR
       to_tsvector($2, authors_full_names) @@ plainto_tsquery($2, $3)
-    );
+    )
+    ORDER BY book_id ASC;
     """
     user_id = message.from_user.id # Get the user ID from the message
     lang = (await state.get_data()).get("locale", "en") # Get the user's locale from the state, default to "en"

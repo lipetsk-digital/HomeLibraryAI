@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-13 15:57+0300\n"
+"POT-Creation-Date: 2025-07-26 10:27+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -18,11 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:64
+#: modules/book.py:65
 msgid "no_books_found"
 msgstr "Книги не найдены 🥺"
 
-#: modules/book.py:66 modules/book.py:81
+#: modules/book.py:67 modules/book.py:82
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
@@ -220,27 +220,31 @@ msgstr "📗 Книга сохранена в библиотеку под ном
 msgid "add_next_{cathegory}"
 msgstr "Добавить следующую книгу в категорию {cathegory}?"
 
-#: modules/h_cat.py:50
+#: modules/h_cat.py:51
 msgid "select_or_enter_cathegory_add_book"
 msgstr "Выберите 📂 категорию, в которую добавить новую книгу или введите название новой категории:"
 
-#: modules/h_cat.py:52
+#: modules/h_cat.py:53
 msgid "select_cathegory_to_view_books"
-msgstr "Выберите 📂 категорию, чтобы посмотреть книги"
+msgstr "Выберите 📂 категорию, чтобы посмотреть книги:"
 
-#: modules/h_cat.py:62
+#: modules/h_cat.py:55
+msgid "select_cathegory_to_rename"
+msgstr "Выберите 📂 категорию, которую нужно переименовать:"
+
+#: modules/h_cat.py:65
 msgid "enter_cathegory_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:64 modules/h_start.py:64
+#: modules/h_cat.py:67 modules/h_start.py:64
 msgid "no_books"
 msgstr "Пока нет книг в библиотеке 🥺"
 
-#: modules/h_cat.py:85
+#: modules/h_cat.py:88
 msgid "can_not_add_cathegory"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
-#: modules/h_cat.py:92
+#: modules/h_cat.py:95
 #, python-brace-format
 msgid "{cathegory}_selected"
 msgstr "Вы выбрали категорию: {cathegory}"
