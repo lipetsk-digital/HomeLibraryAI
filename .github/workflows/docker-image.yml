@@ -81,7 +81,7 @@ jobs:
             --name homelibrary-tgbot \
             --restart always \
             -p 8000:8000 \
-            ${env.IMAGE_NAME_LOWER}:latest
+            ${IMAGE_NAME_LOWER}:latest
           
           # Очищаем старые образы для экономии места
           docker image prune -f
