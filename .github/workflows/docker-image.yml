@@ -63,11 +63,14 @@ jobs:
     steps:
     - name: Deploy to production
       run: |
+          # Конвертируем имя образа в нижний регистр
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+
           # Логинимся в GitHub Container Registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
           
           # Пуллим последний образ
-          docker pull ${{ env.IMAGE_NAME }}:latest
+          docker pull ${{ env.IMAGE_NAME_LOWER }}:latest
           
           # Останавливаем и удаляем старый контейнер
           docker stop homelibrary-tgbot || true
@@ -78,7 +81,7 @@ jobs:
             --name homelibrary-tgbot \
             --restart always \
             -p 8000:8000 \
-            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME_LOWER }}:latest
           
           # Очищаем старые образы для экономии места
           docker image prune -f
