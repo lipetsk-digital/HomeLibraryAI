@@ -229,6 +229,7 @@ Field selection:
 | AWS_BUCKET_NAME | Bucket name in S3 storage | Production | `homelibrary` |
 | AWS_ACCESS_KEY_ID | Access key to S3 storage | Production | `e8793d292328x...` |
 | AWS_SECRET_ACCESS_KEY | Secret key to S3 storage | Production | `a8632409c821...` |
+| AWS_EXTERNAL_URL | HTTPs external URL to access content of S3 storage | `https://cdn.homelib.pro/` |
 | GPT_URL | URL for access to GPR API | Production | `https://api.vsegpt.ru/v1` |
 | GPT_API_TOKEN | Secret token for GPT API | Production | `sk-f3-wm-15a2432133...` |
 | GPT_MODEL | GPT model name | Production | `vis-google/gemini-flash-1.5` |

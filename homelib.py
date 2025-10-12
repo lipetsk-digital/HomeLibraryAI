@@ -15,6 +15,8 @@ import modules.h_brief as h_brief # For handling brief commands
 import modules.h_next as h_next # For handling next book commands
 import modules.h_field as h_field # For handling field selection
 import modules.h_edit as h_edit # For handling book editing
+import modules.h_search as h_search # For handling book search
+import modules.h_rename as h_rename # For handling cathegory renaming
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TELEGRAM_TOKEN)
@@ -56,6 +58,8 @@ async def main():
     dp.include_router(h_next.next_router)
     dp.include_router(h_field.field_router)
     dp.include_router(h_edit.edit_router)
+    dp.include_router(h_search.search_router)
+    dp.include_router(h_rename.rename_router)
     dp.include_router(env.last_router) # Trash messages
     
     # Register startup routines

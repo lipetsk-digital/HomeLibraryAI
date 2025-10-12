@@ -10,7 +10,7 @@ from aiogram.utils.i18n import gettext as _ # For internationalization and local
 from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
-from babel import Locale
+from babel import Locale # For handling locale and language names
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For handling start command
@@ -18,7 +18,7 @@ import modules.h_start as h_start # For handling start command
 # Router for handling messages related to changing the language
 lang_router = Router()
 
-# Handler for the /add command
+# Handler for the /settings command
 @env.first_router.message(Command("settings"))
 async def lang_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     builder = InlineKeyboardBuilder()
@@ -34,7 +34,7 @@ async def lang_command(message: Message, state: FSMContext, pool: asyncpg.Pool, 
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.select_lang)
 
-# Handler for the callback query when the user selects "add" from the main menu
+# Handler for the callback query when the user selects "settings" from the main menu
 @lang_router.callback_query(env.Language.filter())
 async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Finish inline buttons

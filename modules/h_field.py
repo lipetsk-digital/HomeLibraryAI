@@ -40,9 +40,13 @@ async def field_selected(callback: CallbackQuery, callback_data: env.Cathegory, 
     data = await state.get_data()
     if field in data:
         value = data[field]
-        content = as_key_value(_(field), _("edit_field_value"))
-        await callback.message.answer(**content.as_kwargs())
-        await callback.message.answer(value)
+        if value:
+            content = as_key_value(_(field), _("edit_field_value"))
+            await callback.message.answer(**content.as_kwargs())
+            await callback.message.answer(value)
+        else:
+            content = as_key_value(_(field), _("edit_field_empty"))
+            await callback.message.answer(**content.as_kwargs())
     else:
         content = as_key_value(_(field), _("edit_field_empty"))
         await callback.message.answer(**content.as_kwargs())

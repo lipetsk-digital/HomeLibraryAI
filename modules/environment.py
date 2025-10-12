@@ -37,6 +37,7 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 # AWS S3 storage settings
 AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
 AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
+AWS_EXTERNAL_URL = os.getenv("AWS_EXTERNAL_URL").rstrip("/")
 
 # VSEGPT API key
 GPT_URL = os.getenv("GPT_URL")
@@ -55,6 +56,8 @@ class State(StatesGroup):
     wait_next_book = State()
     select_field = State()
     wait_for_field_value = State()
+    wait_for_search_query = State()
+    wait_for_cathegory_name = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
@@ -69,12 +72,13 @@ def _translate_(text: str) -> str:
 # Main menu actions
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
-    _translate_("find"),
+    _translate_("search"),
     _translate_("edit"),
-    _translate_("cat"),
-    _translate_("export")
+    _translate_("cat")
 ]
 ADVANCED_ACTIONS = [
+    _translate_("rename"),
+    _translate_("export"),
     _translate_("settings")
 ]
 COVER_ACTIONS = [

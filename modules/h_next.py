@@ -20,7 +20,7 @@ next_router = Router()
 
 # Handler for the callback query when the user selects "add another book"
 @next_router.callback_query(env.NextActions.filter(F.action == "add_another_book"))
-async def add_another_book(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def add_another_book(callback: CallbackQuery, callback_data: env.NextActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Finish inline buttons
     await env.RemoveMyInlineKeyboards(callback, state)
     # Go to adding another book
@@ -28,7 +28,7 @@ async def add_another_book(callback: CallbackQuery, callback_data: env.Language,
 
 # Handler for the callback query when the user selects "do not add another book"
 @next_router.callback_query(env.NextActions.filter(F.action == "no_another_book"))
-async def no_another_book(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def no_another_book(callback: CallbackQuery, callback_data: env.NextActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Finish inline buttons
     await env.RemoveMyInlineKeyboards(callback, state)
     # Send the main menu again

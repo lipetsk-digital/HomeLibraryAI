@@ -2,3 +2,4 @@ __pycache__/
 certs/
 .vscode/
 modules/__pycache__/
+backup/

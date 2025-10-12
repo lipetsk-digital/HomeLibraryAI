@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Build, Push to GHCR and Deploy
 
 on:
   push:
@@ -6,61 +6,84 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REGISTRY: ghcr.io
+  # Формат: ghcr.io/OWNER/REPO-NAME/IMAGE-NAME
+  IMAGE_NAME: ghcr.io/${{ github.repository }}/homelibrary-tgbot
+
 jobs:
 
   build-and-push:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      uses: docker/setup-buildx-action@v3
     
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
-        registry: ${{ secrets.REGISTRY_HOST }}
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.IMAGE_NAME }}
+        tags: |
+          type=sha,prefix=
+          type=ref,event=branch
+          latest
+
     - name: Build and push
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: |
-          ${{ secrets.REGISTRY_HOST }}/stkorn/homelibrary-bot:latest
-          ${{ secrets.REGISTRY_HOST }}/stkorn/homelibrary-bot:${{ github.sha }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
           
 
   deploy:
-      needs: [build-and-push]
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Configure Kubernetes
-        uses: azure/k8s-set-context@v3
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-      
-      - name: Deploy to cluster
-        run: |
-          kubectl create secret generic homelibrary-bot-secrets \
-            --from-literal=telegram-token=${{ secrets.TELEGRAM_TOKEN }} \
-            --from-literal=postgres-host=${{ secrets.POSTGRES_HOST }} \
-            --from-literal=postgres-port=${{ secrets.POSTGRES_PORT }} \
-            --from-literal=postgres-database=${{ secrets.POSTGRES_DATABASE }} \
-            --from-literal=postgres-username=${{ secrets.POSTGRES_USERNAME }} \
-            --from-literal=postgres-password=${{ secrets.POSTGRES_PASSWORD }} \
-            --from-literal=aws-access-key-id=${{ secrets.AWS_ACCESS_KEY_ID }} \
-            --from-literal=aws-secret-access-key=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
-            --from-literal=aws-endpoint-url=${{ secrets.AWS_ENDPOINT_URL }} \
-            --from-literal=aws-bucket-name=${{ secrets.AWS_BUCKET_NAME }} \
-            --from-literal=gpt-url=${{ secrets.GPT_URL }} \
-            --from-literal=gpt-api-token=${{ secrets.GPT_API_TOKEN }} \
-            --from-literal=gpt-model=${{ secrets.GPT_MODEL }} \
-            --dry-run=client -o yaml | kubectl apply -f -
-          kubectl apply -f deployment.yaml
-          kubectl rollout restart deployment/homelibrary-bot
+    needs: [build-and-push]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - name: Deploy to production
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        key: ${{ secrets.VM_SSH_KEY }}
+        script: |
+          # Логинимся в GitHub Container Registry
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+          
+          # Пуллим последний образ
+          docker pull ${{ env.IMAGE_NAME }}:latest
+          
+          # Останавливаем и удаляем старый контейнер
+          docker stop helloworld-app || true
+          docker rm helloworld-app || true
+          
+          # Запускаем новый контейнер
+          docker run -d \
+            --name helloworld-app \
+            --restart always \
+            -p 8000:8000 \
+            ${{ env.IMAGE_NAME }}:latest
+          
+          # Очищаем старые образы для экономии места
+          docker image prune -f
