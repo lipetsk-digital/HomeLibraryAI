@@ -73,7 +73,8 @@ jobs:
           docker compose pull homelib
           
           # Останавливаем и удаляем старый контейнер
-          docker compose restart homelib
+          docker compose down homelib
+          docker compose up homelib -d
 
           # Очищаем старые образы для экономии места
           docker image prune -f
