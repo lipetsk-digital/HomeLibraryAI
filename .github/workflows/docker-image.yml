@@ -63,38 +63,14 @@ jobs:
     steps:
     - name: Deploy to production
       run: |
-          # Конвертируем имя образа в нижний регистр
-          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
-
           # Логинимся в GitHub Container Registry
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
           
           # Пуллим последний образ
-          docker pull ${IMAGE_NAME_LOWER}:latest
+          docker compose pull homelib
           
           # Останавливаем и удаляем старый контейнер
-          docker stop homelibrary-tgbot || true
-          docker rm homelibrary-tgbot || true
-          
-          # Запускаем новый контейнер
-          docker run -d \
-            --name homelibrary-tgbot \
-            --restart always \
-            -e POSTGRES_HOST="${{ secrets.POSTGRES_HOST }}" \
-            -e POSTGRES_PORT="${{ secrets.POSTGRES_PORT }}" \
-            -e POSTGRES_USERNAME="${{ secrets.POSTGRES_USERNAME }}" \
-            -e POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
-            -e POSTGRES_DATABASE="${{ secrets.POSTGRES_DATABASE }}" \
-            -e GPT_URL="${{ secrets.GPT_URL }}" \
-            -e GPT_API_TOKEN="${{ secrets.GPT_API_TOKEN }}" \
-            -e GPT_MODEL="${{ secrets.GPT_MODEL }}" \
-            -e AWS_ENDPOINT_URL="${{ secrets.AWS_ENDPOINT_URL }}" \
-            -e AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}" \
-            -e AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-            -e AWS_BUCKET_NAME="${{ secrets.AWS_BUCKET_NAME }}" \
-            -e AWS_EXTERNAL_URL="${{ secrets.AWS_EXTERNAL_URL }}" \
-            -e TELEGRAM_TOKEN="${{ secrets.TELEGRAM_TOKEN }}" \
-            ${IMAGE_NAME_LOWER}:latest
-          
+          docker compose restart homelib
+
           # Очищаем старые образы для экономии места
           docker image prune -f
