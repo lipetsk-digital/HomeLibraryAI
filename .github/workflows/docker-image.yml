@@ -67,7 +67,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
           
           # Переходим в директорию с docker-compose.yml
-          cd docker
+          cd ~/docker
 
           # Пуллим последний образ
           docker compose pull homelib
