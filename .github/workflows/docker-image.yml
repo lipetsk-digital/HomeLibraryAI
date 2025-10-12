@@ -70,7 +70,7 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
           
           # Пуллим последний образ
-          docker pull ${{ env.IMAGE_NAME_LOWER }}:latest
+          docker pull ${IMAGE_NAME_LOWER}:latest
           
           # Останавливаем и удаляем старый контейнер
           docker stop homelibrary-tgbot || true
@@ -81,7 +81,7 @@ jobs:
             --name homelibrary-tgbot \
             --restart always \
             -p 8000:8000 \
-            ${{ env.IMAGE_NAME_LOWER }}:latest
+            ${env.IMAGE_NAME_LOWER}:latest
           
           # Очищаем старые образы для экономии места
           docker image prune -f
