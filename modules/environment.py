@@ -73,7 +73,7 @@ def _translate_(text: str) -> str:
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
     _translate_("search"),
-    _translate_("edit"),
+    _translate_("history"),
     _translate_("cat")
 ]
 ADVANCED_ACTIONS = [

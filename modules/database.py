@@ -4,7 +4,6 @@
 # This module is responsible for creating the necessary tables in the PostgreSQL database.
 # It checks if the tables already exist and creates them if they do not. The tables include:
 # - logs: for logging user activity
-# - state: for storing the state of the bot
 # - books: for storing book information
 # ========================================================
 

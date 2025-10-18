@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-18 19:36+0300\n"
+"POT-Creation-Date: 2025-10-18 20:53+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -39,8 +39,8 @@ msgid "search"
 msgstr "🔍 Найти"
 
 #: modules/environment.py:76
-msgid "edit"
-msgstr "✏️ Изменить книгу"
+msgid "history"
+msgstr "🕓 Недавно добавленные"
 
 #: modules/environment.py:77
 msgid "cat"
@@ -286,7 +286,7 @@ msgstr "Выберите язык / Select language:"
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
 
-#: modules/h_rename.py:40
+#: modules/h_rename.py:41
 msgid "cathegory_renamed"
 msgstr "✅ Категория успешно переименована"
 
@@ -302,7 +302,10 @@ msgstr "Выберите действие:"
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
-msgstr[0] "Привет ✌! У гас {result} книга 📕 в библиотеке"
-msgstr[1] "Привет ✌! У вас {result} книги 📚 в библиотеке"
-msgstr[2] "Привет ✌! У вас {result} книг 📚 в библиотеке"
+msgstr[0] "Привет! У гас {result} книга 📕 в библиотеке"
+msgstr[1] "Привет! У вас {result} книги 📚 в библиотеке"
+msgstr[2] "Привет! У вас {result} книг 📚 в библиотеке"
+
+#~ msgid "edit"
+#~ msgstr "✏️ Изменить книгу"
 

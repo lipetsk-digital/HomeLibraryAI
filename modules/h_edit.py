@@ -18,7 +18,7 @@ import modules.book as book # For save book to database
 # Router for handling messages related to selecting book fields
 edit_router = Router()
 
-# Handler for entered text when the user can add a new cathegory
+# Handler for entered text when the user edits field value
 @edit_router.message(env.State.wait_for_field_value, F.text)
 async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     # Extract information about field editing

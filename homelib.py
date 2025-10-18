@@ -17,6 +17,7 @@ import modules.h_field as h_field # For handling field selection
 import modules.h_edit as h_edit # For handling book editing
 import modules.h_search as h_search # For handling book search
 import modules.h_rename as h_rename # For handling cathegory renaming
+import modules.h_history as h_history # For handling book history
 
 # Initialize bot and dispatcher
 bot = Bot(token=env.TELEGRAM_TOKEN)
