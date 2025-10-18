@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-18 18:26+0300\n"
+"POT-Creation-Date: 2025-10-18 19:36+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -250,9 +250,8 @@ msgid "{cathegory}_selected"
 msgstr "Вы выбрали категорию: {cathegory}"
 
 #: modules/h_cat.py:116
-#, fuzzy
 msgid "enter_cathegory_name"
-msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
+msgstr "Напишите новое название 📂 категории:"
 
 #: modules/h_cover.py:53
 msgid "photo_cover"
@@ -286,6 +285,10 @@ msgstr "Выберите язык / Select language:"
 #, python-brace-format
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
+
+#: modules/h_rename.py:40
+msgid "cathegory_renamed"
+msgstr "✅ Категория успешно переименована"
 
 #: modules/h_search.py:26 modules/h_search.py:33
 msgid "enter_search_query"

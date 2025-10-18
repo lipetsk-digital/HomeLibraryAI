@@ -114,7 +114,7 @@ async def DoCathegory(cathegory: str, message: Message, user_id: int, state: FSM
         await h_start.MainMenu(message, state, pool, bot)
     elif action == "rename_cathegory":
         await message.answer(_("enter_cathegory_name"))
-        await state.set_state(env.State.wait_for_cathegory_name)
+        await state.set_state(env.State.wait_for_new_cathegory_name)
 
 # Handler for the /cat command
 @env.first_router.message(Command("cat"))

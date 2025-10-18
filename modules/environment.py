@@ -57,7 +57,7 @@ class State(StatesGroup):
     select_field = State()
     wait_for_field_value = State()
     wait_for_search_query = State()
-    wait_for_cathegory_name = State()
+    wait_for_new_cathegory_name = State()
 
 i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance

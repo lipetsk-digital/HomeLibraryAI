@@ -12,6 +12,7 @@ from aiogram.types.callback_query import CallbackQuery # For handling callback q
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_cat as h_cat # For manipulating cathegories
+import modules.h_start as h_start # For handling start command
 
 # Router for handling messages related to renaming a cathegory
 rename_router = Router()
@@ -22,3 +23,21 @@ async def rename_command(message: Message, state: FSMContext, pool: asyncpg.Pool
     await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
     await h_cat.SelectCathegory(message, message.from_user.id, state, pool, bot, "rename_cathegory")
 
+# Handler for entered text when the user enters new cathegory name
+@rename_router.message(env.State.wait_for_new_cathegory_name, F.text)
+async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    # Extract information about field editing
+    data = await state.get_data()
+    old_cat = data.get("cathegory")
+    new_cat = message.text
+    # Rename cathegory in the database
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            UPDATE books
+            SET cathegory = $1
+            WHERE user_id = $2 AND cathegory = $3
+        """, new_cat, message.from_user.id, old_cat)
+    # Acknowledge the renaming
+    await message.answer(_("cathegory_renamed"))
+    # Return to the main menu
+    await h_start.MainMenu(message, state, pool, bot)
