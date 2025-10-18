@@ -64,7 +64,7 @@ jobs:
     - name: Deploy to production
       run: |
           # Логинимся в GitHub Container Registry
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
+          echo "${{ secrets.GHCR_TOKEN }}" | docker login -u ${{ github.actor }} --password-stdin ${{ env.REGISTRY }}
           
           # Переходим в директорию с docker-compose.yml
           cd ~/docker
