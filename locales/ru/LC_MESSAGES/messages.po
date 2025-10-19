@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 18:25+0300\n"
+"POT-Creation-Date: 2025-10-19 19:01+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -55,7 +55,7 @@ msgid "search"
 msgstr "🔍 Найти"
 
 #: modules/environment.py:57
-msgid "history"
+msgid "recent"
 msgstr "🕓 Недавно добавленные"
 
 #: modules/environment.py:58
@@ -302,17 +302,21 @@ msgstr "Выберите язык / Select language:"
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
 
-#: modules/h_menu.py:26
+#: modules/h_menu.py:27
 msgid "start_add_book"
 msgstr "➕ Добавляем книгу"
+
+#: modules/h_menu.py:31
+msgid "enter_search_query"
+msgstr "🔍 Введите слова из названия книги или её авторов"
+
+#: modules/h_menu.py:35
+msgid "recent_books"
+msgstr "📚 Недавно добавленные книги"
 
 #: modules/h_rename.py:41
 msgid "category_renamed"
 msgstr "✅ Категория успешно переименована"
-
-#: modules/h_search.py:26 modules/h_search.py:33
-msgid "enter_search_query"
-msgstr "🔍 Введите слова из названия книги или её авторов"
 
 #: modules/h_start.py:40
 msgid "main_menu"

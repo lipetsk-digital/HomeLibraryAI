@@ -12,6 +12,7 @@ import base64 # For encoding and decoding base64
 import random # For random choices
 import numpy as np # For arrays processing
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
+from babel import Locale # For locale handling
 from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 
 from aiogram import Bot # For Telegram bot framework

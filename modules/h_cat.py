@@ -51,14 +51,14 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
 
 # -------------------------------------------------------
 # Handler for inline button selection of a category
-@eng.first_router.callback_query(env.Category.filter())
+@eng.base_router.callback_query(env.Category.filter())
 async def category_selected(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await DoCategory(callback_data.name, callback.message, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
-@eng.first_router.message(env.State.select_category, F.text)
+@eng.base_router.message(env.State.select_category, F.text)
 async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     data = await state.get_data()
     action = data.get("action")
@@ -90,9 +90,9 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
         """
         # Run the query to search for books in the database
         rows = await pool.fetch(query, event_from_user.id, category)
-        await book.PrintBooksList(rows, message, bot)
+        await book.PrintBooksList(rows, message, bot, event_from_user)
         # Send main menu to the user
-        await h_start.MainMenu(message, state, pool, bot)
+        await h_start.MainMenu(state, pool, bot, event_chat)
     elif action == "rename_category":
         await message.answer(_("enter_category_name"))
         await state.set_state(env.State.wait_for_new_category_name)

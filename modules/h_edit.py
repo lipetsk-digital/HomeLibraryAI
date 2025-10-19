@@ -20,7 +20,7 @@ async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # -------------------------------------------------------
 # Handle button of field selection
-@eng.first_router.callback_query(env.BookFields.filter())
+@eng.base_router.callback_query(env.BookFields.filter())
 async def field_selected(callback: CallbackQuery, callback_data: env.BookFields, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     # Print current value of selected field
@@ -44,7 +44,7 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
 
 # -------------------------------------------------------
 # Handler for entered text when the user edits field value
-@eng.first_router.message(env.State.wait_for_field_value, F.text)
+@eng.base_router.message(env.State.wait_for_field_value, F.text)
 async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     # Extract information about field editing
     data = await state.get_data()
@@ -73,7 +73,7 @@ async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool,
 
 # -------------------------------------------------------
 # Handler for edit buttons of books
-@eng.first_router.callback_query(env.EditBook.filter())
+@eng.base_router.callback_query(env.EditBook.filter())
 async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBook, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     book_id = callback_data.book_id
     user_id = callback.from_user.id

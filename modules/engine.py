@@ -39,6 +39,7 @@ i18n = None  # Placeholder for i18n instance
 FSMi18n = None  # Placeholder for FSMi18n instance
 
 first_router = Router() # Router for global commands
+base_router = Router() # Router for base commands
 last_router = Router() # Router for trash messages
 
 # ========================================================

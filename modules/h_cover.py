@@ -36,7 +36,7 @@ async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
 
 # =========================================================
 # Handler for sended photo of book cover
-@eng.first_router.message(env.State.wait_for_cover_photo, F.photo)
+@eng.base_router.message(env.State.wait_for_cover_photo, F.photo)
 async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Get the photo from the message
     photo = message.photo[-1]
@@ -153,7 +153,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # =========================================================
 # Handler for inline button use_cover
-@eng.first_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
+@eng.base_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
 async def use_cover(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     # Give like to cover's photo
@@ -164,7 +164,7 @@ async def use_cover(callback: CallbackQuery, callback_data: env.CoverActions, st
 
 # =========================================================
 # Handler for inline button use_original_photo
-@eng.first_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
+@eng.base_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
 async def use_original_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     data = await state.get_data()
@@ -179,7 +179,7 @@ async def use_original_photo(callback: CallbackQuery, callback_data: env.CoverAc
 
 # =========================================================
 # Handler for inline button take_new_photo
-@eng.first_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
+@eng.base_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
 async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await AskForCover(state, pool, bot, event_chat)

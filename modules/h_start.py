@@ -19,7 +19,7 @@ async def PrepareGlobalMenu(bot: Bot):
 
 # -------------------------------------------------------
 # Handler for the /start command
-@eng.first_router.message(Command("start"))
+@eng.base_router.message(Command("start"))
 async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     async with pool.acquire() as conn:
         await conn.execute(

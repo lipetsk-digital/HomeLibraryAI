@@ -22,7 +22,7 @@ class State(StatesGroup):
 # States data description of users conversation
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
-    #             ["add_book", "select_category", "rename_category"]
+    #             ["add_book", "search", "recent", "select_category", "rename_category"]
     # category: str - selected category name
     #
     # photo_filename: str - filename of the uploaded book cover photo
@@ -54,7 +54,7 @@ def _translate_(text: str) -> str:
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
     _translate_("search"),
-    _translate_("history"),
+    _translate_("recent"),
     _translate_("cat")
 ]
 ADVANCED_ACTIONS = [

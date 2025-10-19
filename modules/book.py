@@ -1,6 +1,6 @@
 # Module for get and put books to database
 
-from modules.imports import asyncpg, random, _, as_list, as_key_value, env
+from modules.imports import asyncpg, random, _, as_list, as_key_value, env, eng
 from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext
 
 # -------------------------------------------------------
@@ -67,7 +67,7 @@ async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, ev
 
 # -------------------------------------------------------
 # Loop through books dataset and send to user the books list
-async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
+async def PrintBooksList(rows: list, message: Message, bot: Bot, event_from_user: User) -> None:
     # For short list of the books:
     if len(rows) == 0:
         await message.answer(_("no_books_found"))
@@ -84,7 +84,7 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
             builder.adjust(1)
             if photo:
-                photo_url = env.AWS_EXTERNAL_URL + "/" + photo
+                photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
                 await message.answer_photo(photo=photo_url, caption=f"{book_id}. {title} - {authors}, {year}", reply_markup=builder.as_markup())
             else:
                 await message.answer(title, reply_markup=builder.as_markup())
