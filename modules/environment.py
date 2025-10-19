@@ -22,7 +22,8 @@ class State(StatesGroup):
 # States data description of users conversation
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
-    #             ["add_book", "search", "recent", "select_category", "rename_category"]
+    #             [ "add_book", "search", "recent", "select_category", 
+    #               "rename_category" ]
     # category: str - selected category name
     #
     # photo_filename: str - filename of the uploaded book cover photo

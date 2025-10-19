@@ -38,3 +38,6 @@ async def RunMainMenuAction(action: str, state: FSMContext, pool: asyncpg.Pool, 
     elif action == "cat":
         await state.update_data(action="select_category")
         await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+    elif action == "rename":
+        await state.update_data(action="rename_category")
+        await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)

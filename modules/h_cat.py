@@ -96,3 +96,23 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     elif action == "rename_category":
         await message.answer(_("enter_category_name"))
         await state.set_state(env.State.wait_for_new_category_name)
+
+# -------------------------------------------------------
+# Handler for entered text when the user enters new category name
+@eng.base_router.message(env.State.wait_for_new_category_name, F.text)
+async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    # Extract information about field editing
+    data = await state.get_data()
+    old_cat = data.get("category")
+    new_cat = message.text
+    # Rename category in the database
+    async with pool.acquire() as conn:
+        await conn.execute("""
+            UPDATE books
+            SET category = $1
+            WHERE user_id = $2 AND category = $3
+        """, new_cat, event_from_user.id, old_cat)
+    # Acknowledge the renaming
+    await message.answer(_("category_renamed"))
+    # Return to the main menu
+    await h_start.MainMenu(state, pool, bot, event_chat)
