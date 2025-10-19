@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 21:49+0300\n"
+"POT-Creation-Date: 2025-10-19 22:13+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:12 modules/h_cat.py:49
+#: modules/book.py:12 modules/h_cat.py:50
 msgid "no_books"
 msgstr "Where is no books in your library 🥺"
 
@@ -29,18 +29,18 @@ msgid_plural "{result}_books"
 msgstr[0] "You have {result} book 📕 in your library"
 msgstr[1] "You have {result} books 📚 in your library"
 
-#: modules/book.py:75
+#: modules/book.py:74
 msgid "no_books_found"
 msgstr "Sorry, no books found 🥺"
 
-#: modules/book.py:77 modules/book.py:95
+#: modules/book.py:76 modules/book.py:94
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] "{books} book 📕 found:"
 msgstr[1] "{books} books 📚 found:"
 
-#: modules/book.py:86
+#: modules/book.py:85
 msgid "edit"
 msgstr "✏️ Edit"
 
@@ -259,40 +259,44 @@ msgstr "📗 The book has been saved in the library under the number {bookid}."
 msgid "add_next_{category}"
 msgstr "Add the next book to the {category} category?"
 
-#: modules/h_cat.py:32
+#: modules/h_cat.py:33
 msgid "select_or_enter_category_add_book"
 msgstr "Select 📂 category for adding a new book or enter the name of new category:"
 
-#: modules/h_cat.py:34
+#: modules/h_cat.py:35
 msgid "select_category_to_view_books"
 msgstr "Select 📂 category to see the books:"
 
-#: modules/h_cat.py:36
+#: modules/h_cat.py:37
 msgid "select_category_to_rename"
 msgstr "Select 📂 category to rename:"
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:39
 msgid "select_category_to_move_book"
-msgstr "Select 📂 category to move the book:"
+msgstr "Select 📂 category to move the book or enter the name of new category:"
 
-#: modules/h_cat.py:47
+#: modules/h_cat.py:48
 msgid "enter_category_add_book"
 msgstr "Enter name of 📂 category for adding a new book:"
 
-#: modules/h_cat.py:72
+#: modules/h_cat.py:74 modules/h_cat.py:135
+msgid "category_name_too_long"
+msgstr "The category name is too long 🥺 (maximum 64 bytes)"
+
+#: modules/h_cat.py:77
 msgid "can_not_add_category"
 msgstr "🫸 You cannot add a new category at this moment. Please select an existing one"
 
-#: modules/h_cat.py:80
+#: modules/h_cat.py:85
 #, python-brace-format
 msgid "{category}_selected"
 msgstr "You selected the category: {category}"
 
-#: modules/h_cat.py:100
+#: modules/h_cat.py:105
 msgid "enter_category_name"
 msgstr "Enter new name of 📂 category:"
 
-#: modules/h_cat.py:123
+#: modules/h_cat.py:130
 msgid "category_renamed"
 msgstr "✅ Category renamed successfully"
 

@@ -1,5 +1,6 @@
 # Module for handling bot messages related to select cathegories
 
+from email.mime import message
 from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, InlineKeyboardBuilder, CallbackQuery, FSMContext, env, eng
 import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
@@ -66,7 +67,11 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
     data = await state.get_data()
     action = data.get("action")
     if (action == "add_book") or (action == "edit_book"):
-        await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
+        if len(message.text.encode()) < eng.MaxBytesInCategoryName:
+            await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
+        else:
+            await message.delete()
+            await message.answer(_("category_name_too_long"))
     else:
         await message.delete()
         await message.answer(_("can_not_add_category"))
@@ -108,18 +113,23 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
 # Handler for entered text when the user enters new category name
 @eng.base_router.message(env.State.wait_for_new_category_name, F.text)
 async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    # Extract information about field editing
-    data = await state.get_data()
-    old_cat = data.get("category")
-    new_cat = message.text
-    # Rename category in the database
-    async with pool.acquire() as conn:
-        await conn.execute("""
-            UPDATE books
-            SET category = $1
-            WHERE user_id = $2 AND category = $3
-        """, new_cat, event_from_user.id, old_cat)
-    # Acknowledge the renaming
-    await message.answer(_("category_renamed"))
-    # Return to the main menu
-    await h_start.MainMenu(state, pool, bot, event_chat)
+    # Check the length of the new category name
+    if len(message.text.encode()) < eng.MaxBytesInCategoryName:
+        # Extract information about field editing
+        data = await state.get_data()
+        old_cat = data.get("category")
+        new_cat = message.text
+        # Rename category in the database
+        async with pool.acquire() as conn:
+            await conn.execute("""
+                UPDATE books
+                SET category = $1
+                WHERE user_id = $2 AND category = $3
+            """, new_cat, event_from_user.id, old_cat)
+        # Acknowledge the renaming
+        await message.answer(_("category_renamed"))
+        # Return to the main menu
+        await h_start.MainMenu(state, pool, bot, event_chat)
+    else:
+        await message.delete()
+        await message.answer(_("category_name_too_long"))

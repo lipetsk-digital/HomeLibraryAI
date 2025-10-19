@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 21:49+0300\n"
+"POT-Creation-Date: 2025-10-19 22:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:12 modules/h_cat.py:49
+#: modules/book.py:12 modules/h_cat.py:50
 msgid "no_books"
 msgstr ""
 
@@ -28,18 +28,18 @@ msgid_plural "{result}_books"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:75
+#: modules/book.py:74
 msgid "no_books_found"
 msgstr ""
 
-#: modules/book.py:77 modules/book.py:95
+#: modules/book.py:76 modules/book.py:94
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:86
+#: modules/book.py:85
 msgid "edit"
 msgstr ""
 
@@ -258,40 +258,44 @@ msgstr ""
 msgid "add_next_{category}"
 msgstr ""
 
-#: modules/h_cat.py:32
+#: modules/h_cat.py:33
 msgid "select_or_enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:34
+#: modules/h_cat.py:35
 msgid "select_category_to_view_books"
 msgstr ""
 
-#: modules/h_cat.py:36
+#: modules/h_cat.py:37
 msgid "select_category_to_rename"
 msgstr ""
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:39
 msgid "select_category_to_move_book"
 msgstr ""
 
-#: modules/h_cat.py:47
+#: modules/h_cat.py:48
 msgid "enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:72
+#: modules/h_cat.py:74 modules/h_cat.py:135
+msgid "category_name_too_long"
+msgstr ""
+
+#: modules/h_cat.py:77
 msgid "can_not_add_category"
 msgstr ""
 
-#: modules/h_cat.py:80
+#: modules/h_cat.py:85
 #, python-brace-format
 msgid "{category}_selected"
 msgstr ""
 
-#: modules/h_cat.py:100
+#: modules/h_cat.py:105
 msgid "enter_category_name"
 msgstr ""
 
-#: modules/h_cat.py:123
+#: modules/h_cat.py:130
 msgid "category_renamed"
 msgstr ""
 

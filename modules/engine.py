@@ -31,6 +31,10 @@ GPT_URL = os.getenv("GPT_URL")
 GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
 GPT_MODEL = os.getenv("GPT_MODEL")
 
+# Miscellaneous constants
+CountOfRecentBooks = 5
+MaxBytesInCategoryName = 60
+
 # ========================================================
 # Environment variables
 # ========================================================

@@ -44,10 +44,10 @@ async def RecentBooks(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     FROM books
     WHERE user_id = $1
     ORDER BY book_id DESC
-    LIMIT 5;
+    LIMIT $2;
     """
     # Run the query to search for books in the database
-    rows = await pool.fetch(query, event_from_user.id)
+    rows = await pool.fetch(query, event_from_user.id, eng.CountOfRecentBooks)
     await book.PrintBooksList(rows, message, bot, event_from_user)
 
     # Send main menu to the user
