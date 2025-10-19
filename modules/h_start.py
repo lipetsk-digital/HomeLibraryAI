@@ -1,22 +1,24 @@
 # Module for handling bot messages related to start bot
 
-from imports import asyncpg, Bot, Chat, User, FSMContext, _, Command, InlineKeyboardBuilder, eng, env
+from modules.imports import asyncpg, Bot, Chat, User, Message, FSMContext, _, Command, InlineKeyboardBuilder, eng, env
 import modules.book as book # For book routines
 
+# -------------------------------------------------------
 # Handler for the /start command
-@env.first_router.message(Command("start"))
-async def start_command(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> None:
+@eng.first_router.message(Command("start"))
+async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     async with pool.acquire() as conn:
         await conn.execute(
             "INSERT INTO logs (user_id, nickname, username) VALUES ($1, $2, $3)",
             event_from_user.id, event_from_user.username, event_from_user.full_name
         )
     await book.BriefStatistic(pool=pool, bot=bot, event_from_user=event_from_user, event_chat=event_chat)
-    await MainMenu(state, pool, bot)
+    await MainMenu(state=state, pool=pool, bot=bot, event_chat=event_chat)
 
+# -------------------------------------------------------
 # Prepare and send the main menu inline-buttons for the user
 async def MainMenu(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await eng.RemoveInlineKeyboards(state=state, bot=bot, event_chat=event_chat)
+    await eng.RemoveInlineKeyboards(callback=None, state=state, bot=bot, event_chat=event_chat)
     builder = InlineKeyboardBuilder()
     for action in env.MAIN_MENU_ACTIONS:
         builder.button(text=_(action), callback_data=env.MainMenu(action=action) )

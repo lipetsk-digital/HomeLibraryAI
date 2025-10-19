@@ -21,9 +21,9 @@ import modules.h_start as h_start # For handling start command
 #import modules.h_history as h_history # For handling book history
 
 # Initialize bot and dispatcher
-bot = Bot(token=env.TELEGRAM_TOKEN)
+bot = Bot(token=eng.TELEGRAM_TOKEN)
 #storage = MemoryStorage()
-storage = PostgresStorage(**env.POSTGRES_CONFIG)
+storage = PostgresStorage(**eng.POSTGRES_CONFIG)
 dp = Dispatcher(storage=storage)
 
 # Configuring middleware for database access
@@ -38,20 +38,20 @@ class DatabaseMiddleware:
 # Start the bot
 async def main():
     # Create a Postgres database connection pool
-    pool = await asyncpg.create_pool(**env.POSTGRES_CONFIG)
+    pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
     
     # Add middleware for database access
     dp.update.middleware(DatabaseMiddleware(pool))
 
     # Add middleware for internationalization
-    env.i18n = I18n(path="locales", default_locale="en", domain="messages")
-    env.FSMi18n = FSMI18nMiddleware(i18n=env.i18n).setup(dp)
+    eng.i18n = I18n(path="locales", default_locale="en", domain="messages")
+    eng.FSMi18n = FSMI18nMiddleware(i18n=eng.i18n).setup(dp)
 
     # Table creation (if not exists)
-    await database.create_tables(env.POSTGRES_CONFIG)
+    await database.create_tables(eng.POSTGRES_CONFIG)
     
     # Register handlers
-    dp.include_router(env.first_router) # Global commands
+    dp.include_router(eng.first_router) # Global commands
     #dp.include_router(h_add.add_router)
     #dp.include_router(h_cat.cat_router)
     #dp.include_router(h_lang.lang_router)
@@ -62,7 +62,7 @@ async def main():
     #dp.include_router(h_edit.edit_router)
     #dp.include_router(h_search.search_router)
     #dp.include_router(h_rename.rename_router)
-    dp.include_router(env.last_router) # Trash messages
+    dp.include_router(eng.last_router) # Trash messages
     
     # Register startup routines
     dp.startup.register(eng.PrepareGlobalMenu)
