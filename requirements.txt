@@ -1,8 +1,8 @@
 asyncpg
-aiogram
-babel
 aioboto3
+openai
 numpy
 opencv-python-headless
+aiogram
+babel
 rembg[cpu]
-openai

@@ -15,7 +15,7 @@ async def async_remove(
 
     loop = asyncio.get_running_loop()
     
-    # Запуск синхронной функции в executor'е
+    # Run the synchronous function in the executor
     result = await loop.run_in_executor(
         executor,
         lambda: remove(input_data, **kwargs)

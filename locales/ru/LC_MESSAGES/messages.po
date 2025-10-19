@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-18 18:26+0300\n"
+"POT-Creation-Date: 2025-10-19 22:13+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -18,265 +18,331 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:65
+#: modules/book.py:12 modules/h_cat.py:50
+msgid "no_books"
+msgstr "Пока нет книг в библиотеке 🥺"
+
+#: modules/book.py:14
+#, python-brace-format
+msgid "{result}_book"
+msgid_plural "{result}_books"
+msgstr[0] "Привет! У гас {result} книга 📕 в библиотеке"
+msgstr[1] "Привет! У вас {result} книги 📚 в библиотеке"
+msgstr[2] "Привет! У вас {result} книг 📚 в библиотеке"
+
+#: modules/book.py:74
 msgid "no_books_found"
 msgstr "Книги не найдены 🥺"
 
-#: modules/book.py:67 modules/book.py:82
+#: modules/book.py:76 modules/book.py:94
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] "Найдена {books} книга 📕:"
 msgstr[1] "Найдены {books} книги 📚:"
-msgstr[2] "Найднено {books} книг 📚:"
+msgstr[2] "Найдено {books} книг 📚:"
 
-#: modules/environment.py:74
+#: modules/book.py:85
+msgid "edit"
+msgstr "✏️ Правка"
+
+#: modules/environment.py:57
 msgid "add"
 msgstr "➕ Добавить книгу"
 
-#: modules/environment.py:75
+#: modules/environment.py:58
 msgid "search"
 msgstr "🔍 Найти"
 
-#: modules/environment.py:76
-msgid "edit"
-msgstr "✏️ Изменить книгу"
+#: modules/environment.py:59
+msgid "recent"
+msgstr "🕓 Недавно добавленные"
 
-#: modules/environment.py:77
+#: modules/environment.py:60
 msgid "cat"
 msgstr "🗂️ Категории"
 
-#: modules/environment.py:80
+#: modules/environment.py:63
 msgid "rename"
 msgstr "⚠️ Переименовать категорию"
 
-#: modules/environment.py:81
+#: modules/environment.py:64
 msgid "export"
 msgstr "📨 Экспорт"
 
-#: modules/environment.py:82
+#: modules/environment.py:65
 msgid "settings"
 msgstr "⚙️ Настройки"
 
-#: modules/environment.py:85
+#: modules/environment.py:68
 msgid "use_cover"
 msgstr "✅ Да, использовать эту обложку"
 
-#: modules/environment.py:86 modules/h_cover.py:191
+#: modules/environment.py:69
 msgid "use_original_photo"
 msgstr "🖼️ Нет, использовать оригинальное фото"
 
-#: modules/environment.py:87 modules/environment.py:129
+#: modules/environment.py:70 modules/environment.py:120
 msgid "take_new_photo"
 msgstr "📷 Стоп, сделать новое фото"
 
-#: modules/environment.py:90
+#: modules/environment.py:73
 msgid "title"
 msgstr "📗 Название"
 
-#: modules/environment.py:91
+#: modules/environment.py:74
 msgid "authors_full_names"
 msgstr "🧑‍🎨 Автор"
 
-#: modules/environment.py:92
+#: modules/environment.py:75
 msgid "pages"
 msgstr "📄 Страниц"
 
-#: modules/environment.py:93
+#: modules/environment.py:76
 msgid "publisher"
 msgstr "🏤 Издательство"
 
-#: modules/environment.py:94
+#: modules/environment.py:77
 msgid "year"
 msgstr "📅 Год"
 
-#: modules/environment.py:95
+#: modules/environment.py:78
 msgid "isbn"
 msgstr "🆔 ISBN"
 
-#: modules/environment.py:96
+#: modules/environment.py:79
 msgid "brief"
 msgstr "⏱️ Кратко"
 
-#: modules/environment.py:101
-msgid "cathegory"
-msgstr "📂 Категория"
-
-#: modules/environment.py:105
+#: modules/environment.py:85
 msgid "authors"
 msgstr "🧑‍🎨 Автор (сокр.)"
 
-#: modules/environment.py:106
+#: modules/environment.py:86
 msgid "annotation"
 msgstr "📜 Аннотация"
 
-#: modules/environment.py:109
+#: modules/environment.py:90
+msgid "book_id"
+msgstr "#️⃣ ID книги"
+
+#: modules/environment.py:91
+msgid "category"
+msgstr "📂 Категория"
+
+#: modules/environment.py:94
+msgid "move_book"
+msgstr "Переместить 📁"
+
+#: modules/environment.py:95
+msgid "delete_book"
+msgstr "Удалить ❌"
+
+#: modules/environment.py:96
+msgid "save_changes"
+msgstr "✅ Cохранить"
+
+#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:50
+#: modules/h_edit.py:145
+msgid "cancel"
+msgstr "Отмена"
+
+#: modules/environment.py:100
 msgid "prompt_photo"
 msgstr "На фотографии страница с аннотацией к книге."
 
-#: modules/environment.py:110
+#: modules/environment.py:101
 msgid "prompt_result"
 msgstr "Твой ответ должен представлять собой только секцию [book] ini-файла без вводных и заключительных фраз."
 
-#: modules/environment.py:111
+#: modules/environment.py:102
 msgid "prompt_count"
 msgstr "В секции всегда должно быть 9 параметров. Если какого-то параметра нет, то его значение должно быть пустым."
 
-#: modules/environment.py:112
+#: modules/environment.py:103
 msgid "prompt_lang"
 msgstr "Значения параметоров приводи на том же языке, что и сфотографированная страница."
 
-#: modules/environment.py:113
+#: modules/environment.py:104
 msgid "prompt_characters"
 msgstr "Если значение параметра содержит символы перевода строки или знаки равенства - замени их на пробелы."
 
-#: modules/environment.py:114
+#: modules/environment.py:105
 msgid "prompt_plaintext"
 msgstr "Выводи содержимое ini-флайла в виде обычного текста. Не используй язык разметки markdown."
 
-#: modules/environment.py:115
+#: modules/environment.py:106
 msgid "prompt_fields"
 msgstr "Ниже приведены названия каждого параметра и выделенная из изображения информация, которую должно содержать его значение:"
 
-#: modules/environment.py:116
+#: modules/environment.py:107
 msgid "prompt_title"
 msgstr "title - название книги"
 
-#: modules/environment.py:117
+#: modules/environment.py:108
 msgid "prompt_authors"
 msgstr "authors - авторы книги"
 
-#: modules/environment.py:118
+#: modules/environment.py:109
 msgid "prompt_pages"
 msgstr "pages - количество страниц"
 
-#: modules/environment.py:119
+#: modules/environment.py:110
 msgid "prompt_publisher"
 msgstr "publisher - издательство"
 
-#: modules/environment.py:120
+#: modules/environment.py:111
 msgid "prompt_year"
 msgstr "year - год издания"
 
-#: modules/environment.py:121
+#: modules/environment.py:112
 msgid "prompt_isbn"
 msgstr "isbn - код ISBN"
 
-#: modules/environment.py:122
+#: modules/environment.py:113
 msgid "prompt_annotation"
 msgstr "annotation - заново весь полный текст всей аннотации, дословно приведённый на фотографии страницы"
 
-#: modules/environment.py:123
+#: modules/environment.py:114
 msgid "prompt_brief"
 msgstr "brief - перефразируй поле annotation: сформулируй на его основе одно предложение, лучшим образом раскрывающее содержание книги"
 
-#: modules/environment.py:124
+#: modules/environment.py:115
 msgid "prompt_authors_full_names"
 msgstr "authors_full_names - полные имена, фамилии и (при наличии) отчества всех авторов книги из поля authors. На странице наверняка есть упоминания их полных имён. Найди и приведи их в этом поле"
 
-#: modules/environment.py:127
+#: modules/environment.py:118
 msgid "use_brief"
 msgstr "✅ Всё верно"
 
-#: modules/environment.py:128
+#: modules/environment.py:119
 msgid "edit_brief"
 msgstr "✏️ Редактировать"
 
-#: modules/environment.py:132
+#: modules/environment.py:123
 msgid "add_another_book"
 msgstr "➕ Добавить"
 
-#: modules/environment.py:133
+#: modules/environment.py:124
 msgid "no_another_book"
 msgstr "❌ Не нужно"
 
-#: modules/h_add.py:23 modules/h_add.py:30
-msgid "start_add_book"
-msgstr "➕ Добавляем книгу"
+#: modules/environment.py:127
+msgid "delete"
+msgstr "🗑️ Удалить"
 
-#: modules/h_brief.py:31
+#: modules/h_brief.py:14
 msgid "photo_brief"
 msgstr "Сфотографируйте первую страницу книги с аннотацией и реквизитами 📸"
 
-#: modules/h_brief.py:60 modules/h_cover.py:83 modules/h_cover.py:160
+#: modules/h_brief.py:43 modules/h_cover.py:63 modules/h_cover.py:140
 msgid "upload_failed"
 msgstr "Извините, загрузка не удалась 🥺"
 
-#: modules/h_brief.py:87
+#: modules/h_brief.py:47
+msgid "wait"
+msgstr "⏳ Пожалуйста, подождите, ИИ обрабатывает фотографию..."
+
+#: modules/h_brief.py:74
 msgid "gpt_failed"
 msgstr "ИИ недоступен 🥺"
 
-#: modules/h_brief.py:105
+#: modules/h_brief.py:92
 msgid "gpt_incorrect"
 msgstr "ИИ выдал что-то неопнятное 🥺"
 
-#: modules/h_brief.py:137
+#: modules/h_brief.py:133
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr "📗 Книга сохранена в библиотеку под номером {bookid}."
 
-#: modules/h_brief.py:137
+#: modules/h_brief.py:133
 #, python-brace-format
-msgid "add_next_{cathegory}"
-msgstr "Добавить следующую книгу в категорию {cathegory}?"
+msgid "add_next_{category}"
+msgstr "Добавить следующую книгу в категорию {category}?"
 
-#: modules/h_cat.py:51
-msgid "select_or_enter_cathegory_add_book"
+#: modules/h_cat.py:33
+msgid "select_or_enter_category_add_book"
 msgstr "Выберите 📂 категорию, в которую добавить новую книгу или введите название новой категории:"
 
-#: modules/h_cat.py:53
-msgid "select_cathegory_to_view_books"
+#: modules/h_cat.py:35
+msgid "select_category_to_view_books"
 msgstr "Выберите 📂 категорию, чтобы посмотреть книги:"
 
-#: modules/h_cat.py:55
-msgid "select_cathegory_to_rename"
+#: modules/h_cat.py:37
+msgid "select_category_to_rename"
 msgstr "Выберите 📂 категорию, которую нужно переименовать:"
 
-#: modules/h_cat.py:65
-msgid "enter_cathegory_add_book"
+#: modules/h_cat.py:39
+msgid "select_category_to_move_book"
+msgstr "Выберите 📂 категорию, в которую перенести книгу или напишите название новой категории:"
+
+#: modules/h_cat.py:48
+msgid "enter_category_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:67 modules/h_start.py:64
-msgid "no_books"
-msgstr "Пока нет книг в библиотеке 🥺"
+#: modules/h_cat.py:74 modules/h_cat.py:135
+msgid "category_name_too_long"
+msgstr "Слишком длинное название категории 🥺 (максимум 64 байта)"
 
-#: modules/h_cat.py:88
-msgid "can_not_add_cathegory"
+#: modules/h_cat.py:77
+msgid "can_not_add_category"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:85
 #, python-brace-format
-msgid "{cathegory}_selected"
-msgstr "Вы выбрали категорию: {cathegory}"
+msgid "{category}_selected"
+msgstr "Вы выбрали категорию: {category}"
 
-#: modules/h_cat.py:116
-#, fuzzy
-msgid "enter_cathegory_name"
-msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
+#: modules/h_cat.py:105
+msgid "enter_category_name"
+msgstr "Напишите новое название 📂 категории:"
 
-#: modules/h_cover.py:53
+#: modules/h_cat.py:130
+msgid "category_renamed"
+msgstr "✅ Категория успешно переименована"
+
+#: modules/h_cover.py:33
 msgid "photo_cover"
 msgstr "Сфотографируйте обложку книги 📸"
 
-#: modules/h_cover.py:94
+#: modules/h_cover.py:74
 msgid "remove_background_failed"
 msgstr "Извините, не удалось удалить фон 🥺"
 
-#: modules/h_cover.py:146 modules/h_cover.py:149
+#: modules/h_cover.py:126 modules/h_cover.py:129
 msgid "contour_failed"
 msgstr "Извините, не удалось найти книгу на фото 🥺"
 
-#: modules/h_field.py:29
+#: modules/h_edit.py:27
 msgid "select_field"
 msgstr "❔Выберите поле для редактирования:"
 
-#: modules/h_field.py:44
+#: modules/h_edit.py:47
+msgid "confirm_delete_book"
+msgstr "🗑️ Удалить книгу?"
+
+#: modules/h_edit.py:57
+#, python-brace-format
+msgid "{bookid}_updated"
+msgstr "✅ Книга {bookid} обновлена"
+
+#: modules/h_edit.py:65
 msgid "edit_field_value"
 msgstr "cкопируйте текущее значение поля и исправьте его или напишите новое:"
 
-#: modules/h_field.py:48 modules/h_field.py:51
+#: modules/h_edit.py:69 modules/h_edit.py:72
 msgid "edit_field_empty"
 msgstr "напишите новое значение поля:"
+
+#: modules/h_edit.py:124
+msgid "book_not_found"
+msgstr "Книга не найдена 🥺"
+
+#: modules/h_edit.py:141
+#, python-brace-format
+msgid "{bookid}_deleted"
+msgstr "🗑️ Книга {bookid} удалена"
 
 #: modules/h_lang.py:33
 msgid "select_lang"
@@ -287,19 +353,19 @@ msgstr "Выберите язык / Select language:"
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
 
-#: modules/h_search.py:26 modules/h_search.py:33
-msgid "enter_search_query"
-msgstr "🔍 Введите слова из названия книги или её авторов"
+#: modules/h_menu.py:27
+msgid "start_add_book"
+msgstr "➕ Добавляем книгу"
 
-#: modules/h_start.py:43
+#: modules/h_menu.py:31
+msgid "enter_search_query"
+msgstr "🔍 Введите слова из названия книги, её авторов или её id:"
+
+#: modules/h_menu.py:35
+msgid "recent_books"
+msgstr "📚 Недавно добавленные книги"
+
+#: modules/h_start.py:40
 msgid "main_menu"
 msgstr "Выберите действие:"
-
-#: modules/h_start.py:66
-#, python-brace-format
-msgid "{result}_book"
-msgid_plural "{result}_books"
-msgstr[0] "Привет ✌! У гас {result} книга 📕 в библиотеке"
-msgstr[1] "Привет ✌! У вас {result} книги 📚 в библиотеке"
-msgstr[2] "Привет ✌! У вас {result} книг 📚 в библиотеке"
 

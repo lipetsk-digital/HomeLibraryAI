@@ -4,7 +4,6 @@
 # This module is responsible for creating the necessary tables in the PostgreSQL database.
 # It checks if the tables already exist and creates them if they do not. The tables include:
 # - logs: for logging user activity
-# - state: for storing the state of the bot
 # - books: for storing book information
 # ========================================================
 
@@ -27,7 +26,7 @@ async def create_tables(POSTGRES_CONFIG):
         CREATE TABLE IF NOT EXISTS books (
             user_id BIGINT,
             book_id BIGINT,
-            cathegory TEXT,
+            category TEXT,
             photo_filename TEXT,
             cover_filename TEXT,
             brief_filename TEXT,

@@ -1,54 +1,14 @@
-# ========================================================
-# Module for environment variables and configurations
-# ========================================================
-# This module is responsible for loading environment variables and configurations for the bot.
-# It includes:
-# - PostgreSQL connection settings
-# - Logging configuration
-# - Telegram bot token
-# - Class for finite state machine (FSM) of the bot
-# ========================================================
+from modules.imports import CallbackData, StatesGroup, State
 
-import os # For environment variables
-import logging # For logging
-from aiogram import Bot # For Telegram bot framework
-from aiogram import Router # For creating a router for handling messages
-from aiogram.fsm.context import FSMContext # For finite state machine context
-from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
-from aiogram.types.callback_query import CallbackQuery # For handling callback queries
-from aiogram.filters.callback_data import CallbackData # For callback data handling
+# -------------------------------------------------------
+# Finite State Machine
+# -------------------------------------------------------
 
-
-# PostgreSQL connection settings
-POSTGRES_CONFIG = {
-    "host": os.getenv("POSTGRES_HOST"),
-    "port": os.getenv("POSTGRES_PORT"),
-    "database": os.getenv("POSTGRES_DATABASE"),
-    "user": os.getenv("POSTGRES_USERNAME"),
-    "password": os.getenv("POSTGRES_PASSWORD")
-}
-
-# Logging configuration
-logging.basicConfig(level=logging.INFO)
-
-# Telegram bot token
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-
-# AWS S3 storage settings
-AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
-AWS_BUCKET_NAME = os.getenv("AWS_BUCKET_NAME")
-AWS_EXTERNAL_URL = os.getenv("AWS_EXTERNAL_URL").rstrip("/")
-
-# VSEGPT API key
-GPT_URL = os.getenv("GPT_URL")
-GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
-GPT_MODEL = os.getenv("GPT_MODEL")
-
-# Class for finite state machine
+# States of conversation with the user
 class State(StatesGroup):
     wait_for_command = State()
     select_lang = State()
-    select_cathegory = State()
+    select_category = State()
     wait_for_cover_photo = State()
     wait_reaction_on_cover = State()
     wait_for_brief_photo = State()
@@ -57,13 +17,36 @@ class State(StatesGroup):
     select_field = State()
     wait_for_field_value = State()
     wait_for_search_query = State()
-    wait_for_cathegory_name = State()
+    wait_for_new_category_name = State()
+    confirm_delete_book = State()
 
-i18n = None  # Placeholder for i18n instance
-FSMi18n = None  # Placeholder for FSMi18n instance
+# States data description of users conversation
+    # inline: int - message ID of the last sent message with inline keyboard
+    # action: str - global action being performed: 
+    #             [ "add_book", "search", "recent", "select_category", 
+    #               "rename_category", "edit_book" ]
+    # category: str - selected category name
+    #
+    # photo_filename: str - filename of the uploaded book cover photo
+    # cover_filename: str - filename of the processed book cover photo
+    # brief_filename: str - filename of the uploaded brief photo
+    # title: str - book title
+    # authors: str - original string of book authors
+    # authors_full_names: str - full names of the book authors
+    # pages: str - number of pages in the book
+    # publisher: str - book publisher
+    # year: str - publication year
+    # isbn: str - ISBN number
+    # annotation: str - full book annotation
+    # brief: str - brief description of the book
+    # book_id: int - ID of the book being processed
+    #
+    # field: str - currently selected book field for editing
 
-first_router = Router() # Router for global commands
-last_router = Router() # Router for trash messages
+
+# -------------------------------------------------------
+# Lists of commands and fields
+# -------------------------------------------------------
 
 # Dummy function for pybabel to detect translatable strings
 def _translate_(text: str) -> str:
@@ -73,7 +56,7 @@ def _translate_(text: str) -> str:
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
     _translate_("search"),
-    _translate_("edit"),
+    _translate_("recent"),
     _translate_("cat")
 ]
 ADVANCED_ACTIONS = [
@@ -96,14 +79,22 @@ BOOK_FIELDS = [
     _translate_("brief")
 ]
 ADVANCED_BOOK_FIELDS = [
-    "user_id",
-    "book_id",
-    _translate_("cathegory"),
     "photo_filename",
     "cover_filename",
     "brief_filename",
     _translate_("authors"),
     _translate_("annotation")
+]
+SPECIAL_BOOK_FIELDS = [
+    "user_id",
+    _translate_("book_id"),
+    _translate_("category")
+]
+BOOK_ACTIONS = [
+    _translate_("move_book"),
+    _translate_("delete_book"),
+    _translate_("save_changes"),
+    _translate_("cancel")
 ]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),
@@ -132,13 +123,21 @@ NEXT_ACTIONS = [
     _translate_("add_another_book"),
     _translate_("no_another_book")
 ]
+CONFIRM_DELETE = [
+    _translate_("delete"),
+    _translate_("cancel")
+]
+
+# -------------------------------------------------------
+# Callback data factories
+# -------------------------------------------------------
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
     action: str
 
-# Callback factory for cathegory selection
-class Cathegory(CallbackData, prefix="cat"):
+# Callback factory for category selection
+class Category(CallbackData, prefix="cat"):
     name: str
 
 # Callback factory for language selection
@@ -161,19 +160,9 @@ class NextActions(CallbackData, prefix="next"):
 class BookFields(CallbackData, prefix="field"):
     field: str
 
-# Finish handlers and remove current inline keyboard from its message
-async def RemoveMyInlineKeyboards(callback: CallbackQuery, state: FSMContext) -> None:
-    await callback.answer()
-    await callback.message.edit_reply_markup(reply_markup=None)
-    await state.update_data(inline=None)
-                                   
-# Remove old inline keyboards from messages in the chat
-async def RemoveOldInlineKeyboards(state: FSMContext, chat_id: int, bot: Bot) -> None:
-    data = await state.get_data()
-    inline = data.get("inline")
-    if inline:
-        try:
-            await state.update_data(inline=None)
-            await bot.edit_message_reply_markup(chat_id=chat_id, message_id=inline, reply_markup=None)
-        except Exception as e:
-            logging.error(f"Error deleting inline keyboard: {e}")
+# Callback factory for editing book
+class EditBook(CallbackData, prefix="edit"):
+    book_id: int
+
+class ConfirmDelete(CallbackData, prefix="confirm"):
+    action: str
