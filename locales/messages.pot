@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 18:01+0300\n"
+"POT-Creation-Date: 2025-10-19 18:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/environment.py:68 modules/environment.py:110
+#: modules/environment.py:68 modules/environment.py:112
 msgid "take_new_photo"
 msgstr ""
 
@@ -111,95 +111,95 @@ msgstr ""
 msgid "brief"
 msgstr ""
 
-#: modules/environment.py:82
-msgid "category"
-msgstr ""
-
-#: modules/environment.py:86
+#: modules/environment.py:83
 msgid "authors"
 msgstr ""
 
-#: modules/environment.py:87
+#: modules/environment.py:84
 msgid "annotation"
 msgstr ""
 
-#: modules/environment.py:90
-msgid "prompt_photo"
-msgstr ""
-
-#: modules/environment.py:91
-msgid "prompt_result"
+#: modules/environment.py:89
+msgid "category"
 msgstr ""
 
 #: modules/environment.py:92
-msgid "prompt_count"
+msgid "prompt_photo"
 msgstr ""
 
 #: modules/environment.py:93
-msgid "prompt_lang"
+msgid "prompt_result"
 msgstr ""
 
 #: modules/environment.py:94
-msgid "prompt_characters"
+msgid "prompt_count"
 msgstr ""
 
 #: modules/environment.py:95
-msgid "prompt_plaintext"
+msgid "prompt_lang"
 msgstr ""
 
 #: modules/environment.py:96
-msgid "prompt_fields"
+msgid "prompt_characters"
 msgstr ""
 
 #: modules/environment.py:97
-msgid "prompt_title"
+msgid "prompt_plaintext"
 msgstr ""
 
 #: modules/environment.py:98
-msgid "prompt_authors"
+msgid "prompt_fields"
 msgstr ""
 
 #: modules/environment.py:99
-msgid "prompt_pages"
+msgid "prompt_title"
 msgstr ""
 
 #: modules/environment.py:100
-msgid "prompt_publisher"
+msgid "prompt_authors"
 msgstr ""
 
 #: modules/environment.py:101
-msgid "prompt_year"
+msgid "prompt_pages"
 msgstr ""
 
 #: modules/environment.py:102
-msgid "prompt_isbn"
+msgid "prompt_publisher"
 msgstr ""
 
 #: modules/environment.py:103
-msgid "prompt_annotation"
+msgid "prompt_year"
 msgstr ""
 
 #: modules/environment.py:104
-msgid "prompt_brief"
+msgid "prompt_isbn"
 msgstr ""
 
 #: modules/environment.py:105
+msgid "prompt_annotation"
+msgstr ""
+
+#: modules/environment.py:106
+msgid "prompt_brief"
+msgstr ""
+
+#: modules/environment.py:107
 msgid "prompt_authors_full_names"
 msgstr ""
 
-#: modules/environment.py:108
+#: modules/environment.py:110
 msgid "use_brief"
 msgstr ""
 
-#: modules/environment.py:109
+#: modules/environment.py:111
 msgid "edit_brief"
 msgstr ""
 
-#: modules/environment.py:113
+#: modules/environment.py:115
 msgid "add_another_book"
 msgstr ""
 
-#: modules/environment.py:114
+#: modules/environment.py:116
 msgid "no_another_book"
 msgstr ""
 
@@ -211,20 +211,24 @@ msgstr ""
 msgid "upload_failed"
 msgstr ""
 
-#: modules/h_brief.py:71
+#: modules/h_brief.py:47
+msgid "wait"
+msgstr ""
+
+#: modules/h_brief.py:74
 msgid "gpt_failed"
 msgstr ""
 
-#: modules/h_brief.py:89
+#: modules/h_brief.py:92
 msgid "gpt_incorrect"
 msgstr ""
 
-#: modules/h_brief.py:121
+#: modules/h_brief.py:126
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr ""
 
-#: modules/h_brief.py:121
+#: modules/h_brief.py:126
 #, python-brace-format
 msgid "add_next_{category}"
 msgstr ""

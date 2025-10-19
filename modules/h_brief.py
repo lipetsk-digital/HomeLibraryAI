@@ -43,6 +43,9 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             eng.logging.error(f"Error uploading to S3: {e}")
 
+    # Add temporal message for waiting
+    waiting_message = await message.reply(_("wait"))
+
     # Parse text on the photo using an Vision LLM
     try:
         # Prepare session for OpenAI API        
@@ -89,6 +92,8 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         await message.reply(_("gpt_incorrect")+"\n"+response_text)
         eng.logging.error(f"Error parsing GPT response: {e}")
 
+    # Remove temporal message
+    await waiting_message.delete()
     # Print the book information
     sent_message = await book.PrintBook(message, state, pool, bot)
     # Generate keyboard with further actions

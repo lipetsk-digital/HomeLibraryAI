@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 18:01+0300\n"
+"POT-Creation-Date: 2025-10-19 18:25+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -44,7 +44,7 @@ msgstr[2] "Найдено {books} книг 📚:"
 
 #: modules/book.py:84
 msgid "edit"
-msgstr ""
+msgstr "✏️ Правка"
 
 #: modules/environment.py:55
 msgid "add"
@@ -82,7 +82,7 @@ msgstr "✅ Да, использовать эту обложку"
 msgid "use_original_photo"
 msgstr "🖼️ Нет, использовать оригинальное фото"
 
-#: modules/environment.py:68 modules/environment.py:110
+#: modules/environment.py:68 modules/environment.py:112
 msgid "take_new_photo"
 msgstr "📷 Стоп, сделать новое фото"
 
@@ -114,95 +114,95 @@ msgstr "🆔 ISBN"
 msgid "brief"
 msgstr "⏱️ Кратко"
 
-#: modules/environment.py:82
-msgid "category"
-msgstr "📂 Категория"
-
-#: modules/environment.py:86
+#: modules/environment.py:83
 msgid "authors"
 msgstr "🧑‍🎨 Автор (сокр.)"
 
-#: modules/environment.py:87
+#: modules/environment.py:84
 msgid "annotation"
 msgstr "📜 Аннотация"
 
-#: modules/environment.py:90
+#: modules/environment.py:89
+msgid "category"
+msgstr "📂 Категория"
+
+#: modules/environment.py:92
 msgid "prompt_photo"
 msgstr "На фотографии страница с аннотацией к книге."
 
-#: modules/environment.py:91
+#: modules/environment.py:93
 msgid "prompt_result"
 msgstr "Твой ответ должен представлять собой только секцию [book] ini-файла без вводных и заключительных фраз."
 
-#: modules/environment.py:92
+#: modules/environment.py:94
 msgid "prompt_count"
 msgstr "В секции всегда должно быть 9 параметров. Если какого-то параметра нет, то его значение должно быть пустым."
 
-#: modules/environment.py:93
+#: modules/environment.py:95
 msgid "prompt_lang"
 msgstr "Значения параметоров приводи на том же языке, что и сфотографированная страница."
 
-#: modules/environment.py:94
+#: modules/environment.py:96
 msgid "prompt_characters"
 msgstr "Если значение параметра содержит символы перевода строки или знаки равенства - замени их на пробелы."
 
-#: modules/environment.py:95
+#: modules/environment.py:97
 msgid "prompt_plaintext"
 msgstr "Выводи содержимое ini-флайла в виде обычного текста. Не используй язык разметки markdown."
 
-#: modules/environment.py:96
+#: modules/environment.py:98
 msgid "prompt_fields"
 msgstr "Ниже приведены названия каждого параметра и выделенная из изображения информация, которую должно содержать его значение:"
 
-#: modules/environment.py:97
+#: modules/environment.py:99
 msgid "prompt_title"
 msgstr "title - название книги"
 
-#: modules/environment.py:98
+#: modules/environment.py:100
 msgid "prompt_authors"
 msgstr "authors - авторы книги"
 
-#: modules/environment.py:99
+#: modules/environment.py:101
 msgid "prompt_pages"
 msgstr "pages - количество страниц"
 
-#: modules/environment.py:100
+#: modules/environment.py:102
 msgid "prompt_publisher"
 msgstr "publisher - издательство"
 
-#: modules/environment.py:101
+#: modules/environment.py:103
 msgid "prompt_year"
 msgstr "year - год издания"
 
-#: modules/environment.py:102
+#: modules/environment.py:104
 msgid "prompt_isbn"
 msgstr "isbn - код ISBN"
 
-#: modules/environment.py:103
+#: modules/environment.py:105
 msgid "prompt_annotation"
 msgstr "annotation - заново весь полный текст всей аннотации, дословно приведённый на фотографии страницы"
 
-#: modules/environment.py:104
+#: modules/environment.py:106
 msgid "prompt_brief"
 msgstr "brief - перефразируй поле annotation: сформулируй на его основе одно предложение, лучшим образом раскрывающее содержание книги"
 
-#: modules/environment.py:105
+#: modules/environment.py:107
 msgid "prompt_authors_full_names"
 msgstr "authors_full_names - полные имена, фамилии и (при наличии) отчества всех авторов книги из поля authors. На странице наверняка есть упоминания их полных имён. Найди и приведи их в этом поле"
 
-#: modules/environment.py:108
+#: modules/environment.py:110
 msgid "use_brief"
 msgstr "✅ Всё верно"
 
-#: modules/environment.py:109
+#: modules/environment.py:111
 msgid "edit_brief"
 msgstr "✏️ Редактировать"
 
-#: modules/environment.py:113
+#: modules/environment.py:115
 msgid "add_another_book"
 msgstr "➕ Добавить"
 
-#: modules/environment.py:114
+#: modules/environment.py:116
 msgid "no_another_book"
 msgstr "❌ Не нужно"
 
@@ -214,20 +214,24 @@ msgstr "Сфотографируйте первую страницу книги 
 msgid "upload_failed"
 msgstr "Извините, загрузка не удалась 🥺"
 
-#: modules/h_brief.py:71
+#: modules/h_brief.py:47
+msgid "wait"
+msgstr "⏳ Пожалуйста, подождите, ИИ обрабатывает фотографию..."
+
+#: modules/h_brief.py:74
 msgid "gpt_failed"
 msgstr "ИИ недоступен 🥺"
 
-#: modules/h_brief.py:89
+#: modules/h_brief.py:92
 msgid "gpt_incorrect"
 msgstr "ИИ выдал что-то неопнятное 🥺"
 
-#: modules/h_brief.py:121
+#: modules/h_brief.py:126
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr "📗 Книга сохранена в библиотеку под номером {bookid}."
 
-#: modules/h_brief.py:121
+#: modules/h_brief.py:126
 #, python-brace-format
 msgid "add_next_{category}"
 msgstr "Добавить следующую книгу в категорию {category}?"
@@ -313,10 +317,4 @@ msgstr "🔍 Введите слова из названия книги или �
 #: modules/h_start.py:40
 msgid "main_menu"
 msgstr "Выберите действие:"
-
-#~ msgid "no_books_found"
-#~ msgstr "Книги не найдены 🥺"
-
-#~ msgid "edit"
-#~ msgstr "✏️ Изменить книгу"
 
