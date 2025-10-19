@@ -9,7 +9,7 @@ Telegram bot to photo the covers and annotations of your books and create a cata
 
 Just start chatting with [@home_library_ai_bot](https://t.me/home_library_ai_bot) in telegram. We use `Telegram ID` to identificate user and store it's books. Your telegram ID is permanent and does not change when you changing mobile number or telegram nickname.
 
-Cathegories are not stored in database as a separate entity. They collect everytime from stroed books of the user. Then user add new cathegory, it stored in users variable and applied to the new book. Then just one book with this cathegory saved, we will start receiving this cathegory from selection cathegories of all users books.
+Cathegories are not stored in database as a separate entity. They collect everytime from stroed books of the user. Then user add new category, it stored in users variable and applied to the new book. Then just one book with this category saved, we will start receiving this category from selection cathegories of all users books.
 
 We store all your photos with unique anonymous identifiers is S3 file storage. So if someone known the photo identificator - they can see it. Access to other people's photos is unlikely, but try not to photograph things that you would not like to allow for public review.
 
@@ -157,7 +157,7 @@ Here is [the first handwritten edition](images/manuscript.pdf) of this algorithm
 
 - `wait_for_command` - waiting for the one of global bot's commands
 - `select_lang` - waiting for user to select one of languages
-- `select_cathegory` - waiting for user to select a cathegory or enter the new one
+- `select_category` - waiting for user to select a category or enter the new one
 - `wait_for_cover_photo` - waiting for user to send a photo of the book cover
 - `wait_reaction_on_cover` - waiting for user's reaction of extracted book cover
 - `wait_for_brief_photo` - waiting for user to send a photo of the annotation page
@@ -182,11 +182,11 @@ Common data:
 - `locale`: str - prefered language by user's selection
 - `inline`: int - last ID of message with inline keyboard. Used to remember remove these keyboard, when they are no longer needed
 
-Cathegory selection:
+Category selection:
 
 - `action`: str - name of the action to run after the user selects a category
 - `can_add`: bool - can the user enter the name of a new category when he select it
-- `cathegory`: str - name of the cathegory, selected by user
+- `category`: str - name of the category, selected by user
 
 Book data:
 - `photo_filename`: str - relative path to file with original photo on S3 storage of the book cover
@@ -276,7 +276,7 @@ CREATE TABLE IF NOT EXISTS logs (
 CREATE TABLE IF NOT EXISTS books (
     user_id BIGINT,
     book_id BIGINT,
-    cathegory TEXT,
+    category TEXT,
     photo_filename TEXT,
     cover_filename TEXT,
     brief_filename TEXT,

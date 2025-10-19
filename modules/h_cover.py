@@ -173,7 +173,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # Handler for inline button use_cover
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
-async def use_cover(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def use_cover(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     # Give like to cover's photo
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
@@ -183,7 +183,7 @@ async def use_cover(callback: CallbackQuery, callback_data: env.Cathegory, state
 
 # Handler for inline button use_original_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
-async def use_original_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def use_original_photo(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     data = await state.get_data()
     photo_filename = data.get("photo_filename")
@@ -193,6 +193,6 @@ async def use_original_photo(callback: CallbackQuery, callback_data: env.Cathego
 
 # Handler for inline button take_new_photo
 @cover_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
-async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     await AskForCover(callback.message, state, pool, bot)

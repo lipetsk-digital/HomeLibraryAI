@@ -26,7 +26,7 @@ async def create_tables(POSTGRES_CONFIG):
         CREATE TABLE IF NOT EXISTS books (
             user_id BIGINT,
             book_id BIGINT,
-            cathegory TEXT,
+            category TEXT,
             photo_filename TEXT,
             cover_filename TEXT,
             brief_filename TEXT,

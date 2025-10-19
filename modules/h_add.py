@@ -1,31 +1,25 @@
-# ========================================================
 # Module for handling bot messages related to adding a new book
-# ========================================================
-import asyncpg # For asynchronous PostgreSQL connection
-from aiogram import Bot, F # For Telegram bot framework
-from aiogram import Router # For creating a router for handling messages
-from aiogram.types import Message # For Telegram message handling
-from aiogram.fsm.context import FSMContext # For finite state machine context
-from aiogram.utils.i18n import gettext as _ # For internationalization and localization
-from aiogram.filters.command import Command # For command handling
-from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 
-import modules.environment as env # For environment variables and configurations
+from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, FSMContext, env, eng
 import modules.h_cat as h_cat # For manipulating cathegories
 
-# Router for handling messages related to adding a new book
-add_router = Router()
-
+# -------------------------------------------------------
 # Handler for the /add command
-@env.first_router.message(Command("add"))
-async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
-    await message.answer(_("start_add_book"))
-    await h_cat.SelectCathegory(message, message.from_user.id, state, pool, bot, "add_book")
+@eng.first_router.message(Command("add"))
+async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+    await StartAddBook(state, pool, bot, event_chat, event_from_user)
 
+# -------------------------------------------------------
 # Handler for the callback query when the user selects "add" from the main menu
-@env.first_router.callback_query(env.MainMenu.filter(F.action=="add"))
-async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await env.RemoveMyInlineKeyboards(callback, state)
-    await callback.message.answer(_("start_add_book"))
-    await h_cat.SelectCathegory(callback.message, callback.from_user.id, state, pool, bot, "add_book")
+@eng.first_router.callback_query(env.MainMenu.filter(F.action=="add"))
+async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await StartAddBook(state, pool, bot, event_chat, event_from_user)
+
+# -------------------------------------------------------
+# Start adding a new book
+async def StartAddBook(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    message = await bot.send_message(event_chat.id, _("start_add_book"))
+    await state.update_data(action="add_book")
+    await h_cat.SelectCategory(message, state, pool, bot, event_chat, event_from_user)

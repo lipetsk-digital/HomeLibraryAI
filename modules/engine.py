@@ -1,6 +1,6 @@
 # Module for configuraion data, environment variables, and basic routines
 
-from modules.imports import Bot, env, Router, CallbackQuery, FSMContext, Chat, Message
+from modules.imports import Bot, Router, Chat, Message, CallbackQuery, FSMContext, env
 
 import os # For environment variables
 import logging # For logging

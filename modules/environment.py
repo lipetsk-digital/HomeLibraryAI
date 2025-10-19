@@ -1,4 +1,4 @@
-from modules.imports import StatesGroup, State, CallbackData
+from modules.imports import CallbackData, StatesGroup, State
 
 # -------------------------------------------------------
 # Finite State Machine
@@ -8,7 +8,7 @@ from modules.imports import StatesGroup, State, CallbackData
 class State(StatesGroup):
     wait_for_command = State()
     select_lang = State()
-    select_cathegory = State()
+    select_category = State()
     wait_for_cover_photo = State()
     wait_reaction_on_cover = State()
     wait_for_brief_photo = State()
@@ -17,10 +17,13 @@ class State(StatesGroup):
     select_field = State()
     wait_for_field_value = State()
     wait_for_search_query = State()
-    wait_for_new_cathegory_name = State()
+    wait_for_new_category_name = State()
 
-# States data description
+# States data description of users conversation
   # inline: int - message ID of the last sent message with inline keyboard
+  # action: str - global action being performed: 
+  #             ["add_book", "select_category", "rename_category"]
+  # category: str - selected category name
 
 # -------------------------------------------------------
 # Lists of commands and fields
@@ -59,7 +62,7 @@ BOOK_FIELDS = [
 ADVANCED_BOOK_FIELDS = [
     "user_id",
     "book_id",
-    _translate_("cathegory"),
+    _translate_("category"),
     "photo_filename",
     "cover_filename",
     "brief_filename",
@@ -102,8 +105,8 @@ NEXT_ACTIONS = [
 class MainMenu(CallbackData, prefix="main"):
     action: str
 
-# Callback factory for cathegory selection
-class Cathegory(CallbackData, prefix="cat"):
+# Callback factory for category selection
+class Category(CallbackData, prefix="cat"):
     name: str
 
 # Callback factory for language selection

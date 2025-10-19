@@ -120,7 +120,7 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # Handler for inline button use_brief
 @brief_router.callback_query(env.BriefActions.filter(F.action == "use_brief"))
-async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def use_brief(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     # Give like to brief message
     await bot.set_message_reaction(chat_id=callback.message.chat.id,
@@ -134,19 +134,19 @@ async def use_brief(callback: CallbackQuery, callback_data: env.Cathegory, state
     for action in env.NEXT_ACTIONS:
         builder.button(text=_(action), callback_data=env.NextActions(action=action) )
     builder.adjust(2)
-    sent_message = await callback.message.answer((_("{bookid}_added")+" "+_("add_next_{cathegory}")).format(bookid=data["book_id"], cathegory=data["cathegory"]), 
+    sent_message = await callback.message.answer((_("{bookid}_added")+" "+_("add_next_{category}")).format(bookid=data["book_id"], category=data["category"]), 
                                                  reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_next_book)
 
 # Handler for inline button edit_brief
 @brief_router.callback_query(env.BriefActions.filter(F.action == "edit_brief"))
-async def edit_brief(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def edit_brief(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     await h_field.SelectField(callback.message, state, pool, bot)
 
 # Handler for inline button take_new_photo
 @brief_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
-async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Cathegory, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
     await env.RemoveMyInlineKeyboards(callback, state)
     await AskForBrief(callback.message, state, pool, bot)

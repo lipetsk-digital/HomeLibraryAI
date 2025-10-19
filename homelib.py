@@ -8,7 +8,7 @@ import modules.environment as env # For environment variables and configurations
 from modules.postgresstorage import PostgresStorage # For PostgreSQL storage of bot state
 import modules.database as database # For creating tables in PostgreSQL
 import modules.h_start as h_start # For handling start command
-#import modules.h_add as h_add # For handling adding a new book
+import modules.h_add as h_add # For handling adding a new book
 #import modules.h_cat as h_cat # For manipulating cathegories
 #import modules.h_lang as h_lang # For handling language selection
 #import modules.h_cover as h_cover # For handling book cover photos
@@ -17,12 +17,11 @@ import modules.h_start as h_start # For handling start command
 #import modules.h_field as h_field # For handling field selection
 #import modules.h_edit as h_edit # For handling book editing
 #import modules.h_search as h_search # For handling book search
-#import modules.h_rename as h_rename # For handling cathegory renaming
+#import modules.h_rename as h_rename # For handling category renaming
 #import modules.h_history as h_history # For handling book history
 
 # Initialize bot and dispatcher
 bot = Bot(token=eng.TELEGRAM_TOKEN)
-#storage = MemoryStorage()
 storage = PostgresStorage(**eng.POSTGRES_CONFIG)
 dp = Dispatcher(storage=storage)
 
