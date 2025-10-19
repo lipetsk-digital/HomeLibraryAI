@@ -14,6 +14,7 @@ from aiogram.utils.formatting import Text, as_list, as_key_value # For formattin
 
 import modules.environment as env # For environment variables and configurations
 import modules.book as book # For save book to database
+import modules.h_field as h_field # For selecting book fields
 
 # Router for handling messages related to selecting book fields
 edit_router = Router()
@@ -45,3 +46,28 @@ async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool,
     await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=sent_message.message_id, reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
     await state.set_state(env.State.wait_reaction_on_brief)
+
+# Handler for edit buttons of books
+@edit_router.callback_query(env.EditBook.filter())
+async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBook, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+    book_id = callback_data.book_id
+    user_id = callback.from_user.id
+    # Fetch book information from the database
+    async with pool.acquire() as connection:
+        row = await connection.fetchrow("""
+            SELECT *
+            FROM books
+            WHERE user_id = $1 AND book_id = $2
+        """, user_id, book_id)
+    if row:
+        # Store book information in the state
+        book_dict = {}
+        for field in env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS:
+            book_dict[field] = row.get(field)
+        await state.update_data(**book_dict)
+        await state.update_data(book_id=book_id)
+        sent_message = await book.PrintBook(callback.message, state, pool, bot)
+        await h_field.SelectField(callback.message, state, pool, bot)    
+    else:
+        await callback.message.answer(_("book_not_found"))
+    await env.RemoveMyInlineKeyboards(callback, state)

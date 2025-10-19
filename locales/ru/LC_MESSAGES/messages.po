@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-18 20:53+0300\n"
+"POT-Creation-Date: 2025-10-18 22:40+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -18,17 +18,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:65
+#: modules/book.py:66
 msgid "no_books_found"
 msgstr "Книги не найдены 🥺"
 
-#: modules/book.py:67 modules/book.py:82
+#: modules/book.py:68 modules/book.py:86
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] "Найдена {books} книга 📕:"
 msgstr[1] "Найдены {books} книги 📚:"
 msgstr[2] "Найднено {books} книг 📚:"
+
+#: modules/book.py:77
+msgid "edit"
+msgstr "✏️ Изменить книгу"
 
 #: modules/environment.py:74
 msgid "add"
@@ -305,7 +309,4 @@ msgid_plural "{result}_books"
 msgstr[0] "Привет! У гас {result} книга 📕 в библиотеке"
 msgstr[1] "Привет! У вас {result} книги 📚 в библиотеке"
 msgstr[2] "Привет! У вас {result} книг 📚 в библиотеке"
-
-#~ msgid "edit"
-#~ msgstr "✏️ Изменить книгу"
 

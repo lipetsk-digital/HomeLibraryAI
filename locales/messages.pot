@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-18 20:53+0300\n"
+"POT-Creation-Date: 2025-10-18 22:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,16 +17,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:65
+#: modules/book.py:66
 msgid "no_books_found"
 msgstr ""
 
-#: modules/book.py:67 modules/book.py:82
+#: modules/book.py:68 modules/book.py:86
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
+
+#: modules/book.py:77
+msgid "edit"
+msgstr ""
 
 #: modules/environment.py:74
 msgid "add"

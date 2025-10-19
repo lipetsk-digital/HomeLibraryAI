@@ -1,3 +1,4 @@
+'''
 from aiogram.types import FSInputFile
 
 # ========================================================
@@ -13,11 +14,25 @@ from aiogram.filters.command import Command # For command handling
 from aiogram.types.callback_query import CallbackQuery # For handling callback queries
 from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
 from aiogram.types import BufferedInputFile
+from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
 import random
 
 import modules.environment as env # For environment variables and configurations
 import modules.h_start as h_start # For main menu
+'''
 
+from modules.imports import asyncpg, Bot, Chat, User, _
+
+# Send a brief statistic about the user's library
+async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> None:
+    async with pool.acquire() as conn:
+        result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", event_from_user.id)
+    if (result is None) or (result == 0):
+        await bot.send_message(event_chat.id, _("no_books"))
+    else:
+        await bot.send_message(event_chat.id, _("{result}_book","{result}_books",result).format(result=result))
+
+'''
 # Send to user current book information from user's data and return Message object
 async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> Message:
     # Get the book data from the state
@@ -38,25 +53,36 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
     user_id = callback.from_user.id # Get the user ID from the callback
     # Get stored user's data
     data = await state.get_data()
-    # Select max book_id of current user from the database
-    async with pool.acquire() as connection:
-        result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", user_id)
-        book_id = result + 1 # Increment the max book_id by 1
     # Build book dictionary
     fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS
     for field in fields:
         if field not in data:
             data[field] = None
-    # Add manual fields
-    data["user_id"] = user_id # Add user ID to the book data            
-    data["book_id"] = book_id # Add book ID to the book data
-    await state.update_data(book_id=book_id) # Save book ID in the state
-    # Insert the book data into the database
-    async with pool.acquire() as connection:
-        await connection.execute(
-            f"INSERT INTO books ({', '.join(fields)}) VALUES ({', '.join(['$' + str(i + 1) for i in range(len(fields))])})",
-            *[data[field] for field in fields]
-        )
+    if data["book_id"]: # If book_id is already set, we are updating existing book
+        book_id = data["book_id"]
+        # Update the book data in the database
+        async with pool.acquire() as connection:
+            await connection.execute(
+                f"UPDATE books SET {', '.join([f'{field} = ${i + 2}' for i, field in enumerate(fields)])} WHERE user_id = $1 AND book_id = ${len(fields) + 2}",
+                user_id,
+                *[data[field] for field in fields],
+                book_id
+            )
+    else:
+        # Select max book_id of current user from the database
+        async with pool.acquire() as connection:
+            result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", user_id)
+            book_id = result + 1 # Increment the max book_id by 1
+        # Add manual fields
+        data["user_id"] = user_id # Add user ID to the book data            
+        data["book_id"] = book_id # Add book ID to the book data
+        await state.update_data(book_id=book_id) # Save book ID in the state
+        # Insert the book data into the database
+        async with pool.acquire() as connection:
+            await connection.execute(
+                f"INSERT INTO books ({', '.join(fields)}) VALUES ({', '.join(['$' + str(i + 1) for i in range(len(fields))])})",
+                *[data[field] for field in fields]
+            )
 
 # Loop through books dataset and send to user the books list
 async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
@@ -72,11 +98,14 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             authors = row.get("authors")
             year = row.get("year")
             photo = row.get("cover_filename")  # Adjust field name as needed
+            builder = InlineKeyboardBuilder()
+            builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
+            builder.adjust(1)
             if photo:
                 photo_url = env.AWS_EXTERNAL_URL + "/" + photo
-                await message.answer_photo(photo=photo_url, caption=f"{book_id}. {title} - {authors}, {year}")
+                await message.answer_photo(photo=photo_url, caption=f"{book_id}. {title} - {authors}, {year}", reply_markup=builder.as_markup())
             else:
-                await message.answer(title)
+                await message.answer(title, reply_markup=builder.as_markup())
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"
@@ -88,3 +117,4 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             emoji = random.choice(["📕", "📘", "📗", "📙"])
             message_text += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
         await message.answer(message_text, parse_mode="HTML")
+'''
