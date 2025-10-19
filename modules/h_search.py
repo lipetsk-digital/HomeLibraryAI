@@ -11,7 +11,7 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
 
     # Prepare the query to search for books by title using full-text search
     query = """
-    SELECT book_id, title, authors, year, cover_filename
+    SELECT book_id, title, authors, year, cover_filename, category
     FROM books
     WHERE user_id=$1 AND
     (
@@ -19,7 +19,7 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
       to_tsvector($2, authors_full_names) @@ plainto_tsquery($2, $3) OR
       book_id::text = $3
     )
-    ORDER BY book_id ASC;
+    ORDER BY category ASC, book_id ASC;
     """
     user_id = event_from_user.id # Get the user ID from the message
     lang = (await state.get_data()).get("locale", "en") # Get the user's locale from the state, default to "en"
@@ -40,7 +40,7 @@ async def RecentBooks(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
     # Prepare the query to search for books by title using full-text search
     query = """
-    SELECT book_id, title, authors, year, cover_filename
+    SELECT book_id, title, authors, year, cover_filename, category
     FROM books
     WHERE user_id = $1
     ORDER BY book_id DESC
@@ -48,6 +48,7 @@ async def RecentBooks(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     """
     # Run the query to search for books in the database
     rows = await pool.fetch(query, event_from_user.id, eng.CountOfRecentBooks)
+    rows.reverse() # Reverse the rows order
     await book.PrintBooksList(rows, message, bot, event_from_user)
 
     # Send main menu to the user

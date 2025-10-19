@@ -91,10 +91,10 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     elif action == "select_category":
         # Prepare the query to search for books by category
         query = """
-        SELECT book_id, title, authors, year, cover_filename
+        SELECT book_id, title, authors, year, cover_filename, category
         FROM books
         WHERE user_id=$1 AND category=$2
-        ORDER BY book_id ASC;
+        ORDER BY category ASC, book_id ASC;
         """
         # Run the query to search for books in the database
         rows = await pool.fetch(query, event_from_user.id, category)

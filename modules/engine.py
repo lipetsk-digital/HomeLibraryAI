@@ -33,7 +33,7 @@ GPT_MODEL = os.getenv("GPT_MODEL")
 
 # Miscellaneous constants
 CountOfRecentBooks = 5
-MaxBytesInCategoryName = 60
+MaxBytesInCategoryName = 60 # 64 - len("cat")
 
 # ========================================================
 # Environment variables

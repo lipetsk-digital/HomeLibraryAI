@@ -75,28 +75,38 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot, event_from_user
     elif len(rows) < 10:
         await message.answer(_("{books}_found","{books}_founds",len(rows)).format(books=len(rows)))
         # Send one message for each book with title, authors, year and cover photo
+        prev_category = None
         for row in rows:
             book_id = row.get("book_id")
             title = row.get("title")
             authors = row.get("authors")
             year = row.get("year")
             photo = row.get("cover_filename")  # Adjust field name as needed
+            category = row.get("category")
+            if category != prev_category:
+                await message.answer(_("category")+": <b>"+category+"</b>", parse_mode="HTML")
+                prev_category = category
             builder = InlineKeyboardBuilder()
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
             builder.adjust(1)
             if photo:
                 photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
-                await message.answer_photo(photo=photo_url, caption=f"{book_id}. {title} - {authors}, {year}", reply_markup=builder.as_markup())
+                await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
-                await message.answer(title, reply_markup=builder.as_markup())
+                await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"
+        prev_category = None
         for row in rows:
             book_id = row.get("book_id")
             title = row.get("title")
             authors = row.get("authors")
             year = row.get("year")
+            category = row.get("category")
             emoji = random.choice(["📕", "📘", "📗", "📙"])
+            if category != prev_category:
+                message_text += _("category")+": <b>"+category+"</b>\n"
+                prev_category = category
             message_text += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
         await message.answer(message_text, parse_mode="HTML")
