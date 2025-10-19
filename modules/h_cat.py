@@ -65,7 +65,7 @@ async def category_selected(callback: CallbackQuery, callback_data: env.Category
 async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     data = await state.get_data()
     action = data.get("action")
-    if action == "add_book":
+    if (action == "add_book") or (action == "edit_book"):
         await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
     else:
         await message.delete()
