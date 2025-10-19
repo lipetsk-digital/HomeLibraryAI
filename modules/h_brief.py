@@ -94,6 +94,13 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
     # Remove temporal message
     await waiting_message.delete()
+    # Print book info and ask user for reaction on brief
+    await AskForBriefReaction(message, state, pool, bot, event_chat)
+
+
+# =========================================================
+#  Print book info and ask user for reaction on brief
+async def AskForBriefReaction(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     # Print the book information
     sent_message = await book.PrintBook(message, state, pool, bot)
     # Generate keyboard with further actions

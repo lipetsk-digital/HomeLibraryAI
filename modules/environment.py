@@ -18,12 +18,13 @@ class State(StatesGroup):
     wait_for_field_value = State()
     wait_for_search_query = State()
     wait_for_new_category_name = State()
+    confirm_delete_book = State()
 
 # States data description of users conversation
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
     #             [ "add_book", "search", "recent", "select_category", 
-    #               "rename_category" ]
+    #               "rename_category", "edit_book" ]
     # category: str - selected category name
     #
     # photo_filename: str - filename of the uploaded book cover photo
@@ -86,8 +87,14 @@ ADVANCED_BOOK_FIELDS = [
 ]
 SPECIAL_BOOK_FIELDS = [
     "user_id",
-    "book_id",
+    _translate_("book_id"),
     _translate_("category")
+]
+BOOK_ACTIONS = [
+    _translate_("move_book"),
+    _translate_("delete_book"),
+    _translate_("save_changes"),
+    _translate_("cancel")
 ]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),
@@ -115,6 +122,10 @@ BRIEF_ACTIONS = [
 NEXT_ACTIONS = [
     _translate_("add_another_book"),
     _translate_("no_another_book")
+]
+CONFIRM_DELETE = [
+    _translate_("delete"),
+    _translate_("cancel")
 ]
 
 # -------------------------------------------------------
@@ -153,3 +164,5 @@ class BookFields(CallbackData, prefix="field"):
 class EditBook(CallbackData, prefix="edit"):
     book_id: int
 
+class ConfirmDelete(CallbackData, prefix="confirm"):
+    action: str

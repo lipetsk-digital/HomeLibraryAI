@@ -4,6 +4,7 @@ from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, InlineKeybo
 import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
 import modules.book as book # For generating list of the books
+import modules.h_edit as h_edit # For handling book editing
 
 # -------------------------------------------------------
 # Prepares and sends the inline keyboard for selecting a category.
@@ -33,6 +34,8 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
                 text = _("select_category_to_view_books")
             elif action == "rename_category":
                 text = _("select_category_to_rename")
+            elif action == "edit_book":
+                text = _("select_category_to_move_book")
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Category(name=row[0]) )
             builder.adjust(1)
@@ -96,6 +99,10 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     elif action == "rename_category":
         await message.answer(_("enter_category_name"))
         await state.set_state(env.State.wait_for_new_category_name)
+    elif action == "edit_book":
+        # Return to editing book after category selection
+        sent_message = await book.PrintBook(message, state, pool, bot)
+        await h_edit.SelectField(sent_message, state, pool, bot, event_chat)
 
 # -------------------------------------------------------
 # Handler for entered text when the user enters new category name

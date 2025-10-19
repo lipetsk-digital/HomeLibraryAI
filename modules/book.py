@@ -20,10 +20,11 @@ async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot
     data = await state.get_data() # Get stored user's data
     items = []
     # Loop through the book fields and add them to the items list
-    for field in env.BOOK_FIELDS:
+    for field in ["book_id"] + env.BOOK_FIELDS + ["category"]:
         if field in data:
             value = data[field]
-            items.append(as_key_value(_(field), value))
+            if value:
+                items.append(as_key_value(_(field), value))
     content = as_list(*items)
     # Send the message with the book information and the keyboard
     sent_message = await message.answer(**content.as_kwargs())
@@ -34,6 +35,7 @@ async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot
 async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_from_user: User) -> None:
     # Get stored user's data
     data = await state.get_data()
+    data["user_id"] = event_from_user.id
     # Build book dictionary
     fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + env.SPECIAL_BOOK_FIELDS
     for field in fields:
@@ -55,7 +57,6 @@ async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, ev
             result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", event_from_user.id)
             book_id = result + 1 # Increment the max book_id by 1
         # Add manual fields
-        data["user_id"] = event_from_user.id # Add user ID to the book data            
         data["book_id"] = book_id # Add book ID to the book data
         await state.update_data(book_id=book_id) # Save book ID in the state
         # Insert the book data into the database
