@@ -6,7 +6,7 @@ import modules.h_start as h_start # For handling start command
 #import modules.book as book # For generating list of the books
 
 # Prepares and sends the inline keyboard for selecting a category.
-async def SelectCategory(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat,  event_from_user: User) -> None:
+async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Flush previously selected category
     await state.update_data(category=None)
     # Get the action from the state data
@@ -35,14 +35,14 @@ async def SelectCategory(message: Message, state: FSMContext, pool: asyncpg.Pool
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Category(name=row[0]) )
             builder.adjust(1)
-            sent_message = await message.answer(text, reply_markup=builder.as_markup())
+            sent_message = await bot.send_message(event_chat.id, text, reply_markup=builder.as_markup())
             await state.update_data(inline=sent_message.message_id)
         else:
             # If there are no cathegories, check if the user can add a new one
             if action == "add_book":
-                await message.answer(_("enter_category_add_book"))
+                await bot.send_message(event_chat.id, _("enter_category_add_book"))
             else:
-                await message.answer(_("no_books"))
+                await bot.send_message(event_chat.id, _("no_books"))
                 await h_start.MainMenu(state, pool, bot, event_chat)
                 await state.set_state(env.State.wait_for_command)
                 return
@@ -96,12 +96,17 @@ async def DoCategory(category: str, message: Message, user_id: int, state: FSMCo
 
 # Handler for the /cat command
 @eng.first_router.message(Command("cat"))
-async def add_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await env.RemoveOldInlineKeyboards(state, message.chat.id, bot)
-    await SelectCategory(message, message.from_user.id, state, pool, bot, "select_cat")
+async def cat_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+    await SelectCategoryToViewBooks(state, pool, bot, event_chat, event_from_user)
 
 # Handler for the callback query when the user selects "cat" from the main menu
 @eng.first_router.callback_query(env.MainMenu.filter(F.action=="cat"))
-async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    await env.RemoveMyInlineKeyboards(callback, state)
-    await SelectCategory(callback.message, callback.from_user.id, state, pool, bot, "select_cat")
+async def cat_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await env.RemoveMyInlineKeyboards(callback, state, bot, event_chat)
+    await SelectCategoryToViewBooks(state, pool, bot, event_chat, event_from_user)
+
+# Start selecting category to view books
+async def SelectCategoryToViewBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await state.update_data(action="select_cat")
+    await SelectCategory(state, pool, bot, event_chat, event_from_user)

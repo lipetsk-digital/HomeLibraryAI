@@ -20,6 +20,6 @@ async def add_callback(callback: CallbackQuery, callback_data: env.MainMenu, sta
 # -------------------------------------------------------
 # Start adding a new book
 async def StartAddBook(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    message = await bot.send_message(event_chat.id, _("start_add_book"))
+    await bot.send_message(event_chat.id, _("start_add_book"))
     await state.update_data(action="add_book")
-    await h_cat.SelectCategory(message, state, pool, bot, event_chat, event_from_user)
+    await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
