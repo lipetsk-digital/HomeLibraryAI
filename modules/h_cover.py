@@ -1,8 +1,8 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports import asyncpg, aioboto3, io, uuid, np, cv2, _, env, eng, async_remove
-from modules.imports import Bot, F, Chat, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, CallbackData, FSMContext
-#import modules.h_brief as h_brief # For run brief commands
+from modules.imports import asyncpg, aioboto3, cv2, async_remove, io, uuid, np, _, env, eng
+from modules.imports import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
+import modules.h_brief as h_brief # For run brief commands
 
 # =========================================================
 # Order points for perspective transformation
@@ -27,9 +27,8 @@ def order_points(pts):
 # =========================================================
 # Ask user for the photo of the book cover
 async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    # Forget old books
-    await state.update_data(photo_filename=None, cover_filename=None, brief_filename=None, title=None, authors=None, authors_full_names=None, pages=None,
-                            publisher=None, year=None, isbn=None, brief=None, annotation=None, book_id=None, user_id=None)
+    # Forget old books: clear all book fields in the state
+    await state.update_data(**{key: None for key in (env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + ["book_id"])})
     # Ask for the cover text
     await bot.send_message(event_chat.id, _("photo_cover"))
     # Set the state to wait for the cover text
@@ -38,7 +37,7 @@ async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
 # =========================================================
 # Handler for sended photo of book cover
 @eng.first_router.message(env.State.wait_for_cover_photo, F.photo)
-async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Get the photo from the message
     photo = message.photo[-1]
     photo_file = await bot.get_file(photo.file_id)
@@ -53,11 +52,11 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # -------------------------------------------------------
         # Upload the photo to S3 storage
         try:
-            photo_filename = f"{message.from_user.id}/photo/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
+            photo_filename = f"{event_from_user.id}/photo/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(photo_bytesio2, eng.AWS_BUCKET_NAME, photo_filename)
             await state.update_data(photo_filename=photo_filename) # Save the filename in the state
             # Give like to user's photo
-            await bot.set_message_reaction(chat_id=message.chat.id,
+            await bot.set_message_reaction(chat_id=event_chat.id,
                                            message_id=message.message_id,
                                            reaction=[ReactionTypeEmoji(emoji='👍')])
         except Exception as e:
@@ -134,7 +133,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # Upload the processed image to S3 storage
         try:
             output_bytesio2 = io.BytesIO(output_bytesio.getvalue()) # Save the processed image to a BytesIO object
-            cover_filename = f"{message.from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
+            cover_filename = f"{event_from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(output_bytesio2, eng.AWS_BUCKET_NAME, cover_filename)
             await state.update_data(cover_filename=cover_filename) # Save the filename in the state
         except Exception as e:
@@ -144,29 +143,29 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         # -------------------------------------------------------
         # Send the processed image back to the user
         builder = InlineKeyboardBuilder()
-        await eng.RemoveInlineKeyboards(None, state, message.chat.id, bot)
+        await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
         for action in env.COVER_ACTIONS:
             builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
         builder.adjust(1)
-        sent_message = await bot.send_photo(message.chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
+        sent_message = await bot.send_photo(event_chat.id, photo=BufferedInputFile(output_bytesio.getvalue(), filename=cover_filename), reply_markup=builder.as_markup())
         await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.wait_reaction_on_cover)
 
 # =========================================================
 # Handler for inline button use_cover
 @eng.first_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
-async def use_cover(callback: CallbackQuery, callback_data: CallbackData, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def use_cover(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     # Give like to cover's photo
     await bot.set_message_reaction(chat_id=event_chat.id,
                                     message_id=callback.message.message_id,
                                     reaction=[ReactionTypeEmoji(emoji='👍')])
-    #await h_brief.AskForBrief(callback.message, state, pool, bot)
+    await h_brief.AskForBrief(state, pool, bot, event_chat)
 
 # =========================================================
 # Handler for inline button use_original_photo
 @eng.first_router.callback_query(env.CoverActions.filter(F.action == "use_original_photo"))
-async def use_original_photo(callback: CallbackQuery, callback_data: CallbackData, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def use_original_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     data = await state.get_data()
     photo_filename = data.get("photo_filename")
@@ -176,11 +175,11 @@ async def use_original_photo(callback: CallbackQuery, callback_data: CallbackDat
         await bot.delete_message(chat_id=event_chat.id, message_id=callback.message.message_id)
     except Exception as e:
         eng.logging.warning(f"Failed to delete callback message: {e}")
-    #await h_brief.AskForBrief(callback.message, state, pool, bot)
+    await h_brief.AskForBrief(state, pool, bot, event_chat)
 
 # =========================================================
 # Handler for inline button take_new_photo
 @eng.first_router.callback_query(env.CoverActions.filter(F.action == "take_new_photo"))
-async def take_new_cover_photo(callback: CallbackQuery, callback_data: CallbackData, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await AskForCover(state, pool, bot, event_chat)

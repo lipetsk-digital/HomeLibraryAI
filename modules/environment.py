@@ -24,6 +24,7 @@ class State(StatesGroup):
     # action: str - global action being performed: 
     #             ["add_book", "select_category", "rename_category"]
     # category: str - selected category name
+    #
     # photo_filename: str - filename of the uploaded book cover photo
     # cover_filename: str - filename of the processed book cover photo
     # brief_filename: str - filename of the uploaded brief photo
@@ -34,9 +35,11 @@ class State(StatesGroup):
     # publisher: str - book publisher
     # year: str - publication year
     # isbn: str - ISBN number
-    # annotation: str - book annotation
+    # annotation: str - full book annotation
     # brief: str - brief description of the book
     # book_id: int - ID of the book being processed
+    #
+    # field: str - currently selected book field for editing
 
 
 # -------------------------------------------------------
@@ -74,14 +77,16 @@ BOOK_FIELDS = [
     _translate_("brief")
 ]
 ADVANCED_BOOK_FIELDS = [
-    "user_id",
-    "book_id",
-    _translate_("category"),
     "photo_filename",
     "cover_filename",
     "brief_filename",
     _translate_("authors"),
     _translate_("annotation")
+]
+SPECIAL_BOOK_FIELDS = [
+    "user_id",
+    "book_id",
+    _translate_("category")
 ]
 BOOK_PROMPT = [
     _translate_("prompt_photo"),

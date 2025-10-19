@@ -1,28 +1,9 @@
-'''
-from aiogram.types import FSInputFile
+# Module for get and put books to database
 
-# ========================================================
-# Module for save a book to database
-# ========================================================
-import asyncpg # For asynchronous PostgreSQL connection
-from aiogram import Bot, F # For Telegram bot framework
-from aiogram import Router # For creating a router for handling messages
-from aiogram.types import Message # For Telegram message handling
-from aiogram.fsm.context import FSMContext # For finite state machine context
-from aiogram.utils.i18n import gettext as _ # For internationalization and localization
-from aiogram.filters.command import Command # For command handling
-from aiogram.types.callback_query import CallbackQuery # For handling callback queries
-from aiogram.utils.formatting import Text, as_list, as_key_value # For formatting messages
-from aiogram.types import BufferedInputFile
-from aiogram.utils.keyboard import InlineKeyboardBuilder # For creating inline keyboards
-import random
+from modules.imports import asyncpg, random, _, as_list, as_key_value, env
+from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext
 
-import modules.environment as env # For environment variables and configurations
-import modules.h_start as h_start # For main menu
-'''
-
-from modules.imports import asyncpg, Bot, Chat, User, _
-
+# -------------------------------------------------------
 # Send a brief statistic about the user's library
 async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> None:
     async with pool.acquire() as conn:
@@ -32,7 +13,7 @@ async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, ev
     else:
         await bot.send_message(event_chat.id, _("{result}_book","{result}_books",result).format(result=result))
 
-'''
+# -------------------------------------------------------
 # Send to user current book information from user's data and return Message object
 async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> Message:
     # Get the book data from the state
@@ -48,13 +29,13 @@ async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot
     sent_message = await message.answer(**content.as_kwargs())
     return sent_message
 
+# -------------------------------------------------------
 # Save book to database
-async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
-    user_id = callback.from_user.id # Get the user ID from the callback
+async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_from_user: User) -> None:
     # Get stored user's data
     data = await state.get_data()
     # Build book dictionary
-    fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS
+    fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + env.SPECIAL_BOOK_FIELDS
     for field in fields:
         if field not in data:
             data[field] = None
@@ -64,17 +45,17 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
         async with pool.acquire() as connection:
             await connection.execute(
                 f"UPDATE books SET {', '.join([f'{field} = ${i + 2}' for i, field in enumerate(fields)])} WHERE user_id = $1 AND book_id = ${len(fields) + 2}",
-                user_id,
+                event_from_user.id,
                 *[data[field] for field in fields],
                 book_id
             )
     else:
         # Select max book_id of current user from the database
         async with pool.acquire() as connection:
-            result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", user_id)
+            result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", event_from_user.id)
             book_id = result + 1 # Increment the max book_id by 1
         # Add manual fields
-        data["user_id"] = user_id # Add user ID to the book data            
+        data["user_id"] = event_from_user.id # Add user ID to the book data            
         data["book_id"] = book_id # Add book ID to the book data
         await state.update_data(book_id=book_id) # Save book ID in the state
         # Insert the book data into the database
@@ -84,6 +65,7 @@ async def SaveBookToDatabase(callback: CallbackQuery, state: FSMContext, pool: a
                 *[data[field] for field in fields]
             )
 
+# -------------------------------------------------------
 # Loop through books dataset and send to user the books list
 async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
     # For short list of the books:
@@ -117,4 +99,3 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot) -> None:
             emoji = random.choice(["📕", "📘", "📗", "📙"])
             message_text += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
         await message.answer(message_text, parse_mode="HTML")
-'''
