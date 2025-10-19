@@ -8,7 +8,8 @@ import modules.environment as env # For environment variables and configurations
 from modules.postgresstorage import PostgresStorage # For PostgreSQL storage of bot state
 import modules.database as database # For creating tables in PostgreSQL
 import modules.h_start as h_start # For handling start command
-import modules.h_add as h_add # For handling adding a new book
+import modules.h_menu as h_menu # For handling main menu commands
+#import modules.h_add as h_add # For handling adding a new book
 #import modules.h_cat as h_cat # For manipulating cathegories
 #import modules.h_lang as h_lang # For handling language selection
 #import modules.h_cover as h_cover # For handling book cover photos
@@ -51,20 +52,10 @@ async def main():
     
     # Register handlers
     dp.include_router(eng.first_router) # Global commands
-    #dp.include_router(h_add.add_router)
-    #dp.include_router(h_cat.cat_router)
-    #dp.include_router(h_lang.lang_router)
-    #dp.include_router(h_cover.cover_router)
-    #dp.include_router(h_brief.brief_router)
-    #dp.include_router(h_next.next_router)
-    #dp.include_router(h_field.field_router)
-    #dp.include_router(h_edit.edit_router)
-    #dp.include_router(h_search.search_router)
-    #dp.include_router(h_rename.rename_router)
     dp.include_router(eng.last_router) # Trash messages
     
     # Register startup routines
-    dp.startup.register(eng.PrepareGlobalMenu)
+    dp.startup.register(h_start.PrepareGlobalMenu)
 
     # Start bot polling
     await dp.start_polling(bot)

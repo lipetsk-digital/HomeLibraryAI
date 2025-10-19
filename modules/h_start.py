@@ -1,7 +1,21 @@
 # Module for handling bot messages related to start bot
 
 from modules.imports import asyncpg, _, Bot, Chat, User, Message, Command, InlineKeyboardBuilder, FSMContext, env, eng
+from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot commands
 import modules.book as book # For book routines
+
+# -------------------------------------------------------
+# Prepare the bot's bottom left main menu commands
+async def PrepareGlobalMenu(bot: Bot):
+    # Loop through all available languages and set the bot commands for each one    
+    available_languages = eng.i18n.available_locales
+    eng.logging.debug(f"Available languages: {available_languages}")
+    for lang in available_languages:
+        commands = []
+        actions = env.MAIN_MENU_ACTIONS + env.ADVANCED_ACTIONS
+        for action in actions:
+            commands.append(BotCommand(command=action, description=eng.i18n.gettext(action, locale=lang)))
+        await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # -------------------------------------------------------
 # Handler for the /start command

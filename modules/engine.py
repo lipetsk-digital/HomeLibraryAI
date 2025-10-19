@@ -1,11 +1,9 @@
 # Module for configuraion data, environment variables, and basic routines
 
-from modules.imports import Bot, Router, Chat, Message, CallbackQuery, FSMContext, env
+from modules.imports import asyncpg, Bot, Router, F, Chat, Message, CallbackQuery, FSMContext, env
 
 import os # For environment variables
 import logging # For logging
-
-from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot commands
 
 # ========================================================
 # Configuration data
@@ -53,20 +51,6 @@ logging.basicConfig(level=logging.INFO)
 # ========================================================
 # Routines defenitions
 # ========================================================
-
-# -------------------------------------------------------
-# Prepare the bot's bottom left main menu commands
-async def PrepareGlobalMenu(bot: Bot):
-    # Loop through all available languages and set the bot commands for each one    
-    available_languages = i18n.available_locales
-    logging.debug(f"Available languages: {available_languages}")
-    for lang in available_languages:
-        commands = []
-        actions = env.MAIN_MENU_ACTIONS + env.ADVANCED_ACTIONS
-        for action in actions:
-            commands.append(BotCommand(command=action, description=i18n.gettext(action, locale=lang)))
-        await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
-
 
 # -------------------------------------------------------
 # Remove inline keyboard from callback message or last stored in state
