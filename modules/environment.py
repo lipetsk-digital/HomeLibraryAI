@@ -20,10 +20,24 @@ class State(StatesGroup):
     wait_for_new_category_name = State()
 
 # States data description of users conversation
-  # inline: int - message ID of the last sent message with inline keyboard
-  # action: str - global action being performed: 
-  #             ["add_book", "select_category", "rename_category"]
-  # category: str - selected category name
+    # inline: int - message ID of the last sent message with inline keyboard
+    # action: str - global action being performed: 
+    #             ["add_book", "select_category", "rename_category"]
+    # category: str - selected category name
+    # photo_filename: str - filename of the uploaded book cover photo
+    # cover_filename: str - filename of the processed book cover photo
+    # brief_filename: str - filename of the uploaded brief photo
+    # title: str - book title
+    # authors: str - original string of book authors
+    # authors_full_names: str - full names of the book authors
+    # pages: str - number of pages in the book
+    # publisher: str - book publisher
+    # year: str - publication year
+    # isbn: str - ISBN number
+    # annotation: str - book annotation
+    # brief: str - brief description of the book
+    # book_id: int - ID of the book being processed
+
 
 # -------------------------------------------------------
 # Lists of commands and fields

@@ -1,6 +1,6 @@
 # Module for handling bot messages related to select cathegories
 
-from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, InlineKeyboardBuilder, CallbackQuery, FSMContext, env, eng
+from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, InlineKeyboardBuilder, CallbackQuery, FSMContext, env, eng
 import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
 import modules.book as book # For generating list of the books
@@ -54,23 +54,23 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
 @eng.first_router.callback_query(env.Category.filter())
 async def category_selected(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await DoCategory(callback_data.name, callback.message, state, pool, bot, event_from_user)
+    await DoCategory(callback_data.name, callback.message, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
 @eng.first_router.message(env.State.select_category, F.text)
-async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> None:
+async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     data = await state.get_data()
     action = data.get("action")
     if action == "add_book":
-        await DoCategory(message.text, message, message.from_user.id, state, pool, bot)
+        await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
     else:
         await message.delete()
         await message.answer(_("can_not_add_category"))
 
 # -------------------------------------------------------
 # Process the selected category
-async def DoCategory(category: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_from_user: User) -> None:
+async def DoCategory(category: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Save selected category
     await state.update_data(category=category)
     # Notify the user about the selected category
@@ -79,7 +79,7 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     data = await state.get_data()
     action = data.get("action")
     if action == "add_book":
-        await h_cover.AskForCover(message, state, pool, bot)
+        await h_cover.AskForCover(state, pool, bot, event_chat)
     elif action == "select_category":
         # Prepare the query to search for books by category
         query = """
