@@ -3,6 +3,7 @@
 from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, FSMContext, env, eng
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_search as h_search # For books search routines
+import modules.h_lang as h_lang # For language selection routines
 
 # -------------------------------------------------------
 # Handler for main menu commands
@@ -41,3 +42,6 @@ async def RunMainMenuAction(action: str, state: FSMContext, pool: asyncpg.Pool, 
     elif action == "rename":
         await state.update_data(action="rename_category")
         await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+    elif action == "settings":
+        await state.update_data(action="select_language")
+        await h_lang.SelectLanguage(state, pool, bot, event_chat, event_from_user)
