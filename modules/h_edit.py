@@ -124,24 +124,27 @@ async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBoo
         await callback.message.answer(_("book_not_found"))
 
 # -------------------------------------------------------
-# Handler for confirm delete buttons
-@eng.base_router.callback_query(env.ConfirmDelete.filter())
+# Handler for confirm delete button
+@eng.base_router.callback_query(env.ConfirmDelete.filter(F.action == "delete"))
 async def confirm_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    action = callback_data.action
-    if action == "delete":
-        data = await state.get_data()
-        book_id = data.get("book_id")
-        # Delete the book from the database
-        async with pool.acquire() as connection:
-            await connection.execute("""
-                DELETE FROM books
-                WHERE user_id = $1 AND book_id = $2
-            """, event_from_user.id, book_id)
-        await callback.message.answer((_("{bookid}_deleted")).format(bookid=data["book_id"]))
-        # Return to main menu
-        await h_start.MainMenu(state, pool, bot, event_chat)
-    else:
-        await callback.message.answer(_("cancel"))
-        # Return to editing field selection
-        await SelectField(callback.message, state, pool, bot, event_chat)
+    data = await state.get_data()
+    book_id = data.get("book_id")
+    # Delete the book from the database
+    async with pool.acquire() as connection:
+        await connection.execute("""
+            DELETE FROM books
+            WHERE user_id = $1 AND book_id = $2
+        """, event_from_user.id, book_id)
+    await callback.message.answer((_("{bookid}_deleted")).format(bookid=data["book_id"]))
+    # Return to main menu
+    await h_start.MainMenu(state, pool, bot, event_chat)
+
+# -------------------------------------------------------
+# Handler for cancel delete button
+@eng.base_router.callback_query(env.ConfirmDelete.filter(F.action == "cancel"))
+async def cancel_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await callback.message.answer(_("cancel"))
+    # Return to editing field selection
+    await SelectField(callback.message, state, pool, bot, event_chat)
