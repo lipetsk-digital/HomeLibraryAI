@@ -24,7 +24,7 @@ class State(StatesGroup):
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
     #             [ "add_book", "search", "recent", "select_category", 
-    #               "rename_category", "edit_book" ]
+    #               "rename_category", "edit_book", "select_language" ]
     # category: str - selected category name
     #
     # photo_filename: str - filename of the uploaded book cover photo
