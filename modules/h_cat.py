@@ -98,7 +98,7 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
         """
         # Run the query to search for books in the database
         rows = await pool.fetch(query, event_from_user.id, category)
-        await book.PrintBooksList(rows, message, bot, event_from_user)
+        await book.PrintBooksList(rows, message, state, bot, event_from_user)
         # Send main menu to the user
         await h_start.MainMenu(state, pool, bot, event_chat)
     elif action == "rename_category":
