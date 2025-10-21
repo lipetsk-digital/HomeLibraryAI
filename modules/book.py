@@ -91,10 +91,9 @@ async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: B
             builder.adjust(1)
             if photo:
                 photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
-                sent_message = await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+                await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
-                sent_message = await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
-            await state.update_data(inline=sent_message.message_id)
+                await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"
