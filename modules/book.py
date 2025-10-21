@@ -68,7 +68,7 @@ async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, ev
 
 # -------------------------------------------------------
 # Loop through books dataset and send to user the books list
-async def PrintBooksList(rows: list, message: Message, bot: Bot, event_from_user: User) -> None:
+async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: Bot, event_from_user: User) -> None:
     # For short list of the books:
     if len(rows) == 0:
         await message.answer(_("no_books_found"))
@@ -91,9 +91,10 @@ async def PrintBooksList(rows: list, message: Message, bot: Bot, event_from_user
             builder.adjust(1)
             if photo:
                 photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
-                await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+                sent_message = await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
-                await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+                sent_message = await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+            await state.update_data(inline=sent_message.message_id)
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"

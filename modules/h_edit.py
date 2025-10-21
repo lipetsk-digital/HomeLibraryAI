@@ -44,7 +44,8 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
         for action in env.CONFIRM_DELETE:
             builder.button(text=_(action), callback_data=env.ConfirmDelete(action=action))
         builder.adjust(2)
-        await callback.message.answer(_("confirm_delete_book"), reply_markup=builder.as_markup())
+        sent_message = await callback.message.answer(_("confirm_delete_book"), reply_markup=builder.as_markup())
+        await state.update_data(inline=sent_message.message_id)
         await state.set_state(env.State.confirm_delete_book)
     elif field == "cancel":
         await callback.message.answer(_("cancel"))
