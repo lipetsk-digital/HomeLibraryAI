@@ -14,14 +14,7 @@ import modules.h_cover as h_cover # For handling book cover photos
 import modules.h_brief as h_brief # For handling brief commands
 import modules.h_edit as h_edit # For handling book editing
 import modules.h_search as h_search # For handling book search
-
-#import modules.h_lang as h_lang # For handling language selection
-#import modules.h_field as h_field # For handling field selection
-#import modules.h_rename as h_rename # For handling category renaming
-#import modules.h_history as h_history # For handling book history
-
-#import modules.h_add as h_add # For handling adding a new book
-#import modules.h_next as h_next # For handling next book commands
+import modules.h_lang as h_lang # For handling language selection
 
 # Initialize bot and dispatcher
 bot = Bot(token=eng.TELEGRAM_TOKEN)
