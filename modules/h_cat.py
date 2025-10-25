@@ -71,7 +71,7 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
             await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
         else:
             await message.delete()
-            await message.answer(_("category_name_too_long"))
+            await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))
     else:
         await message.delete()
         await message.answer(_("can_not_add_category"))
@@ -82,7 +82,8 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     # Save selected category
     await state.update_data(category=category)
     # Notify the user about the selected category
-    await message.answer(_("{category}_selected").format(category=category))
+    await message.answer(_("category_selected"))
+    await message.answer(category)
     # Perform the action based on the selected category
     data = await state.get_data()
     action = data.get("action")
@@ -132,4 +133,4 @@ async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncp
         await h_start.MainMenu(state, pool, bot, event_chat)
     else:
         await message.delete()
-        await message.answer(_("category_name_too_long"))
+        await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))

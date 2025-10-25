@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 22:13+0300\n"
+"POT-Creation-Date: 2025-10-25 21:13+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -34,7 +34,7 @@ msgstr[2] "Привет! У вас {result} книг 📚 в библиотек�
 msgid "no_books_found"
 msgstr "Книги не найдены 🥺"
 
-#: modules/book.py:76 modules/book.py:94
+#: modules/book.py:76 modules/book.py:99
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
@@ -42,7 +42,11 @@ msgstr[0] "Найдена {books} книга 📕:"
 msgstr[1] "Найдены {books} книги 📚:"
 msgstr[2] "Найдено {books} книг 📚:"
 
-#: modules/book.py:85
+#: modules/book.py:87 modules/book.py:109 modules/environment.py:91
+msgid "category"
+msgstr "📂 Категория"
+
+#: modules/book.py:90
 msgid "edit"
 msgstr "✏️ Правка"
 
@@ -126,10 +130,6 @@ msgstr "📜 Аннотация"
 msgid "book_id"
 msgstr "#️⃣ ID книги"
 
-#: modules/environment.py:91
-msgid "category"
-msgstr "📂 Категория"
-
 #: modules/environment.py:94
 msgid "move_book"
 msgstr "Переместить 📁"
@@ -142,8 +142,8 @@ msgstr "Удалить ❌"
 msgid "save_changes"
 msgstr "✅ Cохранить"
 
-#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:50
-#: modules/h_edit.py:145
+#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:51
+#: modules/h_edit.py:149
 msgid "cancel"
 msgstr "Отмена"
 
@@ -281,24 +281,24 @@ msgstr "Выберите 📂 категорию, в которую перене
 msgid "enter_category_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:74 modules/h_cat.py:135
-msgid "category_name_too_long"
-msgstr "Слишком длинное название категории 🥺 (максимум 64 байта)"
+#: modules/h_cat.py:74 modules/h_cat.py:136
+#, python-brace-format
+msgid "category_name_{size}"
+msgstr "Слишком длинное название категории 🥺 (максимум {size} байт)"
 
 #: modules/h_cat.py:77
 msgid "can_not_add_category"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
 #: modules/h_cat.py:85
-#, python-brace-format
-msgid "{category}_selected"
-msgstr "Вы выбрали категорию: {category}"
+msgid "category_selected"
+msgstr "Вы выбрали категорию:"
 
-#: modules/h_cat.py:105
+#: modules/h_cat.py:106
 msgid "enter_category_name"
 msgstr "Напишите новое название 📂 категории:"
 
-#: modules/h_cat.py:130
+#: modules/h_cat.py:131
 msgid "category_renamed"
 msgstr "✅ Категория успешно переименована"
 
@@ -322,46 +322,46 @@ msgstr "❔Выберите поле для редактирования:"
 msgid "confirm_delete_book"
 msgstr "🗑️ Удалить книгу?"
 
-#: modules/h_edit.py:57
+#: modules/h_edit.py:58
 #, python-brace-format
 msgid "{bookid}_updated"
 msgstr "✅ Книга {bookid} обновлена"
 
-#: modules/h_edit.py:65
+#: modules/h_edit.py:66
 msgid "edit_field_value"
 msgstr "cкопируйте текущее значение поля и исправьте его или напишите новое:"
 
-#: modules/h_edit.py:69 modules/h_edit.py:72
+#: modules/h_edit.py:70 modules/h_edit.py:73
 msgid "edit_field_empty"
 msgstr "напишите новое значение поля:"
 
-#: modules/h_edit.py:124
+#: modules/h_edit.py:125
 msgid "book_not_found"
 msgstr "Книга не найдена 🥺"
 
-#: modules/h_edit.py:141
+#: modules/h_edit.py:140
 #, python-brace-format
 msgid "{bookid}_deleted"
 msgstr "🗑️ Книга {bookid} удалена"
 
-#: modules/h_lang.py:33
+#: modules/h_lang.py:18
 msgid "select_lang"
 msgstr "Выберите язык / Select language:"
 
-#: modules/h_lang.py:47
+#: modules/h_lang.py:31
 #, python-brace-format
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
 
-#: modules/h_menu.py:27
+#: modules/h_menu.py:28
 msgid "start_add_book"
 msgstr "➕ Добавляем книгу"
 
-#: modules/h_menu.py:31
+#: modules/h_menu.py:32
 msgid "enter_search_query"
 msgstr "🔍 Введите слова из названия книги, её авторов или её id:"
 
-#: modules/h_menu.py:35
+#: modules/h_menu.py:36
 msgid "recent_books"
 msgstr "📚 Недавно добавленные книги"
 
