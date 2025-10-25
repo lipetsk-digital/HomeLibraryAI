@@ -105,8 +105,19 @@ async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: B
             year = row.get("year")
             category = row.get("category")
             emoji = random.choice(["📕", "📘", "📗", "📙"])
+            # Prepare the lines to add
+            lines_to_add = ""
             if category != prev_category:
-                message_text += _("category")+": <b>"+category+"</b>\n"
+                lines_to_add += _("category")+": <b>"+category+"</b>\n"
                 prev_category = category
-            message_text += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
-        await message.answer(message_text, parse_mode="HTML")
+            lines_to_add += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
+            # Check if adding this would exceed the limit
+            if len(message_text + lines_to_add) >= eng.MaxCharsInMessage:
+                # Send current message and start a new one
+                await message.answer(message_text, parse_mode="HTML")
+                message_text = lines_to_add
+            else:
+                message_text += lines_to_add
+        # Send any remaining text
+        if message_text:
+            await message.answer(message_text, parse_mode="HTML")
