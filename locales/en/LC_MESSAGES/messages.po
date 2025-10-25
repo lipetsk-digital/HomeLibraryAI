@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 22:13+0300\n"
+"POT-Creation-Date: 2025-10-25 21:07+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -33,14 +33,18 @@ msgstr[1] "You have {result} books 📚 in your library"
 msgid "no_books_found"
 msgstr "Sorry, no books found 🥺"
 
-#: modules/book.py:76 modules/book.py:94
+#: modules/book.py:76 modules/book.py:99
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] "{books} book 📕 found:"
 msgstr[1] "{books} books 📚 found:"
 
-#: modules/book.py:85
+#: modules/book.py:87 modules/book.py:109 modules/environment.py:91
+msgid "category"
+msgstr "📂 Category"
+
+#: modules/book.py:90
 msgid "edit"
 msgstr "✏️ Edit"
 
@@ -124,10 +128,6 @@ msgstr "📜 Annotation"
 msgid "book_id"
 msgstr "#️⃣ Book ID"
 
-#: modules/environment.py:91
-msgid "category"
-msgstr "📂 Category"
-
 #: modules/environment.py:94
 msgid "move_book"
 msgstr "Move 📁"
@@ -140,8 +140,8 @@ msgstr "Delete 🗑️"
 msgid "save_changes"
 msgstr "✅ Save"
 
-#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:50
-#: modules/h_edit.py:145
+#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:51
+#: modules/h_edit.py:149
 msgid "cancel"
 msgstr "Cancel"
 
@@ -280,8 +280,9 @@ msgid "enter_category_add_book"
 msgstr "Enter name of 📂 category for adding a new book:"
 
 #: modules/h_cat.py:74 modules/h_cat.py:135
-msgid "category_name_too_long"
-msgstr "The category name is too long 🥺 (maximum 64 bytes)"
+#, python-brace-format
+msgid "category_name_{size}"
+msgstr "The category name is too long 🥺 (maximum {size} bytes)"
 
 #: modules/h_cat.py:77
 msgid "can_not_add_category"
@@ -320,46 +321,46 @@ msgstr "❔Select the field to edit:"
 msgid "confirm_delete_book"
 msgstr "🗑️ Delete book?"
 
-#: modules/h_edit.py:57
+#: modules/h_edit.py:58
 #, python-brace-format
 msgid "{bookid}_updated"
 msgstr "📗 The book {bookid} has been updated"
 
-#: modules/h_edit.py:65
+#: modules/h_edit.py:66
 msgid "edit_field_value"
 msgstr "copy current field value and correct it or write a new one:"
 
-#: modules/h_edit.py:69 modules/h_edit.py:72
+#: modules/h_edit.py:70 modules/h_edit.py:73
 msgid "edit_field_empty"
 msgstr "write a new value:"
 
-#: modules/h_edit.py:124
+#: modules/h_edit.py:125
 msgid "book_not_found"
 msgstr "Sorry, book not found 🥺"
 
-#: modules/h_edit.py:141
+#: modules/h_edit.py:140
 #, python-brace-format
 msgid "{bookid}_deleted"
 msgstr "🗑️ The book {bookid} has been deleted"
 
-#: modules/h_lang.py:33
+#: modules/h_lang.py:18
 msgid "select_lang"
 msgstr "Select language:"
 
-#: modules/h_lang.py:47
+#: modules/h_lang.py:31
 #, python-brace-format
 msgid "{language}_selected"
 msgstr "You selected {language} language"
 
-#: modules/h_menu.py:27
+#: modules/h_menu.py:28
 msgid "start_add_book"
 msgstr "➕ Add book"
 
-#: modules/h_menu.py:31
+#: modules/h_menu.py:32
 msgid "enter_search_query"
 msgstr "🔍 Enter worlds of a book title, its authors or its ID:"
 
-#: modules/h_menu.py:35
+#: modules/h_menu.py:36
 msgid "recent_books"
 msgstr "📚 Recently added books"
 

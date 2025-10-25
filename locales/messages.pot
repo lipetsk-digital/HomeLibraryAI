@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-19 22:13+0300\n"
+"POT-Creation-Date: 2025-10-25 21:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,14 +32,18 @@ msgstr[1] ""
 msgid "no_books_found"
 msgstr ""
 
-#: modules/book.py:76 modules/book.py:94
+#: modules/book.py:76 modules/book.py:99
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:85
+#: modules/book.py:87 modules/book.py:109 modules/environment.py:91
+msgid "category"
+msgstr ""
+
+#: modules/book.py:90
 msgid "edit"
 msgstr ""
 
@@ -123,10 +127,6 @@ msgstr ""
 msgid "book_id"
 msgstr ""
 
-#: modules/environment.py:91
-msgid "category"
-msgstr ""
-
 #: modules/environment.py:94
 msgid "move_book"
 msgstr ""
@@ -139,8 +139,8 @@ msgstr ""
 msgid "save_changes"
 msgstr ""
 
-#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:50
-#: modules/h_edit.py:145
+#: modules/environment.py:97 modules/environment.py:128 modules/h_edit.py:51
+#: modules/h_edit.py:149
 msgid "cancel"
 msgstr ""
 
@@ -279,7 +279,8 @@ msgid "enter_category_add_book"
 msgstr ""
 
 #: modules/h_cat.py:74 modules/h_cat.py:135
-msgid "category_name_too_long"
+#, python-brace-format
+msgid "category_name_{size}"
 msgstr ""
 
 #: modules/h_cat.py:77
@@ -319,46 +320,46 @@ msgstr ""
 msgid "confirm_delete_book"
 msgstr ""
 
-#: modules/h_edit.py:57
+#: modules/h_edit.py:58
 #, python-brace-format
 msgid "{bookid}_updated"
 msgstr ""
 
-#: modules/h_edit.py:65
+#: modules/h_edit.py:66
 msgid "edit_field_value"
 msgstr ""
 
-#: modules/h_edit.py:69 modules/h_edit.py:72
+#: modules/h_edit.py:70 modules/h_edit.py:73
 msgid "edit_field_empty"
 msgstr ""
 
-#: modules/h_edit.py:124
+#: modules/h_edit.py:125
 msgid "book_not_found"
 msgstr ""
 
-#: modules/h_edit.py:141
+#: modules/h_edit.py:140
 #, python-brace-format
 msgid "{bookid}_deleted"
 msgstr ""
 
-#: modules/h_lang.py:33
+#: modules/h_lang.py:18
 msgid "select_lang"
 msgstr ""
 
-#: modules/h_lang.py:47
+#: modules/h_lang.py:31
 #, python-brace-format
 msgid "{language}_selected"
 msgstr ""
 
-#: modules/h_menu.py:27
+#: modules/h_menu.py:28
 msgid "start_add_book"
 msgstr ""
 
-#: modules/h_menu.py:31
+#: modules/h_menu.py:32
 msgid "enter_search_query"
 msgstr ""
 
-#: modules/h_menu.py:35
+#: modules/h_menu.py:36
 msgid "recent_books"
 msgstr ""
 
