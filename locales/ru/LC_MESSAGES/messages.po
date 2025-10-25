@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-25 21:07+0300\n"
+"POT-Creation-Date: 2025-10-25 21:13+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -281,7 +281,7 @@ msgstr "Выберите 📂 категорию, в которую перене
 msgid "enter_category_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:74 modules/h_cat.py:135
+#: modules/h_cat.py:74 modules/h_cat.py:136
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr "Слишком длинное название категории 🥺 (максимум {size} байт)"
@@ -291,15 +291,14 @@ msgid "can_not_add_category"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
 #: modules/h_cat.py:85
-#, python-brace-format
-msgid "{category}_selected"
-msgstr "Вы выбрали категорию: {category}"
+msgid "category_selected"
+msgstr "Вы выбрали категорию:"
 
-#: modules/h_cat.py:105
+#: modules/h_cat.py:106
 msgid "enter_category_name"
 msgstr "Напишите новое название 📂 категории:"
 
-#: modules/h_cat.py:130
+#: modules/h_cat.py:131
 msgid "category_renamed"
 msgstr "✅ Категория успешно переименована"
 

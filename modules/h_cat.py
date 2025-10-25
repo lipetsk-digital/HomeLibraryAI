@@ -82,7 +82,8 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     # Save selected category
     await state.update_data(category=category)
     # Notify the user about the selected category
-    await message.answer(_("{category}_selected").format(category=category))
+    await message.answer(_("category_selected"))
+    await message.answer(category)
     # Perform the action based on the selected category
     data = await state.get_data()
     action = data.get("action")

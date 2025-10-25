@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-25 21:07+0300\n"
+"POT-Creation-Date: 2025-10-25 21:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -278,7 +278,7 @@ msgstr ""
 msgid "enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:74 modules/h_cat.py:135
+#: modules/h_cat.py:74 modules/h_cat.py:136
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr ""
@@ -288,15 +288,14 @@ msgid "can_not_add_category"
 msgstr ""
 
 #: modules/h_cat.py:85
-#, python-brace-format
-msgid "{category}_selected"
+msgid "category_selected"
 msgstr ""
 
-#: modules/h_cat.py:105
+#: modules/h_cat.py:106
 msgid "enter_category_name"
 msgstr ""
 
-#: modules/h_cat.py:130
+#: modules/h_cat.py:131
 msgid "category_renamed"
 msgstr ""
 
