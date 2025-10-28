@@ -4,7 +4,6 @@ import asyncpg # For asynchronous PostgreSQL connection
 import aioboto3 # For AWS S3 storage
 from openai import AsyncOpenAI # For OpenAI API client
 import cv2 # For image processing
-from PIL import Image # For image handling
 from modules.aiorembg import async_remove, sessionHQ # For asynchronous background removal
 
 import io # For handling byte streams
