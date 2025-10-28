@@ -1,0 +1,15 @@
+Model: u2net, Time: 0.65 seconds
+Model: u2netp, Time: 0.17 seconds
+Model: u2net_human_seg, Time: 0.69 seconds
+Model: u2net_cloth_seg, Time: 1.31 seconds
+Model: silueta, Time: 0.50 seconds
+Model: isnet-general-use, Time: 0.88 seconds
+Model: isnet-anime, Time: 0.92 seconds
+Model: sam, Time: 2.49 seconds
+Model: birefnet-general, Time: 12.19 seconds
+Model: birefnet-general-lite, Time: 7.41 seconds
+Model: birefnet-portrait, Time: 12.15 seconds
+Model: birefnet-dis, Time: 12.26 seconds
+Model: birefnet-hrsod, Time: 12.44 seconds
+Model: birefnet-cod, Time: 12.34 seconds
+Model: birefnet-massive, Time: 12.61 seconds

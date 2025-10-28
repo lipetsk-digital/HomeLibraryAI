@@ -1,28 +1,13 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports import asyncpg, aioboto3, cv2, async_remove, io, uuid, np, _, env, eng
+from modules.imports import asyncpg, aioboto3, cv2, Image, async_remove, sessionHQ, io, uuid, np, _, env, eng
 from modules.imports import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
 import modules.h_brief as h_brief # For run brief commands
 
 # =========================================================
-# Order points for perspective transformation
-def order_points(pts):
-    # Initialize ordered points
-    rect = np.zeros((4, 2), dtype=np.float32)
-    
-    # Top-left point will have the smallest sum
-    # Bottom-right point will have the largest sum
-    s = pts.sum(axis=1)
-    rect[0] = pts[np.argmin(s)]
-    rect[2] = pts[np.argmax(s)]
-    
-    # Top-right point will have the smallest difference
-    # Bottom-left point will have the largest difference
-    diff = np.diff(pts, axis=1)
-    rect[1] = pts[np.argmin(diff)]
-    rect[3] = pts[np.argmax(diff)]
-    
-    return rect
+# Calculate distance between two points
+def distance(p1, p2):
+    return np.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
 
 # =========================================================
 # Ask user for the photo of the book cover
@@ -63,72 +48,129 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed")+f" {e}")
             eng.logging.error(f"Error uploading to S3: {e}")
         
+        # Add temporal message for waiting
+        waiting_message = await message.reply(_("wait"))
+
         # -------------------------------------------------------
         # Remove the background from the image
         try:
+
+            # Remove background
             photo_bytesio2 = io.BytesIO(photo_bytes)
-            output = await async_remove(photo_bytesio2.getvalue())
-            output_bytesio = io.BytesIO()
-            output_bytesio.write(output) #, format='PNG'
-        except Exception as e:
-            await message.reply(_("remove_background_failed")+f" {e}")
-            eng.logging.error(f"Error removing background: {e}")
-        
-        # -------------------------------------------------------
-        # Found book contour
+            mask = await async_remove(photo_bytesio2.getvalue(), session=sessionHQ, only_mask=True)
+            
+            mask = Image.open(io.BytesIO(mask))
+            # Different models return different image format
+            mask_np = np.array(mask)
+            if mask.mode == 'RGBA':
+                # Берём только альфа-канал
+                mask_bw = mask_np[:, :, 3]
+            else:
+                mask_bw = mask_np
 
-        try:
-            # Load image without background to OpenCV format for contour detection
-            nparr = np.frombuffer(output_bytesio.getvalue(), dtype=np.uint8)
-            img_cv = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-            # Convert for contour detection
-            gray = cv2.cvtColor(img_cv, cv2.COLOR_BGRA2GRAY)
+            # Convert to binary mask
+            t, binary_mask = cv2.threshold(mask_bw, 127, 255, cv2.THRESH_BINARY)
+            # Apply morphological operations to clean up the mask
+            kernel = np.ones((5, 5), np.uint8)
+            # Close small holes in the mask
+            binary_mask = cv2.morphologyEx(binary_mask, cv2.MORPH_CLOSE, kernel, iterations=2)
+            # Remove small noise outside the mask
+            binary_mask = cv2.morphologyEx(binary_mask, cv2.MORPH_OPEN, kernel, iterations=2)
 
             # Find contours
-            contours, hierarchy = cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            if contours:
+            contours, t = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if not contours:
+                raise ValueError(_("contour_failed"))
 
-                # Find the largest contour
-                largest_contour = max(contours, key=cv2.contourArea)
-                
-                # Approximate the contour to get a polygon
-                epsilon = 0.02 * cv2.arcLength(largest_contour, True)
+            # Find the largest contour
+            largest_contour = max(contours, key=cv2.contourArea)
+
+            # Approximate the contour to get a quadrilateral
+            quadrilateral = None
+
+            for factor in np.arange(0.02, 0.15, 0.005):
+                epsilon = factor * cv2.arcLength(largest_contour, True)
                 approx = cv2.approxPolyDP(largest_contour, epsilon, True)
                 
                 if len(approx) == 4:
-                    # Get dimensions for the output image
-                    # Use maximum of width and height to determine orientation
-                    width = int((np.linalg.norm(approx[0] - approx[1])+np.linalg.norm(approx[2] - approx[3]))/2)
-                    height = int((np.linalg.norm(approx[1] - approx[2])+np.linalg.norm(approx[3] - approx[0]))/2)
-                    
-                    # Swap width and height if the image is in portrait orientation
-                    if width > height:
-                        width, height = height, width
+                    quadrilateral = approx
+                    break
+                elif len(approx) < 4 and quadrilateral is None:
+                    # if just not found 4 points yet, save the best approximation
+                    quadrilateral = approx
 
-                    # Define destination points for perspective transform
-                    dst_points = np.array([ [0, 0], [width-1, 0], [width-1, height-1], [0, height-1] ], dtype=np.float32)
-                    
-                    # Sort source points for correct mapping
-                    src_points = np.float32(approx.reshape(4, 2))
-                    src_points = order_points(src_points)
-                    
-                    # Apply perspective transformation
-                    matrix = cv2.getPerspectiveTransform(src_points, dst_points)
-                    result = cv2.warpPerspective(img_cv, matrix, (width, height))
-                    
-            is_success, buffer = cv2.imencode('.jpg', result)
+            # If no quadrilateral found, use minimum area rectangle arround the largest contour
+            if quadrilateral is None or len(quadrilateral) != 4:
+                # Use minimum area rotated rectangle
+                rect = cv2.minAreaRect(largest_contour)
+                box = cv2.boxPoints(rect)
+                quadrilateral = np.int0(box).reshape(-1, 1, 2)
+
+            # Get quadrilateral points
+            pts = quadrilateral.reshape(4, 2).astype(np.float32)
+
+            # Order points: top-left, top-right, bottom-right, bottom-left
+            # First sort by sum of coordinates
+            rect = np.zeros((4, 2), dtype=np.float32)
+            s = pts.sum(axis=1)
+            rect[0] = pts[np.argmin(s)]  # top-left (min sum)
+            rect[2] = pts[np.argmax(s)]  # bottom-right (max sum)
+
+            # Remain two points sort by difference of coordinates
+            diff = np.diff(pts, axis=1)
+            rect[1] = pts[np.argmin(diff)]  # top-right (min difference)
+            rect[3] = pts[np.argmax(diff)]  # bottom-left (max difference)
+
+            # Compute width and height of the output quadrilateral
+            width_top = distance(rect[0], rect[1])
+            width_bottom = distance(rect[2], rect[3])
+            width = int(max(width_top, width_bottom))
+
+            height_left = distance(rect[0], rect[3])
+            height_right = distance(rect[1], rect[2])
+            height = int(max(height_left, height_right))
+
+            # Define orientation and create target quadrilateral
+            # If height is greater than width, then portrait orientation
+            if height > width:
+                # Portrait orientation - swap width and height
+                dst = np.array([
+                    [0, 0],
+                    [width - 1, 0],
+                    [width - 1, height - 1],
+                    [0, height - 1]
+                ], dtype=np.float32)
+                final_width, final_height = width, height
+            else:
+                # Landscape orientation
+                dst = np.array([
+                    [0, 0],
+                    [width - 1, 0],
+                    [width - 1, height - 1],
+                    [0, height - 1]
+                ], dtype=np.float32)
+                final_width, final_height = width, height
+
+            # Compute perspective transformation matrix
+            M = cv2.getPerspectiveTransform(rect, dst)
+
+            # Apply perspective transformation
+            original = cv2.imdecode(np.frombuffer(photo_bytes, np.uint8), cv2.IMREAD_COLOR)
+            warped = cv2.warpPerspective(original, M, (final_width, final_height))
+
+            is_success, buffer = cv2.imencode('.jpg', warped)
             if is_success:
                 output_bytesio = io.BytesIO()
                 output_bytesio.write(buffer.tobytes())
                 output_bytesio.seek(0)
             else:
-                await message.reply(_("contour_failed"))
-                eng.logging.error("Error detect contour of the book")
-        except Exception as e:
-            await message.reply(_("contour_failed")+f" {e}")
-            eng.logging.error(f"Error processing image: {e}")
+                raise ValueError(_("contour_failed"))
 
+        except Exception as e:
+            await message.reply(_("remove_background_failed")+f" {e}")
+            eng.logging.error(f"Error removing background: {e}")
+            return
+        
         # -------------------------------------------------------
         # Upload the processed image to S3 storage
         try:
@@ -140,6 +182,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed")+f" {e}")
             eng.logging.error(f"Error uploading to S3: {e}")
         
+        # Remove temporal message
+        await waiting_message.delete()
+
         # -------------------------------------------------------
         # Send the processed image back to the user
         builder = InlineKeyboardBuilder()
