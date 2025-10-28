@@ -1,3 +1,4 @@
+onnxruntime==1.23.2
 asyncpg
 aioboto3
 openai
