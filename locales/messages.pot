@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-25 21:13+0300\n"
+"POT-Creation-Date: 2025-10-28 16:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:87 modules/book.py:109 modules/environment.py:91
+#: modules/book.py:87 modules/book.py:111 modules/environment.py:91
 msgid "category"
 msgstr ""
 
@@ -232,7 +232,7 @@ msgstr ""
 msgid "photo_brief"
 msgstr ""
 
-#: modules/h_brief.py:43 modules/h_cover.py:63 modules/h_cover.py:140
+#: modules/h_brief.py:43 modules/h_cover.py:48 modules/h_cover.py:179
 msgid "upload_failed"
 msgstr ""
 
@@ -299,16 +299,16 @@ msgstr ""
 msgid "category_renamed"
 msgstr ""
 
-#: modules/h_cover.py:33
+#: modules/h_cover.py:18
 msgid "photo_cover"
 msgstr ""
 
-#: modules/h_cover.py:74
-msgid "remove_background_failed"
+#: modules/h_cover.py:80 modules/h_cover.py:164
+msgid "contour_failed"
 msgstr ""
 
-#: modules/h_cover.py:126 modules/h_cover.py:129
-msgid "contour_failed"
+#: modules/h_cover.py:167
+msgid "remove_background_failed"
 msgstr ""
 
 #: modules/h_edit.py:27

@@ -1,6 +1,8 @@
 import asyncio
 from typing import Optional, Any
-from rembg import remove
+from rembg import remove, new_session
+
+sessionHQ = new_session('birefnet-general')
 
 # Asynchronous wrapper for the remove function from rembg
 # param input_data: Byte representation of the input image

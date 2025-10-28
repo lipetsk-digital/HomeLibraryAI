@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-10-25 21:13+0300\n"
+"POT-Creation-Date: 2025-10-28 16:47+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -40,7 +40,7 @@ msgid_plural "{books}_founds"
 msgstr[0] "{books} book 📕 found:"
 msgstr[1] "{books} books 📚 found:"
 
-#: modules/book.py:87 modules/book.py:109 modules/environment.py:91
+#: modules/book.py:87 modules/book.py:111 modules/environment.py:91
 msgid "category"
 msgstr "📂 Category"
 
@@ -233,7 +233,7 @@ msgstr "🗑️ Delete book"
 msgid "photo_brief"
 msgstr "Take a photo of the first page of the book with an annotation and details 📸"
 
-#: modules/h_brief.py:43 modules/h_cover.py:63 modules/h_cover.py:140
+#: modules/h_brief.py:43 modules/h_cover.py:48 modules/h_cover.py:179
 msgid "upload_failed"
 msgstr "Sorry, the upload failed 🥺"
 
@@ -300,17 +300,17 @@ msgstr "Enter new name of 📂 category:"
 msgid "category_renamed"
 msgstr "✅ Category renamed successfully"
 
-#: modules/h_cover.py:33
+#: modules/h_cover.py:18
 msgid "photo_cover"
 msgstr "Take a photo of the book cover 📸"
 
-#: modules/h_cover.py:74
-msgid "remove_background_failed"
-msgstr "Sorry, the background removal failed 🥺"
-
-#: modules/h_cover.py:126 modules/h_cover.py:129
+#: modules/h_cover.py:80 modules/h_cover.py:164
 msgid "contour_failed"
 msgstr "Sorry, book detection failed 🥺"
+
+#: modules/h_cover.py:167
+msgid "remove_background_failed"
+msgstr "Sorry, the background removal failed 🥺"
 
 #: modules/h_edit.py:27
 msgid "select_field"
