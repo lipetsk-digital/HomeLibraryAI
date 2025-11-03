@@ -17,7 +17,8 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
     (
       to_tsvector($2, title) @@ plainto_tsquery($2, $3) OR
       to_tsvector($2, authors_full_names) @@ plainto_tsquery($2, $3) OR
-      book_id::text = $3
+      book_id::text = $3 OR
+      isbn LIKE $3 || '%'
     )
     ORDER BY category ASC, book_id ASC;
     """

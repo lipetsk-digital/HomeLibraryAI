@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-03 23:09+0300\n"
+"POT-Creation-Date: 2025-11-03 23:16+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -371,7 +371,7 @@ msgstr "➕ Добавляем книгу"
 
 #: modules/h_menu.py:33
 msgid "enter_search_query"
-msgstr "🔍 Введите слова из названия книги, её авторов или её id:"
+msgstr "🔍 Введите слова из названия книги, её авторов, часть isbn или её id:"
 
 #: modules/h_menu.py:38
 msgid "recent_books"
