@@ -51,7 +51,7 @@ class State(StatesGroup):
     # brief: str - brief description of the book
     # book_id: int - ID of the book being processed
     # favorite: bool - is the book marked as favorite
-    # like: bool - is the book marked as liked
+    # likes: bool - is the book marked as liked
 
 
 

@@ -1,6 +1,6 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports import asyncpg, aioboto3, cv2, async_remove, sessionHQ, io, uuid, np, _, env, eng
+from modules.imports import asyncpg, aioboto3, cv2, get_queue_size, async_remove, sessionHQ, io, uuid, np, _, env, eng
 from modules.imports import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
 import modules.h_brief as h_brief # For run brief commands
 
@@ -71,7 +71,12 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
                     photo_bytesio2 = None
             
             # Add temporal message for waiting
-            waiting_message = await message.reply(_("wait"))
+            # Check queue size before processing
+            queue_size = await get_queue_size()
+            if queue_size > 0:
+                waiting_message = await message.reply(_("{wait}_in_queue","{wait}_in_queues",queue_size).format(wait=queue_size))
+            else:
+                waiting_message = await message.reply(_("wait"))
 
             # -------------------------------------------------------
             # Remove the background from the image
