@@ -40,6 +40,8 @@ async def create_tables(POSTGRES_CONFIG):
             isbn TEXT,
             annotation TEXT,
             brief TEXT,
+            favorite BOOLEAN DEFAULT FALSE,
+            like BOOLEAN DEFAULT FALSE,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (user_id, book_id)
         )
