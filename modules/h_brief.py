@@ -10,21 +10,47 @@ import modules.h_start as h_start # For handling start command
 # =========================================================
 # Ask user for the photo of the first page of the book with annotation
 async def AskForBrief(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    # Ask for the brief text
-    await bot.send_message(event_chat.id, _("photo_brief"))
-    # Set the state to wait for the brief text
-    await state.set_state(env.State.wait_for_brief_photo)
+    # Add keyboard for two photos option
+    builder = InlineKeyboardBuilder()
+    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+    builder.button(text=_("take_two_brief_photos"), callback_data=env.BriefPhotos(count=2) )
+    builder.adjust(1)
+    # Ask for the brief photo
+    sent_message = await bot.send_message(event_chat.id, _("photo_brief_1of1"), reply_markup=builder.as_markup())
+    await state.update_data(inline=sent_message.message_id)
+    # Set the state to wait for the brief photo
+    await state.set_state(env.State.wait_for_brief_photo1of1)
+
+# =========================================================
+# Handler for inline button take_two_brief_photos
+@eng.base_router.callback_query(env.BriefPhotos.filter(F.count == 2))
+async def take_two_brief_photos(callback: CallbackQuery, callback_data: env.BriefPhotos, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+    # Remove previous message
+    try:
+        await callback.message.delete()
+    except Exception as e:
+        eng.logging.error(f"Error deleting previous message: {e}")
+    # Ask for the first brief photo
+    sent_message = await bot.send_message(event_chat.id, _("photo_brief_1of2"))
+    # Set the state to wait for the first brief photo
+    await state.set_state(env.State.wait_for_brief_photo1of2)
 
 # =========================================================
 # Handler for sended photo of the first page of the book with annotation
-@eng.base_router.message(env.State.wait_for_brief_photo, F.photo)
+@eng.base_router.message(env.State.wait_for_brief_photo1of1, F.photo)
+@eng.base_router.message(env.State.wait_for_brief_photo1of2, F.photo)
+@eng.base_router.message(env.State.wait_for_brief_photo2of2, F.photo)
 async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+
     # Get the photo from the message
     photo = message.photo[-1]
     photo_file = await bot.get_file(photo.file_id)
     photo_bytesio = await bot.download_file(photo_file.file_path)
     photo_bytes = photo_bytesio.read()
     photo_bytesio2 = io.BytesIO(photo_bytes)
+
+    # Get state
+    current_state = await state.get_state()
 
     # -------------------------------------------------------
     # Start the S3 client
@@ -34,7 +60,12 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         try:
             brief_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
             await s3.upload_fileobj(photo_bytesio2, eng.AWS_BUCKET_NAME, brief_filename)
-            await state.update_data(brief_filename=brief_filename) # Save the filename in the state
+            if current_state == env.State.wait_for_brief_photo2of2:
+                await state.update_data(brief2_filename=brief_filename) # Save the filename in the state
+                await state.update_data(brief2_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8'))
+            else:
+                await state.update_data(brief_filename=brief_filename) # Save the filename in the state
+                await state.update_data(brief_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8'))
             # Give like to user's photo
             await bot.set_message_reaction(chat_id=event_chat.id,
                                            message_id=message.message_id,
@@ -43,13 +74,18 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await message.reply(_("upload_failed"))
             eng.logging.error(f"Error uploading to S3: {e}")
 
+    # If we are waiting for the second brief photo, ask for it
+    if current_state == env.State.wait_for_brief_photo1of2:
+        await bot.send_message(event_chat.id, _("photo_brief_2of2"))
+        await state.set_state(env.State.wait_for_brief_photo2of2)
+        return
+
     # Add temporal message for waiting
     waiting_message = await message.reply(_("wait"))
 
     # Parse text on the photo using an Vision LLM
     try:
         # Prepare session for OpenAI API        
-        img_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8')
         client = AsyncOpenAI(
             api_key=eng.GPT_API_TOKEN,
             base_url=eng.GPT_URL
@@ -58,16 +94,20 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         prompt = ""
         for line in env.BOOK_PROMPT:
             prompt = prompt + _(line) + "\n"
+        data = await state.get_data()
+        VLM_messages = [
+                {"role": "user", "content": [ {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{data.get("brief_base64")}"} } ] }
+            ]
+        if current_state == env.State.wait_for_brief_photo2of2:
+            VLM_messages = VLM_messages + [
+                    {"role": "user", "content": [ {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{data.get("brief2_base64")}"} } ] }
+                ]
+        VLM_messages = VLM_messages + [
+                {"role": "user", "content": [ {"type": "text", "text": prompt} ] }
+            ]
         response = await client.chat.completions.create(
             model=eng.GPT_MODEL,
-            messages=[
-                {"role": "user", "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {
-                        "url": f"data:image/jpeg;base64,{img_base64}"
-                    }}
-                ]}
-            ],
+            messages=VLM_messages,
             max_tokens=2000
         )
     except Exception as e:

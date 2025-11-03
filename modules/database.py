@@ -30,6 +30,7 @@ async def create_tables(POSTGRES_CONFIG):
             photo_filename TEXT,
             cover_filename TEXT,
             brief_filename TEXT,
+            brief2_filename TEXT,
             title TEXT,
             authors TEXT,
             authors_full_names TEXT,

@@ -11,7 +11,9 @@ class State(StatesGroup):
     select_category = State()
     wait_for_cover_photo = State()
     wait_reaction_on_cover = State()
-    wait_for_brief_photo = State()
+    wait_for_brief_photo1of1 = State()
+    wait_for_brief_photo1of2 = State()
+    wait_for_brief_photo2of2 = State()
     wait_reaction_on_brief = State()
     wait_next_book = State()
     select_field = State()
@@ -30,6 +32,7 @@ class State(StatesGroup):
     # photo_filename: str - filename of the uploaded book cover photo
     # cover_filename: str - filename of the processed book cover photo
     # brief_filename: str - filename of the uploaded brief photo
+    # brief2_filename: str - filename of the uploaded brief photo
     # title: str - book title
     # authors: str - original string of book authors
     # authors_full_names: str - full names of the book authors
@@ -41,6 +44,9 @@ class State(StatesGroup):
     # brief: str - brief description of the book
     # book_id: int - ID of the book being processed
     #
+    # brief_base64: str - base64 of the uploaded brief photo
+    # brief2_base64: str - base64 of the uploaded brief photo
+
     # field: str - currently selected book field for editing
 
 
@@ -82,6 +88,7 @@ ADVANCED_BOOK_FIELDS = [
     "photo_filename",
     "cover_filename",
     "brief_filename",
+    "brief2_filename",
     _translate_("authors"),
     _translate_("annotation")
 ]
@@ -164,5 +171,10 @@ class BookFields(CallbackData, prefix="field"):
 class EditBook(CallbackData, prefix="edit"):
     book_id: int
 
+# Callback factory for confirming deletion
 class ConfirmDelete(CallbackData, prefix="confirm"):
     action: str
+
+# Callback factory for take two brief photos
+class BriefPhotos(CallbackData, prefix="photos"):
+    count: int
