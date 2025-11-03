@@ -4,6 +4,7 @@ from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, Ca
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_search as h_search # For books search routines
 import modules.h_lang as h_lang # For language selection routines
+import modules.book as book # For book routines
 
 # -------------------------------------------------------
 # Handler for main menu commands
@@ -33,11 +34,13 @@ async def RunMainMenuAction(action: str, state: FSMContext, pool: asyncpg.Pool, 
         await state.update_data(action="search")
         await state.set_state(env.State.wait_for_search_query)
     elif action == "recent":
+        await book.BriefStatistic(pool, bot, event_from_user, event_chat)
         message = await bot.send_message(event_chat.id, _("recent_books"))
         await state.update_data(action="recent")
         await h_search.RecentBooks(message, state, pool, bot, event_chat, event_from_user)
     elif action == "cat":
         await state.update_data(action="select_category")
+        await book.BriefStatistic(pool, bot, event_from_user, event_chat)
         await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
     elif action == "rename":
         await state.update_data(action="rename_category")

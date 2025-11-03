@@ -27,11 +27,11 @@ async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool,
             event_from_user.id, event_from_user.username, event_from_user.full_name
         )
     await book.BriefStatistic(pool, bot, event_from_user, event_chat)
-    await MainMenu(state, pool, bot, event_chat)
+    await MainMenu(state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Prepare and send the main menu inline-buttons for the user
-async def MainMenu(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def MainMenu(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
     builder = InlineKeyboardBuilder()
     for action in env.MAIN_MENU_ACTIONS:

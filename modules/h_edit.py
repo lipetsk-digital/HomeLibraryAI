@@ -50,13 +50,13 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
     elif field == "cancel":
         await callback.message.answer(_("cancel"))
         if action == "edit_book":
-            await h_start.MainMenu(state, pool, bot, event_chat)
+            await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
         else:
             await h_brief.AskForBriefReaction(callback.message, state, pool, bot, event_chat)
     elif field == "save_changes":
         await book.SaveBookToDatabase(state, pool, bot, event_from_user)
         await callback.message.answer((_("{bookid}_updated")).format(bookid=data["book_id"]))
-        await h_start.MainMenu(state, pool, bot, event_chat)
+        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     else:
         # Print current value of selected field
         await state.update_data(field=field)
@@ -139,7 +139,7 @@ async def confirm_delete_callback(callback: CallbackQuery, callback_data: env.Co
         """, event_from_user.id, book_id)
     await callback.message.answer((_("{bookid}_deleted")).format(bookid=data["book_id"]))
     # Return to main menu
-    await h_start.MainMenu(state, pool, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for cancel delete button

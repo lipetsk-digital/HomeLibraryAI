@@ -23,12 +23,19 @@ class State(StatesGroup):
     confirm_delete_book = State()
 
 # States data description of users conversation
+    # Data of user conversation:
+    # -------------------------------------------------------
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
     #             [ "add_book", "search", "recent", "select_category", 
     #               "rename_category", "edit_book", "select_language" ]
     # category: str - selected category name
+    # field: str - currently selected book field for editing
+    # brief_base64: str - base64 of the uploaded brief photo
+    # brief2_base64: str - base64 of the uploaded brief photo
     #
+    # Data of the book fields:
+    # -------------------------------------------------------
     # photo_filename: str - filename of the uploaded book cover photo
     # cover_filename: str - filename of the processed book cover photo
     # brief_filename: str - filename of the uploaded brief photo
@@ -43,11 +50,7 @@ class State(StatesGroup):
     # annotation: str - full book annotation
     # brief: str - brief description of the book
     # book_id: int - ID of the book being processed
-    #
-    # brief_base64: str - base64 of the uploaded brief photo
-    # brief2_base64: str - base64 of the uploaded brief photo
 
-    # field: str - currently selected book field for editing
 
 
 # -------------------------------------------------------

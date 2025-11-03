@@ -32,7 +32,7 @@ async def search_query_entered(message: Message, state: FSMContext, pool: asyncp
     await book.PrintBooksList(rows, message, state, bot, event_from_user)
 
     # Send main menu to the user
-    await h_start.MainMenu(state, pool, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Show recently added books
@@ -52,4 +52,4 @@ async def RecentBooks(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     await book.PrintBooksList(rows, message, state, bot, event_from_user)
 
     # Send main menu to the user
-    await h_start.MainMenu(state, pool, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
