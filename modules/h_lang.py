@@ -21,7 +21,7 @@ async def SelectLanguage(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
 
 # Handler for the callback query when the user selects "settings" from the main menu
 @eng.base_router.callback_query(env.Language.filter())
-async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def lang_callback(callback: CallbackQuery, callback_data: env.Language, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat.id)
     # Change locale
     await eng.FSMi18n.set_locale(state, callback_data.lang)
@@ -30,4 +30,4 @@ async def lang_callback(callback: CallbackQuery, callback_data: env.Language, st
     native_name = locale.get_language_name(locale=callback_data.lang)
     await bot.send_message(event_chat.id, _("{language}_selected").format(language=native_name))
     # Send the main menu again
-    await h_start.MainMenu(state, pool, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)

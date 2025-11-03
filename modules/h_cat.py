@@ -48,7 +48,7 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
                 await bot.send_message(event_chat.id, _("enter_category_add_book"))
             else:
                 await bot.send_message(event_chat.id, _("no_books"))
-                await h_start.MainMenu(state, pool, bot, event_chat)
+                await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
                 await state.set_state(env.State.wait_for_command)
                 return
         await state.set_state(env.State.select_category)
@@ -101,7 +101,7 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
         rows = await pool.fetch(query, event_from_user.id, category)
         await book.PrintBooksList(rows, message, state, bot, event_from_user)
         # Send main menu to the user
-        await h_start.MainMenu(state, pool, bot, event_chat)
+        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     elif action == "rename_category":
         await message.answer(_("enter_category_name"))
         await state.set_state(env.State.wait_for_new_category_name)
@@ -130,7 +130,7 @@ async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncp
         # Acknowledge the renaming
         await message.answer(_("category_renamed"))
         # Return to the main menu
-        await h_start.MainMenu(state, pool, bot, event_chat)
+        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     else:
         await message.delete()
         await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))
