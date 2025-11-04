@@ -83,24 +83,24 @@ COVER_ACTIONS = [
     _translate_("use_original_photo"),
     _translate_("take_new_photo")
 ]
-BOOK_FIELDS = [
+PUBLIC_BOOK_FIELDS = [
     _translate_("title"),
     _translate_("authors_full_names"),
     _translate_("pages"),
     _translate_("publisher"),
     _translate_("year"),
     _translate_("isbn"),
-    _translate_("brief")
+    _translate_("brief"),
+    _translate_("favorites"),
+    _translate_("likes")
 ]
-ADVANCED_BOOK_FIELDS = [
+HIDDEN_BOOK_FIELDS = [
     "photo_filename",
     "cover_filename",
     "brief_filename",
     "brief2_filename",
     _translate_("authors"),
-    _translate_("annotation")
-]
-SPECIAL_BOOK_FIELDS = [
+    _translate_("annotation"),
     "user_id",
     _translate_("book_id"),
     _translate_("category")

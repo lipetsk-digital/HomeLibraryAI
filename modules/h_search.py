@@ -14,26 +14,21 @@ async def view_cat(callback: CallbackQuery, callback_data: env.SearchMenu, state
     await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
-async def DoSearch(action: str, message: Message, callback: CallbackQuery, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
 
     # Put preparations messages
     if (action == "cat") or (action == "recent"):
         await book.BriefStatistic(pool, bot, event_from_user, event_chat)
     if action == "recent":
-        message = await bot.send_message(event_chat.id, _("recent_books"))
+        await bot.send_message(event_chat.id, _("recent_books"))
     elif action == "favorites":
-        message = await bot.send_message(event_chat.id, _("favorite_books"))
+        await bot.send_message(event_chat.id, _("favorite_books"))
     elif action == "likes":
-        message = await bot.send_message(event_chat.id, _("liked_books"))
-
-    # Prepare query parameters
-    user_id = event_from_user.id # Get the user ID from the message
+        await bot.send_message(event_chat.id, _("liked_books"))
 
     # Prepare the query
     query = """
-    SELECT book_id, title, authors, year, cover_filename, category
+    SELECT book_id, title, authors, year, cover_filename, category, favorites, likes
     FROM books
     WHERE user_id = $1
     """
@@ -51,8 +46,15 @@ async def DoSearch(action: str, message: Message, callback: CallbackQuery, state
         lang = (await state.get_data()).get("locale", "en") # Get the user's locale from the state, default to "en"
         locale = Locale.parse(lang) # Convert two-letter locale code to full locale name for PostgreSQL full-text search
         language = locale.get_language_name('en').lower() # Convert to lowercase for consistency
-        search_text = message.text.strip()
-        rows = await pool.fetch(query, user_id, language, search_text)
+        search_text = text.strip()
+        rows = await pool.fetch(query, event_from_user.id, language, search_text)
+
+    elif action == "cat":
+        query += """
+            AND category = $2
+            ORDER BY category ASC, book_id ASC
+        """
+        rows = await pool.fetch(query, event_from_user.id, text)
 
     elif action == "favorites":
         query += """
@@ -77,19 +79,21 @@ async def DoSearch(action: str, message: Message, callback: CallbackQuery, state
         rows.reverse() # Reverse the rows order
 
     # Print the books list
-    await book.PrintBooksList(rows, message, state, bot, event_from_user)
+    await book.PrintBooksList(rows, state, bot, event_from_user)
     # Send main menu to the user
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
 
 
 # -------------------------------------------------------
-# Handler for inline button "recent books"3
+# Handler for inline buttons "recent books", "favorite books", "liked books"
 @eng.base_router.callback_query(env.SearchMenu.filter())
 async def recent_books(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await DoSearch(callback_data.action, None, callback, state, pool, bot, event_chat, event_from_user)
+    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await DoSearch(callback_data.action, "", state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user is searching for a book
 @eng.base_router.message(env.State.wait_for_search_query, F.text)
 async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await DoSearch("text", message, None, state, pool, bot, event_chat, event_from_user)
+    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+    await DoSearch("text", message.text, state, pool, bot, event_chat, event_from_user)
