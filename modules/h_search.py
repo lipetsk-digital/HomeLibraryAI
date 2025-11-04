@@ -79,7 +79,7 @@ async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool
         rows.reverse() # Reverse the rows order
 
     # Print the books list
-    await book.PrintBooksList(rows, state, bot, event_from_user)
+    await book.PrintBooksList(rows, state, bot, event_chat, event_from_user)
     # Send main menu to the user
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
 
