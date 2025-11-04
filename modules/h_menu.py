@@ -1,6 +1,6 @@
 # Handlers for main menu commands and inline buttons
 
-from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, FSMContext, env, eng
+from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, InlineKeyboardBuilder, FSMContext, env, eng
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_search as h_search # For books search routines
 import modules.h_lang as h_lang # For language selection routines
@@ -30,18 +30,15 @@ async def RunMainMenuAction(action: str, state: FSMContext, pool: asyncpg.Pool, 
         await state.update_data(action="add_book")
         await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
     elif action == "search":
-        await bot.send_message(event_chat.id, _("enter_search_query"))
+        await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+        builder = InlineKeyboardBuilder()
+        for action in env.SEARCH_ACTIONS:
+            builder.button(text=_(action), callback_data=env.SearchMenu(action=action) )
+        builder.adjust(2, 2)
+        message = await bot.send_message(event_chat.id, _("enter_search_query"), reply_markup=builder.as_markup())
+        await state.update_data(inline=message.message_id)
         await state.update_data(action="search")
         await state.set_state(env.State.wait_for_search_query)
-    elif action == "recent":
-        await book.BriefStatistic(pool, bot, event_from_user, event_chat)
-        message = await bot.send_message(event_chat.id, _("recent_books"))
-        await state.update_data(action="recent")
-        await h_search.RecentBooks(message, state, pool, bot, event_chat, event_from_user)
-    elif action == "cat":
-        await state.update_data(action="select_category")
-        await book.BriefStatistic(pool, bot, event_from_user, event_chat)
-        await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
     elif action == "rename":
         await state.update_data(action="rename_category")
         await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)

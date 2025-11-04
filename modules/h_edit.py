@@ -17,9 +17,9 @@ async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     # Create new inline keyboard
     builder = InlineKeyboardBuilder()
     if action == "edit_book":
-        fields = env.BOOK_FIELDS + env.BOOK_ACTIONS
+        fields = env.PUBLIC_BOOK_FIELDS + env.BOOK_ACTIONS
     else:
-        fields = env.BOOK_FIELDS + ["cancel"]
+        fields = env.PUBLIC_BOOK_FIELDS + ["cancel"]
     for field in fields:
         builder.button(text=_(field), callback_data=env.BookFields(field=field))
     builder.adjust(2)
@@ -57,6 +57,20 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
         await book.SaveBookToDatabase(state, pool, bot, event_from_user)
         await callback.message.answer((_("{bookid}_updated")).format(bookid=data["book_id"]))
         await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+    elif (field == "favorites") or (field == "likes"):
+        # Inverse boolean field value
+        old_value = data[field]
+        new_value = not old_value
+        book_dict = {}
+        book_dict[field] = new_value
+        await state.update_data(**book_dict)
+        # Update the book information
+        if action == "edit_book":
+            # Return to field selection
+            sent_message = await book.PrintBook(callback.message, state, pool, bot)
+            await SelectField(sent_message, state, pool, bot, event_chat)
+        else:
+            await h_brief.AskForBriefReaction(callback.message, state, pool, bot, event_chat)
     else:
         # Print current value of selected field
         await state.update_data(field=field)
@@ -115,7 +129,7 @@ async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBoo
     if row:
         # Store book information in the state
         book_dict = {}
-        for field in env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + ["category"]:
+        for field in env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS:
             book_dict[field] = row.get(field)
         await state.update_data(**book_dict)
         await state.update_data(book_id=book_id)

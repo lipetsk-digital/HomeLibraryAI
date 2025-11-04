@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-04 00:20+0300\n"
+"POT-Creation-Date: 2025-11-04 14:26+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -40,7 +40,7 @@ msgid_plural "{books}_founds"
 msgstr[0] "{books} book 📕 found:"
 msgstr[1] "{books} books 📚 found:"
 
-#: modules/book.py:87 modules/book.py:111 modules/environment.py:103
+#: modules/book.py:87 modules/book.py:111 modules/environment.py:106
 msgid "category"
 msgstr "📂 Category"
 
@@ -48,184 +48,192 @@ msgstr "📂 Category"
 msgid "edit"
 msgstr "✏️ Edit"
 
-#: modules/environment.py:68
+#: modules/environment.py:67
 msgid "add"
 msgstr "➕ Add book"
 
-#: modules/environment.py:69
+#: modules/environment.py:68
 msgid "search"
 msgstr "🔍 Search"
 
-#: modules/environment.py:70
-msgid "recent"
-msgstr "🕓 Recently added"
-
 #: modules/environment.py:71
-msgid "cat"
-msgstr "🗂️ Cathegories"
-
-#: modules/environment.py:74
 msgid "rename"
 msgstr "⚠️ Rename category"
 
-#: modules/environment.py:75
+#: modules/environment.py:72
 msgid "export"
 msgstr "📨 Export"
 
-#: modules/environment.py:76
+#: modules/environment.py:73
 msgid "settings"
 msgstr "⚙️ Settings"
 
+#: modules/environment.py:76
+msgid "recent"
+msgstr "🕓 Recent"
+
+#: modules/environment.py:77
+msgid "cat"
+msgstr "🗂️ Cathegories"
+
+#: modules/environment.py:78
+msgid "favorites"
+msgstr "⭐ Want to read"
+
 #: modules/environment.py:79
+msgid "likes"
+msgstr "👍 Like it"
+
+#: modules/environment.py:82
 msgid "use_cover"
 msgstr "✅ OK, use this cover"
 
-#: modules/environment.py:80
+#: modules/environment.py:83
 msgid "use_original_photo"
 msgstr "🖼️ No, use original photo"
 
-#: modules/environment.py:81 modules/environment.py:132
+#: modules/environment.py:84 modules/environment.py:135
 msgid "take_new_photo"
 msgstr "📷 Stop, take a new photo"
 
-#: modules/environment.py:84
+#: modules/environment.py:87
 msgid "title"
 msgstr "📗 Title"
 
-#: modules/environment.py:85
+#: modules/environment.py:88
 msgid "authors_full_names"
 msgstr "🧑‍🎨 Author"
 
-#: modules/environment.py:86
+#: modules/environment.py:89
 msgid "pages"
 msgstr "📄 Pages"
 
-#: modules/environment.py:87
+#: modules/environment.py:90
 msgid "publisher"
 msgstr "🏤 Publisher"
 
-#: modules/environment.py:88
+#: modules/environment.py:91
 msgid "year"
 msgstr "📅 Year"
 
-#: modules/environment.py:89
+#: modules/environment.py:92
 msgid "isbn"
 msgstr "🆔 ISBN"
 
-#: modules/environment.py:90
+#: modules/environment.py:93
 msgid "brief"
 msgstr "⏱️ Brief"
 
-#: modules/environment.py:97
+#: modules/environment.py:100
 msgid "authors"
 msgstr "🧑‍🎨 Author (abbr.)"
 
-#: modules/environment.py:98
+#: modules/environment.py:101
 msgid "annotation"
 msgstr "📜 Annotation"
 
-#: modules/environment.py:102
+#: modules/environment.py:105
 msgid "book_id"
 msgstr "#️⃣ Book ID"
 
-#: modules/environment.py:106
+#: modules/environment.py:109
 msgid "move_book"
 msgstr "Move 📁"
 
-#: modules/environment.py:107
+#: modules/environment.py:110
 msgid "delete_book"
 msgstr "Delete 🗑️"
 
-#: modules/environment.py:108
+#: modules/environment.py:111
 msgid "save_changes"
 msgstr "✅ Save"
 
-#: modules/environment.py:109 modules/environment.py:140 modules/h_edit.py:51
+#: modules/environment.py:112 modules/environment.py:143 modules/h_edit.py:51
 #: modules/h_edit.py:149
 msgid "cancel"
 msgstr "Cancel"
 
-#: modules/environment.py:112
+#: modules/environment.py:115
 msgid "prompt_photo"
 msgstr "The photo contains a page with the book's annotation."
 
-#: modules/environment.py:113
+#: modules/environment.py:116
 msgid "prompt_result"
 msgstr "Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases."
 
-#: modules/environment.py:114
+#: modules/environment.py:117
 msgid "prompt_count"
 msgstr "The section must always contain 9 parameters. If a parameter is missing, its value should be empty."
 
-#: modules/environment.py:115
+#: modules/environment.py:118
 msgid "prompt_lang"
 msgstr "Provide the parameter values in the same language as the photographed page."
 
-#: modules/environment.py:116
+#: modules/environment.py:119
 msgid "prompt_characters"
 msgstr "If the parameter value contains newlines or equal signs, replace them with spaces."
 
-#: modules/environment.py:117
+#: modules/environment.py:120
 msgid "prompt_plaintext"
 msgstr "Output only plain text of ini file content. Do not output markdown."
 
-#: modules/environment.py:118
+#: modules/environment.py:121
 msgid "prompt_fields"
 msgstr "Below are the names of each parameter and the extracted information from the image that its value should contain:"
 
-#: modules/environment.py:119
+#: modules/environment.py:122
 msgid "prompt_title"
 msgstr "title - the title of the book"
 
-#: modules/environment.py:120
+#: modules/environment.py:123
 msgid "prompt_authors"
 msgstr "authors - the authors of the book"
 
-#: modules/environment.py:121
+#: modules/environment.py:124
 msgid "prompt_pages"
 msgstr "pages - the number of pages"
 
-#: modules/environment.py:122
+#: modules/environment.py:125
 msgid "prompt_publisher"
 msgstr "publisher - the publishing house"
 
-#: modules/environment.py:123
+#: modules/environment.py:126
 msgid "prompt_year"
 msgstr "year - the year of publication"
 
-#: modules/environment.py:124
+#: modules/environment.py:127
 msgid "prompt_isbn"
 msgstr "isbn - the ISBN code"
 
-#: modules/environment.py:125
+#: modules/environment.py:128
 msgid "prompt_annotation"
 msgstr "annotation - the full text of the annotation exactly as it appears on the photographed page"
 
-#: modules/environment.py:126
+#: modules/environment.py:129
 msgid "prompt_brief"
 msgstr "brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book"
 
-#: modules/environment.py:127
+#: modules/environment.py:130
 msgid "prompt_authors_full_names"
 msgstr "authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field"
 
-#: modules/environment.py:130
+#: modules/environment.py:133
 msgid "use_brief"
 msgstr "✅ All right"
 
-#: modules/environment.py:131
+#: modules/environment.py:134
 msgid "edit_brief"
 msgstr "✏️ Edit"
 
-#: modules/environment.py:135
+#: modules/environment.py:138
 msgid "add_another_book"
 msgstr "➕ Add"
 
-#: modules/environment.py:136
+#: modules/environment.py:139
 msgid "no_another_book"
 msgstr "❌ No"
 
-#: modules/environment.py:139
+#: modules/environment.py:142
 msgid "delete"
 msgstr "🗑️ Delete book"
 
@@ -374,13 +382,21 @@ msgstr "You selected {language} language"
 msgid "start_add_book"
 msgstr "➕ Add book"
 
-#: modules/h_menu.py:33
-msgid "enter_search_query"
-msgstr "🔍 Enter worlds of a book title, its authors, part of its ISBN or its ID:"
-
 #: modules/h_menu.py:38
+msgid "enter_search_query"
+msgstr "🔍 Enter worlds of a book title, its authors, part of its ISBN, its ID or select a button:"
+
+#: modules/h_search.py:25
 msgid "recent_books"
-msgstr "📚 Recently added books"
+msgstr "🕓 Recently added books"
+
+#: modules/h_search.py:27
+msgid "favorite_books"
+msgstr "⭐ Books I want to read"
+
+#: modules/h_search.py:29
+msgid "liked_books"
+msgstr "👍 Liked books"
 
 #: modules/h_start.py:40
 msgid "main_menu"

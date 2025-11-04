@@ -6,6 +6,7 @@ import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
 import modules.book as book # For generating list of the books
 import modules.h_edit as h_edit # For handling book editing
+import modules.h_search as h_search # For handling book search routines
 
 # -------------------------------------------------------
 # Prepares and sends the inline keyboard for selecting a category.
@@ -31,7 +32,7 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
         if result:
             if action == "add_book":
                 text = _("select_or_enter_category_add_book")
-            elif action == "select_category":
+            elif action == "search":
                 text = _("select_category_to_view_books")
             elif action == "rename_category":
                 text = _("select_category_to_rename")
@@ -89,19 +90,8 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     action = data.get("action")
     if action == "add_book":
         await h_cover.AskForCover(state, pool, bot, event_chat)
-    elif action == "select_category":
-        # Prepare the query to search for books by category
-        query = """
-        SELECT book_id, title, authors, year, cover_filename, category
-        FROM books
-        WHERE user_id=$1 AND category=$2
-        ORDER BY category ASC, book_id ASC;
-        """
-        # Run the query to search for books in the database
-        rows = await pool.fetch(query, event_from_user.id, category)
-        await book.PrintBooksList(rows, message, state, bot, event_from_user)
-        # Send main menu to the user
-        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+    elif action == "search":
+        await h_search.DoSearch("cat", category, state, pool, bot, event_chat, event_from_user)        
     elif action == "rename_category":
         await message.answer(_("enter_category_name"))
         await state.set_state(env.State.wait_for_new_category_name)

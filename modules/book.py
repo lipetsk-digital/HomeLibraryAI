@@ -20,11 +20,14 @@ async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot
     data = await state.get_data() # Get stored user's data
     items = []
     # Loop through the book fields and add them to the items list
-    for field in ["book_id"] + env.BOOK_FIELDS + ["category"]:
+    for field in ["book_id"] + env.PUBLIC_BOOK_FIELDS + ["category"]:
         if field in data:
             value = data[field]
             if value:
-                items.append(as_key_value(_(field), value))
+                if (field == "favorites") or (field == "likes"):
+                    items.append(_(field))
+                else:
+                    items.append(as_key_value(_(field), value))
     content = as_list(*items)
     # Send the message with the book information and the keyboard
     sent_message = await message.answer(**content.as_kwargs())
@@ -37,7 +40,7 @@ async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, ev
     data = await state.get_data()
     data["user_id"] = event_from_user.id
     # Build book dictionary
-    fields = env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + env.SPECIAL_BOOK_FIELDS
+    fields = env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS
     for field in fields:
         if field not in data:
             data[field] = None
@@ -68,12 +71,12 @@ async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, ev
 
 # -------------------------------------------------------
 # Loop through books dataset and send to user the books list
-async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: Bot, event_from_user: User) -> None:
+async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # For short list of the books:
     if len(rows) == 0:
-        await message.answer(_("no_books_found"))
+        await bot.send_message(event_chat.id, _("no_books_found"))
     elif len(rows) < 10:
-        await message.answer(_("{books}_found","{books}_founds",len(rows)).format(books=len(rows)))
+        await bot.send_message(event_chat.id, _("{books}_found","{books}_founds",len(rows)).format(books=len(rows)))
         # Send one message for each book with title, authors, year and cover photo
         prev_category = None
         for row in rows:
@@ -83,17 +86,19 @@ async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: B
             year = row.get("year")
             photo = row.get("cover_filename")  # Adjust field name as needed
             category = row.get("category")
+            favorites = " ⭐" if row.get("favorites") else ""
+            likes = " 👍" if row.get("likes") else ""
             if category != prev_category:
-                await message.answer(_("category")+": <b>"+category+"</b>", parse_mode="HTML")
+                await bot.send_message(event_chat.id, _("category")+": <b>"+category+"</b>", parse_mode="HTML")
                 prev_category = category
             builder = InlineKeyboardBuilder()
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
             builder.adjust(1)
             if photo:
                 photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
-                await message.answer_photo(photo=photo_url, caption=f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+                await bot.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
-                await message.answer(f"{book_id}. <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
+                await bot.send_message(event_chat.id, f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"
@@ -104,20 +109,22 @@ async def PrintBooksList(rows: list, message: Message, state: FSMContext, bot: B
             authors = row.get("authors")
             year = row.get("year")
             category = row.get("category")
+            favorites = " ⭐" if row.get("favorites") else ""
+            likes = " 👍" if row.get("likes") else ""
             emoji = random.choice(["📕", "📘", "📗", "📙"])
             # Prepare the lines to add
             lines_to_add = ""
             if category != prev_category:
                 lines_to_add += _("category")+": <b>"+category+"</b>\n"
                 prev_category = category
-            lines_to_add += f"{emoji} {book_id}. <b>{title}</b> - {authors}, {year}\n"
+            lines_to_add += f"{emoji} {book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}\n"
             # Check if adding this would exceed the limit
             if len(message_text + lines_to_add) >= eng.MaxCharsInMessage:
                 # Send current message and start a new one
-                await message.answer(message_text, parse_mode="HTML")
+                await bot.send_message(event_chat.id, message_text, parse_mode="HTML")
                 message_text = lines_to_add
             else:
                 message_text += lines_to_add
         # Send any remaining text
         if message_text:
-            await message.answer(message_text, parse_mode="HTML")
+            await bot.send_message(event_chat.id, message_text, parse_mode="HTML")

@@ -13,7 +13,7 @@ def distance(p1, p2):
 # Ask user for the photo of the book cover
 async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     # Forget old books: clear all book fields in the state
-    await state.update_data(**{key: None for key in (env.BOOK_FIELDS + env.ADVANCED_BOOK_FIELDS + ["book_id"])})
+    await state.update_data(**{key: None for key in (env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS - ["category"])})
     # Ask for the cover text
     await bot.send_message(event_chat.id, _("photo_cover"))
     # Set the state to wait for the cover text
