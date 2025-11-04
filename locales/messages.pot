@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-04 00:20+0300\n"
+"POT-Creation-Date: 2025-11-04 13:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:87 modules/book.py:111 modules/environment.py:103
+#: modules/book.py:87 modules/book.py:111 modules/environment.py:106
 msgid "category"
 msgstr ""
 
@@ -47,184 +47,192 @@ msgstr ""
 msgid "edit"
 msgstr ""
 
-#: modules/environment.py:68
+#: modules/environment.py:67
 msgid "add"
 msgstr ""
 
-#: modules/environment.py:69
+#: modules/environment.py:68
 msgid "search"
 msgstr ""
 
-#: modules/environment.py:70
-msgid "recent"
-msgstr ""
-
 #: modules/environment.py:71
-msgid "cat"
-msgstr ""
-
-#: modules/environment.py:74
 msgid "rename"
 msgstr ""
 
-#: modules/environment.py:75
+#: modules/environment.py:72
 msgid "export"
 msgstr ""
 
-#: modules/environment.py:76
+#: modules/environment.py:73
 msgid "settings"
 msgstr ""
 
+#: modules/environment.py:76
+msgid "recent"
+msgstr ""
+
+#: modules/environment.py:77
+msgid "cat"
+msgstr ""
+
+#: modules/environment.py:78
+msgid "favorites"
+msgstr ""
+
 #: modules/environment.py:79
+msgid "likes"
+msgstr ""
+
+#: modules/environment.py:82
 msgid "use_cover"
 msgstr ""
 
-#: modules/environment.py:80
+#: modules/environment.py:83
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/environment.py:81 modules/environment.py:132
+#: modules/environment.py:84 modules/environment.py:135
 msgid "take_new_photo"
 msgstr ""
 
-#: modules/environment.py:84
+#: modules/environment.py:87
 msgid "title"
 msgstr ""
 
-#: modules/environment.py:85
+#: modules/environment.py:88
 msgid "authors_full_names"
 msgstr ""
 
-#: modules/environment.py:86
+#: modules/environment.py:89
 msgid "pages"
 msgstr ""
 
-#: modules/environment.py:87
+#: modules/environment.py:90
 msgid "publisher"
 msgstr ""
 
-#: modules/environment.py:88
+#: modules/environment.py:91
 msgid "year"
 msgstr ""
 
-#: modules/environment.py:89
+#: modules/environment.py:92
 msgid "isbn"
 msgstr ""
 
-#: modules/environment.py:90
+#: modules/environment.py:93
 msgid "brief"
 msgstr ""
 
-#: modules/environment.py:97
+#: modules/environment.py:100
 msgid "authors"
 msgstr ""
 
-#: modules/environment.py:98
+#: modules/environment.py:101
 msgid "annotation"
 msgstr ""
 
-#: modules/environment.py:102
+#: modules/environment.py:105
 msgid "book_id"
 msgstr ""
 
-#: modules/environment.py:106
+#: modules/environment.py:109
 msgid "move_book"
 msgstr ""
 
-#: modules/environment.py:107
+#: modules/environment.py:110
 msgid "delete_book"
 msgstr ""
 
-#: modules/environment.py:108
+#: modules/environment.py:111
 msgid "save_changes"
 msgstr ""
 
-#: modules/environment.py:109 modules/environment.py:140 modules/h_edit.py:51
+#: modules/environment.py:112 modules/environment.py:143 modules/h_edit.py:51
 #: modules/h_edit.py:149
 msgid "cancel"
 msgstr ""
 
-#: modules/environment.py:112
+#: modules/environment.py:115
 msgid "prompt_photo"
 msgstr ""
 
-#: modules/environment.py:113
+#: modules/environment.py:116
 msgid "prompt_result"
 msgstr ""
 
-#: modules/environment.py:114
+#: modules/environment.py:117
 msgid "prompt_count"
 msgstr ""
 
-#: modules/environment.py:115
+#: modules/environment.py:118
 msgid "prompt_lang"
 msgstr ""
 
-#: modules/environment.py:116
+#: modules/environment.py:119
 msgid "prompt_characters"
 msgstr ""
 
-#: modules/environment.py:117
+#: modules/environment.py:120
 msgid "prompt_plaintext"
 msgstr ""
 
-#: modules/environment.py:118
+#: modules/environment.py:121
 msgid "prompt_fields"
 msgstr ""
 
-#: modules/environment.py:119
+#: modules/environment.py:122
 msgid "prompt_title"
 msgstr ""
 
-#: modules/environment.py:120
+#: modules/environment.py:123
 msgid "prompt_authors"
 msgstr ""
 
-#: modules/environment.py:121
+#: modules/environment.py:124
 msgid "prompt_pages"
 msgstr ""
 
-#: modules/environment.py:122
+#: modules/environment.py:125
 msgid "prompt_publisher"
 msgstr ""
 
-#: modules/environment.py:123
+#: modules/environment.py:126
 msgid "prompt_year"
 msgstr ""
 
-#: modules/environment.py:124
+#: modules/environment.py:127
 msgid "prompt_isbn"
 msgstr ""
 
-#: modules/environment.py:125
+#: modules/environment.py:128
 msgid "prompt_annotation"
 msgstr ""
 
-#: modules/environment.py:126
+#: modules/environment.py:129
 msgid "prompt_brief"
 msgstr ""
 
-#: modules/environment.py:127
+#: modules/environment.py:130
 msgid "prompt_authors_full_names"
 msgstr ""
 
-#: modules/environment.py:130
+#: modules/environment.py:133
 msgid "use_brief"
 msgstr ""
 
-#: modules/environment.py:131
+#: modules/environment.py:134
 msgid "edit_brief"
 msgstr ""
 
-#: modules/environment.py:135
+#: modules/environment.py:138
 msgid "add_another_book"
 msgstr ""
 
-#: modules/environment.py:136
+#: modules/environment.py:139
 msgid "no_another_book"
 msgstr ""
 
-#: modules/environment.py:139
+#: modules/environment.py:142
 msgid "delete"
 msgstr ""
 
@@ -373,11 +381,11 @@ msgstr ""
 msgid "start_add_book"
 msgstr ""
 
-#: modules/h_menu.py:33
+#: modules/h_menu.py:38
 msgid "enter_search_query"
 msgstr ""
 
-#: modules/h_menu.py:38
+#: modules/h_search.py:15
 msgid "recent_books"
 msgstr ""
 

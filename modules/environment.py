@@ -27,8 +27,7 @@ class State(StatesGroup):
     # -------------------------------------------------------
     # inline: int - message ID of the last sent message with inline keyboard
     # action: str - global action being performed: 
-    #             [ "add_book", "search", "recent", "select_category", 
-    #               "rename_category", "edit_book", "select_language" ]
+    #             [ "add_book", "search", "rename_category", "edit_book", "select_language" ]
     # category: str - selected category name
     # field: str - currently selected book field for editing
     # brief_base64: str - base64 of the uploaded brief photo
@@ -50,7 +49,7 @@ class State(StatesGroup):
     # annotation: str - full book annotation
     # brief: str - brief description of the book
     # book_id: int - ID of the book being processed
-    # favorite: bool - is the book marked as favorite
+    # favorites: bool - is the book marked as favorite
     # likes: bool - is the book marked as liked
 
 
@@ -66,14 +65,18 @@ def _translate_(text: str) -> str:
 # Main menu actions
 MAIN_MENU_ACTIONS = [
     _translate_("add"),
-    _translate_("search"),
-    _translate_("recent"),
-    _translate_("cat")
+    _translate_("search")
 ]
 ADVANCED_ACTIONS = [
     _translate_("rename"),
     _translate_("export"),
     _translate_("settings")
+]
+SEARCH_ACTIONS = [
+    _translate_("recent"),
+    _translate_("cat"),
+    _translate_("favorites"),
+    _translate_("likes")
 ]
 COVER_ACTIONS = [
     _translate_("use_cover"),
@@ -146,6 +149,10 @@ CONFIRM_DELETE = [
 
 # Callback factory for main menu
 class MainMenu(CallbackData, prefix="main"):
+    action: str
+
+# Callback factory for search menu
+class SearchMenu(CallbackData, prefix="search"):
     action: str
 
 # Callback factory for category selection

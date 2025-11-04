@@ -31,7 +31,7 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
         if result:
             if action == "add_book":
                 text = _("select_or_enter_category_add_book")
-            elif action == "select_category":
+            elif action == "search":
                 text = _("select_category_to_view_books")
             elif action == "rename_category":
                 text = _("select_category_to_rename")
@@ -89,7 +89,7 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
     action = data.get("action")
     if action == "add_book":
         await h_cover.AskForCover(state, pool, bot, event_chat)
-    elif action == "select_category":
+    elif action == "search":
         # Prepare the query to search for books by category
         query = """
         SELECT book_id, title, authors, year, cover_filename, category
