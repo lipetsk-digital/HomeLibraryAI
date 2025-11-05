@@ -75,6 +75,18 @@ async def RemoveInlineKeyboards(callback: CallbackQuery, state: FSMContext, bot:
     await state.update_data(inline=None)
 
 # -------------------------------------------------------
+# Remove previous bot message in the chat
+async def RemovePreviousBotMessage(state: FSMContext, bot: Bot, event_chat: Chat) -> None:
+    data = await state.get_data()
+    inline = data.get("inline")
+    if inline:
+        try:
+            await bot.delete_message(chat_id=event_chat.id, message_id=inline)
+        except Exception as e:
+            logging.error(f"Error deleting previous bot message: {e}")
+        await state.update_data(inline=None)
+
+# -------------------------------------------------------
 # Handler for trash messages
 @last_router.message()
 async def trash_entered(message: Message) -> None:

@@ -10,6 +10,9 @@ import io # For handling byte streams
 import uuid # For generating unique filenames
 import base64 # For encoding and decoding base64
 import random # For random choices
+import csv # For CSV handling
+import json # For JSON handling
+from datetime import datetime # For handling date and time
 import numpy as np # For arrays processing
 from aiogram.utils.i18n import gettext as _ # For internationalization and localization
 from babel import Locale # For locale handling

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-04 14:26+0300\n"
+"POT-Creation-Date: 2025-11-05 11:56+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:12 modules/h_cat.py:50
+#: modules/book.py:12 modules/h_cat.py:52
 msgid "no_books"
 msgstr "Where is no books in your library 🥺"
 
@@ -29,22 +29,18 @@ msgid_plural "{result}_books"
 msgstr[0] "You have {result} book 📕 in your library"
 msgstr[1] "You have {result} books 📚 in your library"
 
-#: modules/book.py:74
+#: modules/book.py:78
 msgid "no_books_found"
 msgstr "Sorry, no books found 🥺"
 
-#: modules/book.py:76 modules/book.py:99
+#: modules/book.py:80 modules/book.py:105
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] "{books} book 📕 found:"
 msgstr[1] "{books} books 📚 found:"
 
-#: modules/book.py:87 modules/book.py:111 modules/environment.py:106
-msgid "category"
-msgstr "📂 Category"
-
-#: modules/book.py:90
+#: modules/book.py:96
 msgid "edit"
 msgstr "✏️ Edit"
 
@@ -76,170 +72,195 @@ msgstr "🕓 Recent"
 msgid "cat"
 msgstr "🗂️ Cathegories"
 
-#: modules/environment.py:78
+#: modules/environment.py:78 modules/environment.py:102
 msgid "favorites"
 msgstr "⭐ Want to read"
 
-#: modules/environment.py:79
+#: modules/environment.py:79 modules/environment.py:103
 msgid "likes"
 msgstr "👍 Like it"
 
-#: modules/environment.py:82
-msgid "use_cover"
-msgstr "✅ OK, use this cover"
-
-#: modules/environment.py:83
-msgid "use_original_photo"
-msgstr "🖼️ No, use original photo"
-
-#: modules/environment.py:84 modules/environment.py:135
-msgid "take_new_photo"
-msgstr "📷 Stop, take a new photo"
-
-#: modules/environment.py:87
-msgid "title"
-msgstr "📗 Title"
-
-#: modules/environment.py:88
-msgid "authors_full_names"
-msgstr "🧑‍🎨 Author"
-
-#: modules/environment.py:89
-msgid "pages"
-msgstr "📄 Pages"
-
-#: modules/environment.py:90
-msgid "publisher"
-msgstr "🏤 Publisher"
-
-#: modules/environment.py:91
-msgid "year"
-msgstr "📅 Year"
-
-#: modules/environment.py:92
-msgid "isbn"
-msgstr "🆔 ISBN"
-
-#: modules/environment.py:93
-msgid "brief"
-msgstr "⏱️ Brief"
-
-#: modules/environment.py:100
-msgid "authors"
-msgstr "🧑‍🎨 Author (abbr.)"
-
-#: modules/environment.py:101
-msgid "annotation"
-msgstr "📜 Annotation"
-
-#: modules/environment.py:105
-msgid "book_id"
-msgstr "#️⃣ Book ID"
-
-#: modules/environment.py:109
-msgid "move_book"
-msgstr "Move 📁"
-
-#: modules/environment.py:110
-msgid "delete_book"
-msgstr "Delete 🗑️"
-
-#: modules/environment.py:111
-msgid "save_changes"
-msgstr "✅ Save"
-
-#: modules/environment.py:112 modules/environment.py:143 modules/h_edit.py:51
-#: modules/h_edit.py:149
+#: modules/environment.py:80 modules/environment.py:120
+#: modules/environment.py:151 modules/h_cat.py:43 modules/h_edit.py:51
+#: modules/h_edit.py:163
 msgid "cancel"
 msgstr "Cancel"
 
-#: modules/environment.py:115
+#: modules/environment.py:83
+msgid "recent_intro"
+msgstr "🕓 Recently added books"
+
+#: modules/environment.py:84
+msgid "cat_intro"
+msgstr "🗂️ View category"
+
+#: modules/environment.py:85
+msgid "favorites_intro"
+msgstr "⭐ Books I want to read"
+
+#: modules/environment.py:86
+msgid "likes_intro"
+msgstr "👍 Liked books"
+
+#: modules/environment.py:87
+msgid "text_intro"
+msgstr "🔍 Search books"
+
+#: modules/environment.py:90
+msgid "use_cover"
+msgstr "✅ OK, use this cover"
+
+#: modules/environment.py:91
+msgid "use_original_photo"
+msgstr "🖼️ No, use original photo"
+
+#: modules/environment.py:92 modules/environment.py:143
+msgid "take_new_photo"
+msgstr "📷 Stop, take a new photo"
+
+#: modules/environment.py:95
+msgid "title"
+msgstr "📗 Title"
+
+#: modules/environment.py:96
+msgid "authors_full_names"
+msgstr "🧑‍🎨 Author"
+
+#: modules/environment.py:97
+msgid "pages"
+msgstr "📄 Pages"
+
+#: modules/environment.py:98
+msgid "publisher"
+msgstr "🏤 Publisher"
+
+#: modules/environment.py:99
+msgid "year"
+msgstr "📅 Year"
+
+#: modules/environment.py:100
+msgid "isbn"
+msgstr "🆔 ISBN"
+
+#: modules/environment.py:101
+msgid "brief"
+msgstr "⏱️ Brief"
+
+#: modules/environment.py:110
+msgid "authors"
+msgstr "🧑‍🎨 Author (abbr.)"
+
+#: modules/environment.py:111
+msgid "annotation"
+msgstr "📜 Annotation"
+
+#: modules/environment.py:113
+msgid "book_id"
+msgstr "#️⃣ Book ID"
+
+#: modules/environment.py:114
+msgid "category"
+msgstr "📂 Category"
+
+#: modules/environment.py:117
+msgid "move_book"
+msgstr "Move 📁"
+
+#: modules/environment.py:118
+msgid "delete_book"
+msgstr "Delete 🗑️"
+
+#: modules/environment.py:119
+msgid "save_changes"
+msgstr "✅ Save"
+
+#: modules/environment.py:123
 msgid "prompt_photo"
 msgstr "The photo contains a page with the book's annotation."
 
-#: modules/environment.py:116
+#: modules/environment.py:124
 msgid "prompt_result"
 msgstr "Your response should only consist of the [book] section of an ini file without any introductory or concluding phrases."
 
-#: modules/environment.py:117
+#: modules/environment.py:125
 msgid "prompt_count"
 msgstr "The section must always contain 9 parameters. If a parameter is missing, its value should be empty."
 
-#: modules/environment.py:118
+#: modules/environment.py:126
 msgid "prompt_lang"
 msgstr "Provide the parameter values in the same language as the photographed page."
 
-#: modules/environment.py:119
+#: modules/environment.py:127
 msgid "prompt_characters"
 msgstr "If the parameter value contains newlines or equal signs, replace them with spaces."
 
-#: modules/environment.py:120
+#: modules/environment.py:128
 msgid "prompt_plaintext"
 msgstr "Output only plain text of ini file content. Do not output markdown."
 
-#: modules/environment.py:121
+#: modules/environment.py:129
 msgid "prompt_fields"
 msgstr "Below are the names of each parameter and the extracted information from the image that its value should contain:"
 
-#: modules/environment.py:122
+#: modules/environment.py:130
 msgid "prompt_title"
 msgstr "title - the title of the book"
 
-#: modules/environment.py:123
+#: modules/environment.py:131
 msgid "prompt_authors"
 msgstr "authors - the authors of the book"
 
-#: modules/environment.py:124
+#: modules/environment.py:132
 msgid "prompt_pages"
 msgstr "pages - the number of pages"
 
-#: modules/environment.py:125
+#: modules/environment.py:133
 msgid "prompt_publisher"
 msgstr "publisher - the publishing house"
 
-#: modules/environment.py:126
+#: modules/environment.py:134
 msgid "prompt_year"
 msgstr "year - the year of publication"
 
-#: modules/environment.py:127
+#: modules/environment.py:135
 msgid "prompt_isbn"
 msgstr "isbn - the ISBN code"
 
-#: modules/environment.py:128
+#: modules/environment.py:136
 msgid "prompt_annotation"
 msgstr "annotation - the full text of the annotation exactly as it appears on the photographed page"
 
-#: modules/environment.py:129
+#: modules/environment.py:137
 msgid "prompt_brief"
 msgstr "brief - rephrase the annotation field: formulate a single sentence that best conveys the content of the book"
 
-#: modules/environment.py:130
+#: modules/environment.py:138
 msgid "prompt_authors_full_names"
 msgstr "authors_full_names - full names, surnames, and (if applicable) patronymics of all authors of the book from the authors field. The page likely contains mentions of their full names. Find and provide them in this field"
 
-#: modules/environment.py:133
+#: modules/environment.py:141
 msgid "use_brief"
 msgstr "✅ All right"
 
-#: modules/environment.py:134
+#: modules/environment.py:142
 msgid "edit_brief"
 msgstr "✏️ Edit"
 
-#: modules/environment.py:138
+#: modules/environment.py:146
 msgid "add_another_book"
 msgstr "➕ Add"
 
-#: modules/environment.py:139
+#: modules/environment.py:147
 msgid "no_another_book"
 msgstr "❌ No"
 
-#: modules/environment.py:142
+#: modules/environment.py:150
 msgid "delete"
 msgstr "🗑️ Delete book"
 
 #: modules/h_brief.py:16
 msgid "take_two_brief_photos"
-msgstr "2️⃣ Photo two 📸📸 pages"
+msgstr "Photo two 📸📸 pages"
 
 #: modules/h_brief.py:19
 msgid "photo_brief_1of1"
@@ -249,7 +270,7 @@ msgstr "Take a photo of the page with an annotation and details 📸"
 msgid "photo_brief_1of2"
 msgstr "Take a photo the 1 of 2 pages with an annotation and details 📸"
 
-#: modules/h_brief.py:74 modules/h_cover.py:65 modules/h_cover.py:258
+#: modules/h_brief.py:74 modules/h_cover.py:69 modules/h_cover.py:262
 msgid "upload_failed"
 msgstr "Sorry, the upload failed 🥺"
 
@@ -257,85 +278,90 @@ msgstr "Sorry, the upload failed 🥺"
 msgid "photo_brief_2of2"
 msgstr "Take a photo the 2 of 2 pages with an annotation and details 📸"
 
-#: modules/h_brief.py:84 modules/h_cover.py:79
+#: modules/h_brief.py:85
+msgid "wait2"
+msgstr "⏳ Please wait, the AI is processing your photos..."
+
+#: modules/h_brief.py:87 modules/h_cover.py:83
 msgid "wait"
 msgstr "⏳ Please wait, the AI is processing your photo..."
 
-#: modules/h_brief.py:114
+#: modules/h_brief.py:117
 msgid "gpt_failed"
 msgstr "Sorry, AI request failed 🥺"
 
-#: modules/h_brief.py:132
+#: modules/h_brief.py:135
 msgid "gpt_incorrect"
 msgstr "Sorry, the AI response is incorrect 🥺"
 
-#: modules/h_brief.py:173
+#: modules/h_brief.py:176
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr "📗 The book has been saved in the library under the number {bookid}."
 
-#: modules/h_brief.py:173
+#: modules/h_brief.py:176
 #, python-brace-format
 msgid "add_next_{category}"
 msgstr "Add the next book to the {category} category?"
 
-#: modules/h_cat.py:33
+#: modules/h_cat.py:34
 msgid "select_or_enter_category_add_book"
 msgstr "Select 📂 category for adding a new book or enter the name of new category:"
 
-#: modules/h_cat.py:35
+#: modules/h_cat.py:36
 msgid "select_category_to_view_books"
 msgstr "Select 📂 category to see the books:"
 
-#: modules/h_cat.py:37
+#: modules/h_cat.py:38
 msgid "select_category_to_rename"
 msgstr "Select 📂 category to rename:"
 
-#: modules/h_cat.py:39
+#: modules/h_cat.py:40
 msgid "select_category_to_move_book"
 msgstr "Select 📂 category to move the book or enter the name of new category:"
 
-#: modules/h_cat.py:48
+#: modules/h_cat.py:50
 msgid "enter_category_add_book"
 msgstr "Enter name of 📂 category for adding a new book:"
 
-#: modules/h_cat.py:74 modules/h_cat.py:136
+#: modules/h_cat.py:83 modules/h_cat.py:133
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr "The category name is too long 🥺 (maximum {size} bytes)"
 
-#: modules/h_cat.py:77
+#: modules/h_cat.py:86
 msgid "can_not_add_category"
 msgstr "🫸 You cannot add a new category at this moment. Please select an existing one"
 
-#: modules/h_cat.py:85
-msgid "category_selected"
-msgstr "You selected the category:"
+#: modules/h_cat.py:97
+#, python-brace-format
+msgid "adding_book_in_{category}"
+msgstr "➕ Adding a book to the category {category}"
 
-#: modules/h_cat.py:106
-msgid "enter_category_name"
+#: modules/h_cat.py:102
+msgid "rename_category"
 msgstr "Enter new name of 📂 category:"
 
-#: modules/h_cat.py:131
+#: modules/h_cat.py:128
 msgid "category_renamed"
 msgstr "✅ Category renamed successfully"
 
-#: modules/h_cover.py:18
+#: modules/h_cover.py:22
 msgid "photo_cover"
 msgstr "Take a photo of the book cover 📸"
 
-#: modules/h_cover.py:77
+#: modules/h_cover.py:81
 #, python-brace-format
 msgid "{wait}_in_queue"
 msgid_plural "{wait}_in_queues"
 msgstr[0] "⏳ Your task is queued for processing by the AI. There are {wait} task ahead of you. Please wait..."
 msgstr[1] "⏳ Your task is queued for processing by the AI. There are {wait} tasks ahead of you. Please wait..."
 
-#: modules/h_cover.py:133 modules/h_cover.py:237
+#: modules/h_cover.py:137 modules/h_cover.py:241
 msgid "contour_failed"
 msgstr "Sorry, book detection failed 🥺"
 
-#: modules/h_cover.py:240
+#: modules/h_cover.py:244
 msgid "remove_background_failed"
 msgstr "Sorry, the background removal failed 🥺"
 
@@ -352,19 +378,19 @@ msgstr "🗑️ Delete book?"
 msgid "{bookid}_updated"
 msgstr "📗 The book {bookid} has been updated"
 
-#: modules/h_edit.py:66
+#: modules/h_edit.py:80
 msgid "edit_field_value"
 msgstr "copy current field value and correct it or write a new one:"
 
-#: modules/h_edit.py:70 modules/h_edit.py:73
+#: modules/h_edit.py:84 modules/h_edit.py:87
 msgid "edit_field_empty"
 msgstr "write a new value:"
 
-#: modules/h_edit.py:125
+#: modules/h_edit.py:139
 msgid "book_not_found"
 msgstr "Sorry, book not found 🥺"
 
-#: modules/h_edit.py:140
+#: modules/h_edit.py:154
 #, python-brace-format
 msgid "{bookid}_deleted"
 msgstr "🗑️ The book {bookid} has been deleted"
@@ -378,27 +404,11 @@ msgstr "Select language:"
 msgid "{language}_selected"
 msgstr "You selected {language} language"
 
-#: modules/h_menu.py:29
-msgid "start_add_book"
-msgstr "➕ Add book"
-
-#: modules/h_menu.py:38
+#: modules/h_menu.py:36
 msgid "enter_search_query"
 msgstr "🔍 Enter worlds of a book title, its authors, part of its ISBN, its ID or select a button:"
 
-#: modules/h_search.py:25
-msgid "recent_books"
-msgstr "🕓 Recently added books"
-
-#: modules/h_search.py:27
-msgid "favorite_books"
-msgstr "⭐ Books I want to read"
-
-#: modules/h_search.py:29
-msgid "liked_books"
-msgstr "👍 Liked books"
-
-#: modules/h_start.py:40
-msgid "main_menu"
-msgstr "Select action:"
+#: modules/h_search.py:39
+msgid "_intro"
+msgstr ""
 

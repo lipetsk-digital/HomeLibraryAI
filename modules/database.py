@@ -30,7 +30,6 @@ async def create_tables(POSTGRES_CONFIG):
             photo_filename TEXT,
             cover_filename TEXT,
             brief_filename TEXT,
-            brief2_filename TEXT,
             title TEXT,
             authors TEXT,
             authors_full_names TEXT,
@@ -40,9 +39,10 @@ async def create_tables(POSTGRES_CONFIG):
             isbn TEXT,
             annotation TEXT,
             brief TEXT,
-            favorites BOOLEAN DEFAULT FALSE,
-            likes BOOLEAN DEFAULT FALSE,
             datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            brief2_filename TEXT,
+            likes BOOLEAN DEFAULT FALSE,
+            favorites BOOLEAN DEFAULT FALSE,
             PRIMARY KEY (user_id, book_id)
         )
     ''')
