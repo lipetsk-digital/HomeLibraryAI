@@ -5,13 +5,14 @@ from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSM
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
-async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> None:
+async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> Message:
     async with pool.acquire() as conn:
         result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", event_from_user.id)
     if (result is None) or (result == 0):
-        await bot.send_message(event_chat.id, _("no_books"))
+        message = await bot.send_message(event_chat.id, _("no_books"))
     else:
-        await bot.send_message(event_chat.id, _("{result}_book","{result}_books",result).format(result=result))
+        message = await bot.send_message(event_chat.id, _("{result}_book","{result}_books",result).format(result=result))
+    return message
 
 # -------------------------------------------------------
 # Send to user current book information from user's data and return Message object
@@ -89,7 +90,7 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
             favorites = " ⭐" if row.get("favorites") else ""
             likes = " 👍" if row.get("likes") else ""
             if category != prev_category:
-                await bot.send_message(event_chat.id, _("category")+": <b>"+category+"</b>", parse_mode="HTML")
+                await bot.send_message(event_chat.id, "📂 <b>"+category+"</b>", parse_mode="HTML")
                 prev_category = category
             builder = InlineKeyboardBuilder()
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
@@ -115,7 +116,10 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
             # Prepare the lines to add
             lines_to_add = ""
             if category != prev_category:
-                lines_to_add += _("category")+": <b>"+category+"</b>\n"
+                await bot.send_message(event_chat.id, message_text, parse_mode="HTML")
+                message_text = ""
+                lines_to_add += "📂 <b>"+category+"</b>\n"
+                lines_to_add += "------------------------\n"
                 prev_category = category
             lines_to_add += f"{emoji} {book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}\n"
             # Check if adding this would exceed the limit

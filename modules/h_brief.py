@@ -81,7 +81,10 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         return
 
     # Add temporal message for waiting
-    waiting_message = await message.reply(_("wait"))
+    if current_state == env.State.wait_for_brief_photo2of2:
+        waiting_message = await message.reply(_("wait2"))
+    else:
+        waiting_message = await message.reply(_("wait"))
 
     # Parse text on the photo using an Vision LLM
     try:

@@ -40,6 +40,7 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
                 text = _("select_category_to_move_book")
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Category(name=row[0]) )
+            builder.button(text=_("cancel"), callback_data=env.Category(name="cancel") )
             builder.adjust(1)
             sent_message = await bot.send_message(event_chat.id, text, reply_markup=builder.as_markup())
             await state.update_data(inline=sent_message.message_id)
@@ -55,10 +56,17 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
         await state.set_state(env.State.select_category)
 
 # -------------------------------------------------------
+# Handler for inline button "cancel" in category selection
+@eng.base_router.callback_query(env.Category.filter(F.name == "cancel"))
+async def category_selection_cancel(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+
+# -------------------------------------------------------
 # Handler for inline button selection of a category
 @eng.base_router.callback_query(env.Category.filter())
 async def category_selected(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
     await DoCategory(callback_data.name, callback.message, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
@@ -82,18 +90,17 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
 async def DoCategory(category: str, message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Save selected category
     await state.update_data(category=category)
-    # Notify the user about the selected category
-    await message.answer(_("category_selected"))
-    await message.answer(category)
     # Perform the action based on the selected category
     data = await state.get_data()
     action = data.get("action")
     if action == "add_book":
+        await bot.send_message(event_chat.id, _("adding_book_in_{category}").format(category=category))
         await h_cover.AskForCover(state, pool, bot, event_chat)
     elif action == "search":
         await h_search.DoSearch("cat", category, state, pool, bot, event_chat, event_from_user)        
     elif action == "rename_category":
-        await message.answer(_("enter_category_name"))
+        await bot.send_message(event_chat.id, _("rename_category"))
+        await bot.send_message(event_chat.id, category)
         await state.set_state(env.State.wait_for_new_category_name)
     elif action == "edit_book":
         # Return to editing book after category selection

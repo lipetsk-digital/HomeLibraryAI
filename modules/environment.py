@@ -76,7 +76,15 @@ SEARCH_ACTIONS = [
     _translate_("recent"),
     _translate_("cat"),
     _translate_("favorites"),
-    _translate_("likes")
+    _translate_("likes"),
+    _translate_("cancel")
+]
+SEARCH_INTROS = [
+    _translate_("recent_intro"),
+    _translate_("cat_intro"),
+    _translate_("favorites_intro"),
+    _translate_("likes_intro"),
+    _translate_("text_intro")
 ]
 COVER_ACTIONS = [
     _translate_("use_cover"),

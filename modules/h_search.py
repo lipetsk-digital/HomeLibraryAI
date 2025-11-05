@@ -6,25 +6,37 @@ import modules.book as book # For generating list of the books
 import modules.h_cat as h_cat # For handling category selection
 
 # -------------------------------------------------------
+# Handler for inline button "cancel"
+@eng.base_router.callback_query(env.SearchMenu.filter(F.action == "cancel"))
+async def search_cancel(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+
+# -------------------------------------------------------
 # Handler for inline button "search by category"
 @eng.base_router.callback_query(env.SearchMenu.filter(F.action == "cat"))
 async def view_cat(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await book.BriefStatistic(pool, bot, event_from_user, event_chat)
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
     await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+
+# -------------------------------------------------------
+# Handler for inline buttons "recent books", "favorite books", "liked books"
+@eng.base_router.callback_query(env.SearchMenu.filter())
+async def recent_books(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await DoSearch(callback_data.action, "", state, pool, bot, event_chat, event_from_user)
+
+# -------------------------------------------------------
+# Handler for entered text when the user is searching for a book
+@eng.base_router.message(env.State.wait_for_search_query, F.text)
+async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await DoSearch("text", message.text, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
 
-    # Put preparations messages
-    if (action == "cat") or (action == "recent"):
-        await book.BriefStatistic(pool, bot, event_from_user, event_chat)
-    if action == "recent":
-        await bot.send_message(event_chat.id, _("recent_books"))
-    elif action == "favorites":
-        await bot.send_message(event_chat.id, _("favorite_books"))
-    elif action == "likes":
-        await bot.send_message(event_chat.id, _("liked_books"))
+    await bot.send_message(event_chat.id, _(action + "_intro"))
 
     # Prepare the query
     query = """
@@ -82,18 +94,3 @@ async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool
     await book.PrintBooksList(rows, state, bot, event_chat, event_from_user)
     # Send main menu to the user
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-
-
-# -------------------------------------------------------
-# Handler for inline buttons "recent books", "favorite books", "liked books"
-@eng.base_router.callback_query(env.SearchMenu.filter())
-async def recent_books(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await DoSearch(callback_data.action, "", state, pool, bot, event_chat, event_from_user)
-
-# -------------------------------------------------------
-# Handler for entered text when the user is searching for a book
-@eng.base_router.message(env.State.wait_for_search_query, F.text)
-async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
-    await DoSearch("text", message.text, state, pool, bot, event_chat, event_from_user)
