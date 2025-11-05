@@ -1,7 +1,8 @@
 # Module for get and put books to database
 
-from modules.imports import asyncpg, random, _, as_list, as_key_value, env, eng
-from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext
+from modules.imports import asyncpg, io, random, csv, json, datetime, _, as_list, as_key_value, env, eng
+from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
+import modules.h_start as h_start # For handling start command
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
@@ -119,9 +120,9 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
                 await bot.send_message(event_chat.id, message_text, parse_mode="HTML")
                 message_text = ""
                 lines_to_add += "📂 <b>"+category+"</b>\n"
-                lines_to_add += "------------------------\n"
+                lines_to_add += "——————————————————\n"
                 prev_category = category
-            lines_to_add += f"{emoji} {book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}\n"
+            lines_to_add += f"{emoji} {book_id}.{favorites}{likes} {title} - {authors}, {year}\n"
             # Check if adding this would exceed the limit
             if len(message_text + lines_to_add) >= eng.MaxCharsInMessage:
                 # Send current message and start a new one
@@ -132,3 +133,87 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
         # Send any remaining text
         if message_text:
             await bot.send_message(event_chat.id, message_text, parse_mode="HTML")
+
+# -------------------------------------------------------
+# Export books to files and send to user
+async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+    await bot.send_message(event_chat.id, _("exporting_books"))
+    async with pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT *
+            FROM books
+            WHERE user_id = $1
+            ORDER BY category ASC, book_id ASC
+        """, event_from_user.id)
+    if len(rows) == 0:
+        await bot.send_message(event_chat.id, _("no_books"))
+    else:
+        # Prepare CSV and JSON data
+        timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
+        csv_file = io.StringIO()
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(["book_id", "category", "title", "authors", "authors_full_names", "pages", "publisher", "year", "isbn", "favorites", "likes", 
+                             "cover_filename", "photo_filename", "brief_filename", "brief2_filename",
+                             "brief", "annotation", "datetime"])
+        json_list = []
+
+        for row in rows:
+            csv_writer.writerow([
+                row["book_id"],
+                row["category"],
+                row["title"],
+                row["authors"],
+                row["authors_full_names"],
+                row["pages"],
+                row["publisher"],
+                row["year"],
+                row["isbn"],
+                row["favorites"],
+                row["likes"],
+                eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                row["brief"],
+                row["annotation"],
+                row["datetime"].isoformat()
+            ])
+            json_list.append({
+                "book_id": row["book_id"],
+                "category": row["category"],
+                "title": row["title"],
+                "authors": row["authors"],
+                "authors_full_names": row["authors_full_names"],
+                "pages": row["pages"],
+                "publisher": row["publisher"],
+                "year": row["year"],
+                "isbn": row["isbn"],
+                "favorites": row["favorites"],
+                "likes": row["likes"],
+                "cover_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                "photo_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                "brief_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                "brief2_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                "brief": row["brief"],
+                "annotation": row["annotation"],
+                "datetime": row["datetime"].isoformat()
+            })
+
+        # Send CSV file
+        csv_file.seek(0)
+        await bot.send_document(
+            event_chat.id,
+            document=BufferedInputFile(csv_file.getvalue().encode(), filename=f"{timestamp}.csv"),
+            caption=_("books_export_csv")
+        )
+
+        # Send JSON file
+        json_data = json.dumps(json_list, ensure_ascii=False, indent=4)
+        await bot.send_document(
+            event_chat.id,
+            document=BufferedInputFile(json_data.encode(), filename=f"{timestamp}.json"),
+            caption=_("books_export_json")
+        )
+
+    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+    

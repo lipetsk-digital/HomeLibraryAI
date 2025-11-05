@@ -39,58 +39,60 @@ async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool
     await bot.send_message(event_chat.id, _(action + "_intro"))
 
     # Prepare the query
-    query = """
-    SELECT book_id, title, authors, year, cover_filename, category, favorites, likes
-    FROM books
-    WHERE user_id = $1
-    """
-    if action == "text":
-        query += """
-          AND
-          (
-            to_tsvector($2, title) @@ plainto_tsquery($2, $3) OR
-            to_tsvector($2, authors_full_names) @@ plainto_tsquery($2, $3) OR
-            book_id::text = $3 OR
-            isbn LIKE $3 || '%'
-          )
-          ORDER BY category ASC, book_id ASC
+    async with pool.acquire() as conn:
+        query = """
+        SELECT book_id, title, authors, year, cover_filename, category, favorites, likes
+        FROM books
+        WHERE user_id = $1
         """
-        lang = (await state.get_data()).get("locale", "en") # Get the user's locale from the state, default to "en"
-        locale = Locale.parse(lang) # Convert two-letter locale code to full locale name for PostgreSQL full-text search
-        language = locale.get_language_name('en').lower() # Convert to lowercase for consistency
-        search_text = text.strip()
-        rows = await pool.fetch(query, event_from_user.id, language, search_text)
-
-    elif action == "cat":
-        query += """
-            AND category = $2
+        if action == "text":
+            query += """
+            AND
+            (
+                to_tsvector($2, title) @@ plainto_tsquery($2, $3) OR
+                to_tsvector($2, authors_full_names) @@ plainto_tsquery($2, $3) OR
+                book_id::text = $3 OR
+                isbn LIKE $3 || '%'
+            )
             ORDER BY category ASC, book_id ASC
-        """
-        rows = await pool.fetch(query, event_from_user.id, text)
+            """
+            lang = (await state.get_data()).get("locale", "en") # Get the user's locale from the state, default to "en"
+            locale = Locale.parse(lang) # Convert two-letter locale code to full locale name for PostgreSQL full-text search
+            language = locale.get_language_name('en').lower() # Convert to lowercase for consistency
+            search_text = text.strip()
+            rows = await conn.fetch(query, event_from_user.id, language, search_text)
 
-    elif action == "favorites":
-        query += """
-            AND favorites = TRUE
-            ORDER BY category ASC, book_id ASC
-        """
-        rows = await pool.fetch(query, event_from_user.id)
+        elif action == "cat":
+            query += """
+                AND category = $2
+                ORDER BY category ASC, book_id ASC
+            """
+            rows = await conn.fetch(query, event_from_user.id, text)
 
-    elif action == "likes":
-        query += """
-            AND likes = TRUE
-            ORDER BY category ASC, book_id ASC
-        """
-        rows = await pool.fetch(query, event_from_user.id)
+        elif action == "favorites":
+            query += """
+                AND favorites = TRUE
+                ORDER BY category ASC, book_id ASC
+            """
+            rows = await conn.fetch(query, event_from_user.id)
 
-    elif action == "recent":
-        query += """
-            ORDER BY book_id DESC 
-            LIMIT $2
-        """
-        rows = await pool.fetch(query, event_from_user.id, eng.CountOfRecentBooks)
-        rows.reverse() # Reverse the rows order
+        elif action == "likes":
+            query += """
+                AND likes = TRUE
+                ORDER BY category ASC, book_id ASC
+            """
+            rows = await conn.fetch(query, event_from_user.id)
 
-    # Print the books list
-    await book.PrintBooksList(rows, state, bot, event_chat, event_from_user)
+        elif action == "recent":
+            query += """
+                ORDER BY book_id DESC 
+                LIMIT $2
+            """
+            rows = await conn.fetch(query, event_from_user.id, eng.CountOfRecentBooks)
+            rows.reverse() # Reverse the rows order
+
+        # Print the books list
+        await book.PrintBooksList(rows, state, bot, event_chat, event_from_user)
+        
     # Send main menu to the user
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
