@@ -1,6 +1,7 @@
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
+from aiohttp import web
 
 # Internal modules
 import modules.engine as eng # For basic engine functions and definitions
@@ -32,6 +33,14 @@ class DatabaseMiddleware:
 
 # Start the bot
 async def main():
+    # Create web application
+    web_app = web.Application()
+    web_app.router.add_get('/', lambda request: web.Response(text="Bot is running."))
+    runner = web.AppRunner(web_app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 80)
+    await site.start()
+
     # Create a Postgres database connection pool
     pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
     
@@ -54,7 +63,10 @@ async def main():
     dp.startup.register(h_start.PrepareGlobalMenu)
 
     # Start bot polling
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await runner.cleanup()
 
 # Run the bot in global thread
 if __name__ == "__main__":

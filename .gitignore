@@ -3,3 +3,4 @@ certs/
 .vscode/
 modules/__pycache__/
 backup/
+export/
