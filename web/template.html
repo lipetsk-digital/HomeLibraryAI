@@ -456,9 +456,36 @@
                 font-size: 16px;
             }
         }
+
+        #loading-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading-bar.loaded {
+            opacity: 0;
+        }
+
+        #loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.7);
+        }
     </style>
 </head>
 <body>
+    <div id="loading-bar">
+        <div id="loading-progress"></div>
+    </div>
     <div class="container">
         <div class="sidebar">
             <h2 id="categoriesTitle" title="Показать все книги">📚 Категории</h2>
@@ -478,7 +505,7 @@
         </div>
         
         <div class="main-content">
-            <h1 class="header-title">Домашняя библиотека</h1>
+            <!--<h1 class="header-title">Домашняя библиотека</h1>-->
             <div class="search-container">
                 <input type="text" 
                        id="searchInput" 
@@ -542,7 +569,7 @@
         function getCategories() {
             const categories = {};
             books.forEach(book => {
-                // Применяем фильтры favorites и likes
+                // Apply filters favorites and likes
                 if (!applyFilters(book)) return;
                 
                 if (!categories[book.category]) {
@@ -574,30 +601,36 @@
                 event.target.classList.add('active');
             }
             
+            // Scroll to top smoothly
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+
             renderBooks();
         }
 
         function resetAllFilters() {
-            // Сброс категории
+            // Reset selected category
             selectedCategory = null;
             document.querySelectorAll('.category').forEach(el => {
                 el.classList.remove('active');
             });
             
-            // Сброс поиска
+            // Reset search query
             searchQuery = '';
             const searchInput = document.getElementById('searchInput');
             const clearSearchBtn = document.getElementById('clearSearch');
             searchInput.value = '';
             clearSearchBtn.classList.remove('visible');
             
-            // Сброс фильтров favorites и likes
+            // Reset filters favorites and likes
             filterFavorites = false;
             filterLikes = false;
             document.getElementById('checkboxFavorites').classList.remove('checked');
             document.getElementById('checkboxLikes').classList.remove('checked');
             
-            // Перерендерить категории и книги
+            // Re-render categories and books
             renderCategories();
             renderBooks();
         }
@@ -606,15 +639,15 @@
             const container = document.getElementById('booksGrid');
             let filteredBooks = books;
             
-            // Фильтрация по favorites и likes
+            // Filter by favorites and likes
             filteredBooks = filteredBooks.filter(applyFilters);
             
-            // Фильтрация по категории
+            // Filter by category
             if (selectedCategory) {
                 filteredBooks = filteredBooks.filter(book => book.category === selectedCategory);
             }
             
-            // Фильтрация по поисковому запросу
+            // Filter by search query
             if (searchQuery) {
                 filteredBooks = filteredBooks.filter(book => searchInBook(book, searchQuery));
             }
@@ -780,6 +813,41 @@
 
         renderCategories();
         renderBooks();
+
+        // Loading bar logic
+        (function() {
+            const loadingBar = document.getElementById('loading-bar');
+            const loadingProgress = document.getElementById('loading-progress');
+            const images = document.querySelectorAll('img');
+            let loadedImages = 0;
+            const totalImages = images.length;
+
+            if (totalImages === 0) {
+                loadingBar.classList.add('loaded');
+                return;
+            }
+
+            function updateProgress() {
+                loadedImages++;
+                const percent = (loadedImages / totalImages) * 100;
+                loadingProgress.style.width = percent + '%';
+
+                if (loadedImages === totalImages) {
+                    setTimeout(() => {
+                        loadingBar.classList.add('loaded');
+                    }, 200);
+                }
+            }
+
+            images.forEach((img) => {
+                if (img.complete) {
+                    updateProgress();
+                } else {
+                    img.addEventListener('load', updateProgress);
+                    img.addEventListener('error', updateProgress);
+                }
+            });
+        })();
     </script>
 </body>
 </html>
