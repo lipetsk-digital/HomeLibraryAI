@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="icon" href="favicon.png" sizes="any">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Домашняя библиотека - бот для каталогизации книг</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            object-fit: cover;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: row;
+            align-items: stretch;
+            justify-content: center;
+            gap: 40px;
+            margin: 30px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .qr-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .bot-username {
+            font-size: 1.5em;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        .bot-link {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .bot-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 25px;
+            color: #764ba2;
+            text-align: center;
+        }
+
+        .problem-list {
+            background: #fff5f5;
+            border-left: 5px solid #e53e3e;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .problem-list h3 {
+            color: #e53e3e;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .problem-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .problem-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1em;
+        }
+
+        .problem-list li:before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+        }
+
+        .solution {
+            background: #f0fff4;
+            border-left: 5px solid #38a169;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .solution h3 {
+            color: #38a169;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .solution p {
+            font-size: 1.15em;
+            line-height: 1.8;
+        }
+
+        .feature {
+            margin-bottom: 40px;
+        }
+
+        .feature h3 {
+            font-size: 1.6em;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .image-showcase {
+            display: flex;
+            gap: 20px;
+            margin: 25px 0;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .image-showcase img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .before-after {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .before-after-item {
+            text-align: center;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .before-after-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .arrow {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .dialogs {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .dialog-img {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+        }
+
+        .dialog-img img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .benefit-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .benefit-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card h4 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .benefit-card p {
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .cta {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .cta h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .cta .bot-link {
+            background: white;
+            color: #667eea;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: white;
+            font-size: 0.9em;
+        }
+
+        .copyright {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .hero, .section {
+                padding: 25px;
+            }
+
+            .subtitle {
+                font-size: 1.1em;
+            }
+
+            .hero-top {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .avatar {
+                width: 120px;
+                height: 120px;
+            }
+
+            .qr-section {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .qr-code {
+                width: 150px;
+                height: 150px;
+            }
+
+            .arrow {
+                font-size: 2em;
+            }
+
+            .before-after {
+                gap: 15px;
+            }
+
+            .dialogs {
+                gap: 15px;
+            }
+
+            .dialog-img {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <div class="hero-top">
+                <img src="avatar.jpg" alt="Домашняя библиотека" class="avatar">
+                <div class="hero-text">
+                    <h1>📚 Домашняя библиотека</h1>
+                    <p class="subtitle">Бот для упорядочивания и каталогизации вашей домашней библиотеки</p>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <div class="qr-item">
+                    <img src="t_me-home_library_ai_bot.png" alt="QR код бота" class="qr-code">
+                    <a href="https://t.me/home_library_ai_bot" class="bot-link" target="_blank">Открыть бота в Telegram</a>
+                </div>
+                <div class="qr-item">
+                    <img src="t_me-home_library_ai_bot.png" alt="QR код бота" class="qr-code">
+                    <a href="https://t.me/home_library_ai_bot" class="bot-link" target="_blank">Открыть бота в Max</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="problem-list">
+                <h3>Знакомо?</h3>
+                <ul>
+                    <li>Любишь бумажные книги, но не помнишь, какие у тебя уже есть?</li>
+                    <li>Нет времени переписывать каждую книгу?</li>
+                    <li>Лень возиться с таблицами и базами данных?</li>
+                </ul>
+            </div>
+
+            <div class="solution">
+                <h3>Решение есть!</h3>
+                <p>
+                    Бот <strong>"Домашняя библиотека"</strong> поможет тебе! 
+                    Всего лишь <strong>две фотки со смартфона</strong>: обложки и аннотации книги — 
+                    и она уже в твоей базе данных.
+                </p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🤖 Искусственный интеллект работает за тебя</h2>
+
+            <div class="feature">
+                <h3>📸 Обработка изображений</h3>
+                <p>ИИ повернёт и выровняет фотографии, найдёт обложку книги и оставит только её:</p>
+                
+                <div class="before-after">
+                    <div class="before-after-item">
+                        <p><strong>Твоё фото</strong></p>
+                        <img src="photo-example.jpg" alt="Исходное фото">
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="before-after-item">
+                        <p><strong>Результат</strong></p>
+                        <img src="cover-example.jpg" alt="Обработанная обложка">
+                    </div>
+                </div>
+            </div>
+
+            <div class="feature">
+                <h3>🧠 Распознавание и анализ</h3>
+                <p>ИИ сам распознает название и авторов книги, прочтёт и сократит аннотацию, укажет издательство, год выпуска и ISBN:</p>
+                
+                <div class="before-after">
+                    <div class="before-after-item">
+                        <p><strong>Твоё фото</strong></p>
+                        <img src="brief-example.JPG" alt="Исходная аннотация">
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="before-after-item">
+                        <p><strong>Результат</strong></p>
+                        <img src="brief-example.png" alt="Обработанная аннотация">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>✨ Просто и быстро</h2>
+            <p style="text-align: center; font-size: 1.2em; margin-bottom: 30px;">
+                Больше никаких поисков в интернете и набивания текста на клавиатуре.<br>
+                <strong>Раз фото — два фото — и книга у вас в базе!</strong>
+            </p>
+
+            <div class="dialogs">
+                <div class="dialog-img">
+                    <img src="dialog-1.png" alt="Диалог с ботом 1">
+                </div>
+                <div class="dialog-img">
+                    <img src="dialog-2.png" alt="Диалог с ботом 2">
+                </div>
+                <div class="dialog-img">
+                    <img src="dialog-3.png" alt="Диалог с ботом 3">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Возможности бота</h2>
+            
+            <div class="benefits">
+                <div class="benefit-card">
+                    <div class="icon">⭐</div>
+                    <h4>Отмечай книги</h4>
+                    <p>Помечай книги, которые хочешь прочесть, и те, что прочёл и они тебе понравились</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="icon">🔍</div>
+                    <h4>Мгновенный поиск</h4>
+                    <p>Находи книгу по любым словам в названии, аннотации и фамилиях авторов</p>
+                </div>
+
+                <div class="benefit-card">
+                    <div class="icon">📱</div>
+                    <h4>Всегда под рукой</h4>
+                    <p>Весь каталог твоей домашней библиотеки всегда с тобой в Telegram или Max</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💾 Сохранность данных</h2>
+            
+            <div class="feature">
+                <h3>📊 Экспорт данных</h3>
+                <p>Будь спокоен: базу данных всегда можно выгрузить и сохранить на диск в форматах CSV и JSON:</p>
+                
+                <div class="image-showcase">
+                    <img src="json-example.png" alt="Пример экспорта в JSON">
+                </div>
+            </div>
+
+            <div class="feature">
+                <h3>🌐 Веб-каталог</h3>
+                <p>Генерируй красивую интерактивную страничку своей библиотеки и делись ей с друзьями:</p>
+                
+                <div class="image-showcase">
+                    <img src="web-library.png" alt="Веб-каталог библиотеки">
+                </div>
+            </div>
+        </div>
+
+        <div class="cta">
+            <h2>Начни прямо сейчас!</h2>
+            <p>Наведи порядок в своей домашней библиотеке уже сегодня</p>
+            
+            <div class="qr-section" style="margin-top: 20px;">
+                <div class="qr-item">
+                    <img src="t_me-home_library_ai_bot.png" alt="QR код бота Telegram" class="qr-code">
+                    <a href="https://t.me/home_library_ai_bot" class="bot-link" target="_blank">Открыть бота в Telegram</a>
+                </div>
+                <div class="qr-item">
+                    <img src="t_me-home_library_ai_bot.png" alt="QR код бота Max" class="qr-code">
+                    <a href="https://t.me/home_library_ai_bot" class="bot-link" target="_blank">Открыть бота в Max</a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2024-2025 <a href="https://github.com/st-korn" class="copyright">https://github.com/st-korn</a>. Создано с ❤️ для любителей книг.</p>
+        </footer>
+    </div>
+</body>
+</html>

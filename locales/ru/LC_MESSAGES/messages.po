@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-28 19:57+0300\n"
+"POT-Creation-Date: 2025-12-29 00:00+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -47,18 +47,21 @@ msgid "edit"
 msgstr "✏️ Правка"
 
 #: modules/book.py:140
-#, fuzzy
 msgid "exporting_books"
-msgstr "Пока нет книг в библиотеке 🥺"
+msgstr "Выгружаю книги... ⏳"
 
 #: modules/book.py:207
 msgid "books_export_csv"
-msgstr ""
+msgstr "𝄜 CSV-таблица книг"
 
 #: modules/book.py:215
-#, fuzzy
 msgid "books_export_json"
-msgstr "Книга не найдена 🥺"
+msgstr "{ } JSON-файл книг"
+
+#: modules/book.py:220
+#, python-brace-format
+msgid "books_{url}_export"
+msgstr "📚 Ваша библиотека теперь всегда доступна по этой ссылке: {url} Поделись ею с друзьями!"
 
 #: modules/environment.py:67
 msgid "add"

@@ -1,6 +1,6 @@
 # Module for get and put books to database
 
-from modules.imports import asyncpg, io, random, csv, json, datetime, _, as_list, as_key_value, env, eng
+from modules.imports import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, eng
 from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
 import modules.h_start as h_start # For handling start command
 
@@ -215,5 +215,68 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
             caption=_("books_export_json")
         )
 
+        # Encrypte user ID and send link to web-export
+        url = eng.URL_BASE + "lib/" + eng.encrypt_for_url(str(event_from_user.id))
+        await bot.send_message(event_chat.id, _("books_{url}_export").format(url=url))
+
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     
+
+# -------------------------------------------------------
+# 
+async def library_html(request):
+    encrypted = request.match_info.get('user', '')
+
+    # Decrypt user ID
+    try:
+        user_id = eng.decrypt_from_url(encrypted)
+        user_id = int(user_id)
+    except Exception:
+        return web.Response(text="Invalid link", content_type='text/html')
+    
+    # Fetch books from database
+    async with eng.pool.acquire() as conn:
+        rows = await conn.fetch("""
+            SELECT *
+            FROM books
+            WHERE user_id = $1
+            ORDER BY category ASC, book_id ASC
+        """, user_id)
+
+    if len(rows) == 0:
+        # Answer if no books found
+        return web.Response(text="No books found", content_type='text/html')
+
+    else:
+        # Prepare JSON data
+        json_list = []
+        for row in rows:
+            json_list.append({
+                "book_id": row["book_id"],
+                "category": row["category"],
+                "title": row["title"],
+                "authors": row["authors"],
+                "authors_full_names": row["authors_full_names"],
+                "pages": row["pages"],
+                "publisher": row["publisher"],
+                "year": row["year"],
+                "isbn": row["isbn"],
+                "favorites": row["favorites"],
+                "likes": row["likes"],
+                "cover_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                "photo_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                "brief_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                "brief2_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                "brief": row["brief"],
+                "annotation": row["annotation"],
+                "datetime": row["datetime"].isoformat()
+            })
+        json_data = json.dumps(json_list, ensure_ascii=False, indent=4)
+
+        # Prepare HTML content
+        with open('web/template.html', 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        html_content = html_content.replace('//*BOOKS*', json_data)
+
+        # Return HTML response
+        return web.Response(text=html_content, content_type='text/html')
