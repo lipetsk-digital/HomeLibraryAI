@@ -31,6 +31,9 @@ GPT_URL = os.getenv("GPT_URL")
 GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
 GPT_MODEL = os.getenv("GPT_MODEL")
 
+# WEB parameters
+WEB_PORT = 80
+
 # Miscellaneous constants
 CountOfRecentBooks = 5
 MaxBytesInCategoryName = 60 # 64 - len("cat")

@@ -38,7 +38,7 @@ async def main():
     web_app.router.add_get('/', lambda request: web.Response(text="Bot is running."))
     runner = web.AppRunner(web_app)
     await runner.setup()
-    site = web.TCPSite(runner, '0.0.0.0', 80)
+    site = web.TCPSite(runner, port=eng.WEB_PORT)
     await site.start()
 
     # Create a Postgres database connection pool
