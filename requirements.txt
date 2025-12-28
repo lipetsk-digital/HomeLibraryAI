@@ -1,5 +1,6 @@
 asyncpg
 aioboto3
+aiohttp
 openai
 numpy
 opencv-python-headless
