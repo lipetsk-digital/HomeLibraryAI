@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-12-28 19:57+0300\n"
+"POT-Creation-Date: 2025-12-29 00:00+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -45,18 +45,21 @@ msgid "edit"
 msgstr "✏️ Edit"
 
 #: modules/book.py:140
-#, fuzzy
 msgid "exporting_books"
-msgstr "Where is no books in your library 🥺"
+msgstr "Exporting books... ⏳"
 
 #: modules/book.py:207
 msgid "books_export_csv"
-msgstr ""
+msgstr "𝄜 CSV books table"
 
 #: modules/book.py:215
-#, fuzzy
 msgid "books_export_json"
-msgstr "Sorry, book not found 🥺"
+msgstr "{ } JSON books file"
+
+#: modules/book.py:220
+#, python-brace-format
+msgid "books_{url}_export"
+msgstr "📚 Your library is now always available at this link: {url} Share it with your friends!"
 
 #: modules/environment.py:67
 msgid "add"
@@ -425,4 +428,7 @@ msgstr "🔍 Enter worlds of a book title, its authors, part of its ISBN, its ID
 #: modules/h_search.py:39
 msgid "_intro"
 msgstr ""
+
+#~ msgid "books_export_web_link"
+#~ msgstr "Sorry, book not found 🥺"
 

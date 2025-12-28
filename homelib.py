@@ -1,7 +1,7 @@
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
-from aiohttp import web
+from aiohttp import web # For web server
 
 # Internal modules
 import modules.engine as eng # For basic engine functions and definitions
@@ -16,6 +16,7 @@ import modules.h_brief as h_brief # For handling brief commands
 import modules.h_edit as h_edit # For handling book editing
 import modules.h_search as h_search # For handling book search
 import modules.h_lang as h_lang # For handling language selection
+import modules.book as book # For books routines
 
 # Initialize bot and dispatcher
 bot = Bot(token=eng.TELEGRAM_TOKEN)
@@ -35,17 +36,21 @@ class DatabaseMiddleware:
 async def main():
     # Create web application
     web_app = web.Application()
-    web_app.router.add_get('/', lambda request: web.Response(text="Bot is running."))
+    # Setup web-server routes
+    web_app.router.add_get('/', lambda request: web.FileResponse('web/index.html')) # Main page
+    web_app.router.add_get('/lib/{user}', book.library_html) # Users libraries pages
+    web_app.router.add_static('/', path='web', follow_symlinks=False, show_index=False) # Static files
+    # Start web server
     runner = web.AppRunner(web_app)
     await runner.setup()
     site = web.TCPSite(runner, port=eng.WEB_PORT)
     await site.start()
 
     # Create a Postgres database connection pool
-    pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
+    eng.pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
     
     # Add middleware for database access
-    dp.update.middleware(DatabaseMiddleware(pool))
+    dp.update.middleware(DatabaseMiddleware(eng.pool))
 
     # Add middleware for internationalization
     eng.i18n = I18n(path="locales", default_locale="en", domain="messages")

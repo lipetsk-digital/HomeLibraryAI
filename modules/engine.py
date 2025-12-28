@@ -4,6 +4,9 @@ from modules.imports import asyncpg, Bot, Router, F, Chat, Message, CallbackQuer
 
 import os # For environment variables
 import logging # For logging
+import base64 # For base64 encoding/decoding
+from Crypto.Cipher import AES # For AES encryption/decryption
+from Crypto.Util.Padding import pad, unpad # For padding in AES
 
 # ========================================================
 # Configuration data
@@ -33,6 +36,8 @@ GPT_MODEL = os.getenv("GPT_MODEL")
 
 # WEB parameters
 WEB_PORT = 80
+URL_KEY = os.getenv("URL_KEY")
+URL_BASE = os.getenv("URL_BASE")
 
 # Miscellaneous constants
 CountOfRecentBooks = 5
@@ -49,6 +54,8 @@ FSMi18n = None  # Placeholder for FSMi18n instance
 first_router = Router() # Router for global commands
 base_router = Router() # Router for base commands
 last_router = Router() # Router for trash messages
+
+pool = None  # Placeholder for database connection pool
 
 # ========================================================
 # Start section
@@ -94,3 +101,22 @@ async def RemovePreviousBotMessage(state: FSMContext, bot: Bot, event_chat: Chat
 @last_router.message()
 async def trash_entered(message: Message) -> None:
     await message.delete()
+
+# -------------------------------------------------------
+# AES Encryption text for URL usage
+def encrypt_for_url(text):
+    cipher = AES.new(URL_KEY.encode(), AES.MODE_ECB)
+    encrypted = cipher.encrypt(pad(text.encode(), AES.block_size))
+    return base64.urlsafe_b64encode(encrypted).decode().rstrip('=')
+
+# -------------------------------------------------------
+# AES Decryption text from URL
+def decrypt_from_url(encrypted):
+    # Add padding if necessary
+    padding = 4 - (len(encrypted) % 4)
+    if padding != 4:
+        encrypted += '=' * padding
+    # Decrypt
+    cipher = AES.new(URL_KEY.encode(), AES.MODE_ECB)
+    text = unpad(cipher.decrypt(base64.urlsafe_b64decode(encrypted)), AES.block_size)
+    return text.decode()
