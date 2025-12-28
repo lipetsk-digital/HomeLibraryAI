@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-11-05 11:56+0300\n"
+"POT-Creation-Date: 2025-12-28 19:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,30 +17,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:12 modules/h_cat.py:52
+#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:52
 msgid "no_books"
 msgstr ""
 
-#: modules/book.py:14
+#: modules/book.py:15
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:78
+#: modules/book.py:79
 msgid "no_books_found"
 msgstr ""
 
-#: modules/book.py:80 modules/book.py:105
+#: modules/book.py:81 modules/book.py:106
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:96
+#: modules/book.py:97
 msgid "edit"
+msgstr ""
+
+#: modules/book.py:140
+msgid "exporting_books"
+msgstr ""
+
+#: modules/book.py:207
+msgid "books_export_csv"
+msgstr ""
+
+#: modules/book.py:215
+msgid "books_export_json"
 msgstr ""
 
 #: modules/environment.py:67
