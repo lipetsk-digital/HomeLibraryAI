@@ -19,7 +19,7 @@ import modules.h_lang as h_lang # For handling language selection
 import modules.book as book # For books routines
 
 # Initialize bot and dispatcher
-bot = Bot(token=eng.TELEGRAM_TOKEN)
+bot = Bot(token=eng.TELEGRAM_TOKEN, proxy=eng.TELEGRAM_PROXY)
 storage = PostgresStorage(**eng.POSTGRES_CONFIG)
 dp = Dispatcher(storage=storage)
 

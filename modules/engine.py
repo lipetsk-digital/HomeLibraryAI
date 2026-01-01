@@ -23,6 +23,7 @@ POSTGRES_CONFIG = {
 
 # Telegram bot token
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_PROXY = os.getenv("TELEGRAM_PROXY")
 
 # AWS S3 storage settings
 AWS_ENDPOINT_URL = os.getenv("AWS_ENDPOINT_URL")
