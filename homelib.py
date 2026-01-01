@@ -34,6 +34,7 @@ class DatabaseMiddleware:
 
 # Start the bot
 async def main():
+    '''
     # Create web application
     web_app = web.Application()
     # Setup web-server routes
@@ -45,7 +46,7 @@ async def main():
     await runner.setup()
     site = web.TCPSite(runner, port=eng.WEB_PORT)
     await site.start()
-
+    '''
     # Create a Postgres database connection pool
     eng.pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
     
@@ -68,10 +69,10 @@ async def main():
     dp.startup.register(h_start.PrepareGlobalMenu)
 
     # Start bot polling
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await runner.cleanup()
+    #try:
+    await dp.start_polling(bot)
+    #finally:
+    #    await runner.cleanup()
 
 # Run the bot in global thread
 if __name__ == "__main__":
