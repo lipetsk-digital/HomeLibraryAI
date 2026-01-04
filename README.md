@@ -180,7 +180,7 @@ Also bot process `/start` command - for the first run of each user.
 Common data:
 
 - `locale`: str - prefered language by user's selection
-- `inline`: int - last ID of message with inline keyboard. Used to remember remove these keyboard, when they are no longer needed
+- `inline`: int or array of int - last ID of message with inline keyboard. Used to remember remove these keyboard, when they are no longer needed
 
 Category selection:
 

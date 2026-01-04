@@ -44,6 +44,7 @@ URL_BASE = os.getenv("URL_BASE")
 CountOfRecentBooks = 5
 MaxBytesInCategoryName = 60 # 64 - len("cat")
 MaxCharsInMessage = 4096
+MaxButtonsInMessage = 60 # 80+ buttons got REPLY_MARKUP_TOO_LONG error from Telegram
 
 # ========================================================
 # Environment variables
@@ -79,10 +80,12 @@ async def RemoveInlineKeyboards(callback: CallbackQuery, state: FSMContext, bot:
         data = await state.get_data()
         inline = data.get("inline")
         if inline:
-            try:
-                await bot.edit_message_reply_markup(chat_id=event_chat.id, message_id=inline, reply_markup=None)
-            except Exception as e:
-                logging.error(f"Error deleting inline keyboard: {e}")
+            inline_list = inline if isinstance(inline, list) else [inline]
+            for message_id in inline_list:
+                try:
+                    await bot.edit_message_reply_markup(chat_id=event_chat.id, message_id=message_id, reply_markup=None)
+                except Exception as e:
+                    logging.error(f"Error deleting inline keyboard: {e}")
     await state.update_data(inline=None)
 
 # -------------------------------------------------------
@@ -91,10 +94,12 @@ async def RemovePreviousBotMessage(state: FSMContext, bot: Bot, event_chat: Chat
     data = await state.get_data()
     inline = data.get("inline")
     if inline:
-        try:
-            await bot.delete_message(chat_id=event_chat.id, message_id=inline)
-        except Exception as e:
-            logging.error(f"Error deleting previous bot message: {e}")
+        inline_list = inline if isinstance(inline, list) else [inline]
+        for message_id in inline_list:
+            try:
+                await bot.delete_message(chat_id=event_chat.id, message_id=message_id)
+            except Exception as e:
+                logging.error(f"Error deleting previous bot message: {e}")
         await state.update_data(inline=None)
 
 # -------------------------------------------------------
