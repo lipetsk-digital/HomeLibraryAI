@@ -1,13 +1,15 @@
 import asyncpg # For asynchronous PostgreSQL connection
 from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
-from aiohttp import web # For web server
 
 # Internal modules
 import modules.engine as eng # For basic engine functions and definitions
 import modules.environment as env # For environment variables and configurations
 from modules.postgresstorage import PostgresStorage # For PostgreSQL storage of bot state
 import modules.database as database # For creating tables in PostgreSQL
+import modules.book as book # For books routines
+
+# Handler modules (imported to register their routes via decorators)
 import modules.h_start as h_start # For handling start command
 import modules.h_menu as h_menu # For handling main menu commands
 import modules.h_cat as h_cat # For manipulating cathegories
@@ -16,7 +18,6 @@ import modules.h_brief as h_brief # For handling brief commands
 import modules.h_edit as h_edit # For handling book editing
 import modules.h_search as h_search # For handling book search
 import modules.h_lang as h_lang # For handling language selection
-import modules.book as book # For books routines
 
 # Initialize bot and dispatcher
 bot = Bot(token=eng.TELEGRAM_TOKEN, proxy=eng.TELEGRAM_PROXY)
@@ -34,45 +35,34 @@ class DatabaseMiddleware:
 
 # Start the bot
 async def main():
-    
-    # Create web application
-    web_app = web.Application()
-    # Setup web-server routes
-    web_app.router.add_get('/', lambda request: web.FileResponse('web/index.html')) # Main page
-    web_app.router.add_get('/lib/{user}', book.library_html) # Users libraries pages
-    web_app.router.add_static('/', path='web', follow_symlinks=False, show_index=False) # Static files
-    # Start web server
-    runner = web.AppRunner(web_app)
-    await runner.setup()
-    site = web.TCPSite(runner, port=eng.WEB_PORT)
-    await site.start()
-    
-    # Create a Postgres database connection pool
-    eng.pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
-    
-    # Add middleware for database access
-    dp.update.middleware(DatabaseMiddleware(eng.pool))
-
-    # Add middleware for internationalization
-    eng.i18n = I18n(path="locales", default_locale="en", domain="messages")
-    eng.FSMi18n = FSMI18nMiddleware(i18n=eng.i18n).setup(dp)
-
-    # Table creation (if not exists)
-    await database.create_tables(eng.POSTGRES_CONFIG)
-    
-    # Register handlers
-    dp.include_router(eng.first_router) # Global commands
-    dp.include_router(eng.base_router)  # Base handlers
-    dp.include_router(eng.last_router) # Trash messages
-    
-    # Register startup routines
-    dp.startup.register(h_start.PrepareGlobalMenu)
-
-    # Start bot polling
     try:
+        # Create a Postgres database connection pool
+        eng.pool = await asyncpg.create_pool(**eng.POSTGRES_CONFIG)
+        
+        # Add middleware for database access
+        dp.update.middleware(DatabaseMiddleware(eng.pool))
+
+        # Add middleware for internationalization
+        eng.i18n = I18n(path="locales", default_locale="en", domain="messages")
+        eng.FSMi18n = FSMI18nMiddleware(i18n=eng.i18n).setup(dp)
+
+        # Table creation (if not exists)
+        await database.create_tables(eng.POSTGRES_CONFIG)
+        
+        # Register handlers
+        dp.include_router(eng.first_router) # Global commands
+        dp.include_router(eng.base_router)  # Base handlers
+        dp.include_router(eng.last_router) # Trash messages
+        
+        # Register startup routines
+        dp.startup.register(h_start.PrepareGlobalMenu)
+
+        # Start bot polling
         await dp.start_polling(bot)
     finally:
-        await runner.cleanup()
+        # Close database connection pool
+        if eng.pool:
+            await eng.pool.close()
 
 # Run the bot in global thread
 if __name__ == "__main__":

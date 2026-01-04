@@ -1,0 +1,6 @@
+FROM base-image:latest AS builder
+
+COPY homelib-web.py .
+COPY web ./web
+
+CMD ["python", "homelib-web.py"]
