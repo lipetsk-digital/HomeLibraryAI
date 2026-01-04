@@ -7,6 +7,7 @@ import modules.h_cover as h_cover # For do book cover photos
 import modules.book as book # For generating list of the books
 import modules.h_edit as h_edit # For handling book editing
 import modules.h_search as h_search # For handling book search routines
+import json
 
 # -------------------------------------------------------
 # Prepares and sends the inline keyboard for selecting a category.
@@ -16,8 +17,6 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
     # Get the action from the state data
     data = await state.get_data()
     action = data.get("action")
-    # Create new inline keyboard
-    builder = InlineKeyboardBuilder()
     # Select cathegories from the database
     async with pool.acquire() as conn:
         # Fetching cathegories from the database: selects the category and counts the number of books in each category for the user
@@ -30,6 +29,11 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
         """, event_from_user.id)
         # If there are cathegories, create buttons for each one and ask user
         if result:
+            # Create new inline keyboard
+            builder = InlineKeyboardBuilder()
+            buttons_count = 0
+            sent_messages = []
+            # Prepare text header based on the action
             if action == "add_book":
                 text = _("select_or_enter_category_add_book")
             elif action == "search":
@@ -40,10 +44,20 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
                 text = _("select_category_to_move_book")
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Category(name=row[0]) )
+                buttons_count += 1
+                if  buttons_count >= eng.MaxButtonsInMessage:
+                    builder.adjust(1)
+                    sent_message = await bot.send_message(event_chat.id, text, reply_markup=builder.as_markup())
+                    sent_messages.append(sent_message.message_id)
+                    await state.update_data(inline=sent_message.message_id)
+                    buttons_count = 0
+                    builder = InlineKeyboardBuilder()
+                    text = _("continue_selecting_category")
             builder.button(text=_("cancel"), callback_data=env.Category(name="cancel") )
             builder.adjust(1)
             sent_message = await bot.send_message(event_chat.id, text, reply_markup=builder.as_markup())
-            await state.update_data(inline=sent_message.message_id)
+            sent_messages.append(sent_message.message_id)
+            await state.update_data(inline=sent_messages)
         else:
             # If there are no cathegories, check if the user can add a new one
             if action == "add_book":
