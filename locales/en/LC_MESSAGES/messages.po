@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-04 13:00+0300\n"
+"POT-Creation-Date: 2026-01-04 15:22+0300\n"
 "PO-Revision-Date: 2025-05-01 13:09+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:62
+#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:66
 msgid "no_books"
 msgstr "Where is no books in your library 🥺"
 
@@ -98,7 +98,7 @@ msgid "likes"
 msgstr "👍 Like it"
 
 #: modules/environment.py:80 modules/environment.py:120
-#: modules/environment.py:151 modules/h_cat.py:53 modules/h_edit.py:51
+#: modules/environment.py:151 modules/h_cat.py:56 modules/h_edit.py:51
 #: modules/h_edit.py:163
 msgid "cancel"
 msgstr "Cancel"
@@ -287,7 +287,7 @@ msgstr "Take a photo of the page with an annotation and details 📸"
 msgid "photo_brief_1of2"
 msgstr "Take a photo the 1 of 2 pages with an annotation and details 📸"
 
-#: modules/h_brief.py:74 modules/h_cover.py:69 modules/h_cover.py:262
+#: modules/h_brief.py:74 modules/h_cover.py:70 modules/h_cover.py:263
 msgid "upload_failed"
 msgstr "Sorry, the upload failed 🥺"
 
@@ -299,7 +299,7 @@ msgstr "Take a photo the 2 of 2 pages with an annotation and details 📸"
 msgid "wait2"
 msgstr "⏳ Please wait, the AI is processing your photos..."
 
-#: modules/h_brief.py:87 modules/h_cover.py:83
+#: modules/h_brief.py:87 modules/h_cover.py:84
 msgid "wait"
 msgstr "⏳ Please wait, the AI is processing your photo..."
 
@@ -321,68 +321,72 @@ msgstr "📗 The book has been saved in the library under the number {bookid}."
 msgid "add_next_{category}"
 msgstr "Add the next book to the {category} category?"
 
-#: modules/h_cat.py:36
+#: modules/h_cat.py:38
 msgid "select_or_enter_category_add_book"
 msgstr "Select 📂 category for adding a new book or enter the name of new category:"
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:40
 msgid "select_category_to_view_books"
 msgstr "Select 📂 category to see the books:"
 
-#: modules/h_cat.py:40
+#: modules/h_cat.py:42
 msgid "select_category_to_rename"
 msgstr "Select 📂 category to rename:"
 
-#: modules/h_cat.py:42
+#: modules/h_cat.py:44
 msgid "select_category_to_move_book"
 msgstr "Select 📂 category to move the book or enter the name of new category:"
 
-#: modules/h_cat.py:52
+#: modules/h_cat.py:55
 msgid "continue_selecting_category"
 msgstr "... continue ..."
 
-#: modules/h_cat.py:60
+#: modules/h_cat.py:64
 msgid "enter_category_add_book"
 msgstr "Enter name of 📂 category for adding a new book:"
 
-#: modules/h_cat.py:93 modules/h_cat.py:143
+#: modules/h_cat.py:96
+msgid "no_such_category_name"
+msgstr "Sorry, but you can not use this words as a category name 🥺"
+
+#: modules/h_cat.py:101 modules/h_cat.py:151
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr "The category name is too long 🥺 (maximum {size} bytes)"
 
-#: modules/h_cat.py:96
+#: modules/h_cat.py:104
 msgid "can_not_add_category"
 msgstr "🫸 You cannot add a new category at this moment. Please select an existing one"
 
-#: modules/h_cat.py:107
+#: modules/h_cat.py:115
 #, python-brace-format
 msgid "adding_book_in_{category}"
 msgstr "➕ Adding a book to the category {category}"
 
-#: modules/h_cat.py:112
+#: modules/h_cat.py:120
 msgid "rename_category"
 msgstr "Enter new name of 📂 category:"
 
-#: modules/h_cat.py:138
+#: modules/h_cat.py:146
 msgid "category_renamed"
 msgstr "✅ Category renamed successfully"
 
-#: modules/h_cover.py:22
+#: modules/h_cover.py:23
 msgid "photo_cover"
 msgstr "Take a photo of the book cover 📸"
 
-#: modules/h_cover.py:81
+#: modules/h_cover.py:82
 #, python-brace-format
 msgid "{wait}_in_queue"
 msgid_plural "{wait}_in_queues"
 msgstr[0] "⏳ Your task is queued for processing by the AI. There are {wait} task ahead of you. Please wait..."
 msgstr[1] "⏳ Your task is queued for processing by the AI. There are {wait} tasks ahead of you. Please wait..."
 
-#: modules/h_cover.py:137 modules/h_cover.py:241
+#: modules/h_cover.py:138 modules/h_cover.py:242
 msgid "contour_failed"
 msgstr "Sorry, book detection failed 🥺"
 
-#: modules/h_cover.py:244
+#: modules/h_cover.py:245
 msgid "remove_background_failed"
 msgstr "Sorry, the background removal failed 🥺"
 

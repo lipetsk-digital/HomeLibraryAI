@@ -91,7 +91,11 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
     action = data.get("action")
     if (action == "add_book") or (action == "edit_book"):
         if len(message.text.encode()) < eng.MaxBytesInCategoryName:
-            await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
+            if message.text.lower() == "cancel":
+                await message.delete()
+                await message.answer(_("no_such_category_name"))
+            else:
+                await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
         else:
             await message.delete()
             await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))
