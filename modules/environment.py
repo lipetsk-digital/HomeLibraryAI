@@ -140,6 +140,8 @@ BOOK_PROMPT = [
 BRIEF_ACTIONS = [
     _translate_("use_brief"),
     _translate_("edit_brief"),
+    _translate_("favorites"),
+    _translate_("likes"),
     _translate_("take_new_photo")
 ]
 NEXT_ACTIONS = [

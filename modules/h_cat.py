@@ -65,7 +65,6 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
             else:
                 await bot.send_message(event_chat.id, _("no_books"))
                 await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-                await state.set_state(env.State.wait_for_command)
                 return
         await state.set_state(env.State.select_category)
 
@@ -91,7 +90,11 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
     action = data.get("action")
     if (action == "add_book") or (action == "edit_book"):
         if len(message.text.encode()) < eng.MaxBytesInCategoryName:
-            await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
+            if message.text.lower() == "cancel":
+                await message.delete()
+                await message.answer(_("no_such_category_name"))
+            else:
+                await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
         else:
             await message.delete()
             await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))

@@ -151,7 +151,7 @@ async def AskForBriefReaction(message: Message, state: FSMContext, pool: asyncpg
     await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
     for action in env.BRIEF_ACTIONS:
         builder.button(text=_(action), callback_data=env.BriefActions(action=action) )
-    builder.adjust(2,1)
+    builder.adjust(2,2,1)
     # Add to the message with book information the keyboard
     await bot.edit_message_reply_markup(chat_id=event_chat.id, message_id=sent_message.message_id, reply_markup=builder.as_markup())
     await state.update_data(inline=sent_message.message_id)
@@ -184,6 +184,23 @@ async def use_brief(callback: CallbackQuery, callback_data: env.BriefActions, st
 async def edit_brief(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await h_edit.SelectField(callback.message, state, pool, bot, event_chat)
+
+# =========================================================
+# Handler for inline button favorites and likes
+@eng.base_router.callback_query(env.BriefActions.filter(F.action == "favorites"))
+@eng.base_router.callback_query(env.BriefActions.filter(F.action == "likes"))
+async def favorites(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    # Inverse boolean field value
+    action = callback_data.action
+    data = await state.get_data()
+    old_value = data[action]
+    new_value = not old_value
+    book_dict = {}
+    book_dict[action] = new_value
+    await state.update_data(**book_dict)
+    # Update the book information
+    await AskForBriefReaction(callback.message, state, pool, bot, event_chat)
 
 # =========================================================
 # Handler for inline button take_new_photo

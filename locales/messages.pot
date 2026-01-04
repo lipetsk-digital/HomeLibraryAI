@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-04 13:06+0300\n"
+"POT-Creation-Date: 2026-01-04 15:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:62
+#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:66
 msgid "no_books"
 msgstr ""
 
@@ -97,7 +97,7 @@ msgid "likes"
 msgstr ""
 
 #: modules/environment.py:80 modules/environment.py:120
-#: modules/environment.py:151 modules/h_cat.py:53 modules/h_edit.py:51
+#: modules/environment.py:151 modules/h_cat.py:56 modules/h_edit.py:51
 #: modules/h_edit.py:163
 msgid "cancel"
 msgstr ""
@@ -286,7 +286,7 @@ msgstr ""
 msgid "photo_brief_1of2"
 msgstr ""
 
-#: modules/h_brief.py:74 modules/h_cover.py:69 modules/h_cover.py:262
+#: modules/h_brief.py:74 modules/h_cover.py:70 modules/h_cover.py:263
 msgid "upload_failed"
 msgstr ""
 
@@ -298,7 +298,7 @@ msgstr ""
 msgid "wait2"
 msgstr ""
 
-#: modules/h_brief.py:87 modules/h_cover.py:83
+#: modules/h_brief.py:87 modules/h_cover.py:84
 msgid "wait"
 msgstr ""
 
@@ -320,68 +320,72 @@ msgstr ""
 msgid "add_next_{category}"
 msgstr ""
 
-#: modules/h_cat.py:36
+#: modules/h_cat.py:38
 msgid "select_or_enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:40
 msgid "select_category_to_view_books"
 msgstr ""
 
-#: modules/h_cat.py:40
+#: modules/h_cat.py:42
 msgid "select_category_to_rename"
 msgstr ""
 
-#: modules/h_cat.py:42
+#: modules/h_cat.py:44
 msgid "select_category_to_move_book"
 msgstr ""
 
-#: modules/h_cat.py:52
+#: modules/h_cat.py:55
 msgid "continue_selecting_category"
 msgstr ""
 
-#: modules/h_cat.py:60
+#: modules/h_cat.py:64
 msgid "enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:93 modules/h_cat.py:143
+#: modules/h_cat.py:96
+msgid "no_such_category_name"
+msgstr ""
+
+#: modules/h_cat.py:101 modules/h_cat.py:151
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr ""
 
-#: modules/h_cat.py:96
+#: modules/h_cat.py:104
 msgid "can_not_add_category"
 msgstr ""
 
-#: modules/h_cat.py:107
+#: modules/h_cat.py:115
 #, python-brace-format
 msgid "adding_book_in_{category}"
 msgstr ""
 
-#: modules/h_cat.py:112
+#: modules/h_cat.py:120
 msgid "rename_category"
 msgstr ""
 
-#: modules/h_cat.py:138
+#: modules/h_cat.py:146
 msgid "category_renamed"
 msgstr ""
 
-#: modules/h_cover.py:22
+#: modules/h_cover.py:23
 msgid "photo_cover"
 msgstr ""
 
-#: modules/h_cover.py:81
+#: modules/h_cover.py:82
 #, python-brace-format
 msgid "{wait}_in_queue"
 msgid_plural "{wait}_in_queues"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/h_cover.py:137 modules/h_cover.py:241
+#: modules/h_cover.py:138 modules/h_cover.py:242
 msgid "contour_failed"
 msgstr ""
 
-#: modules/h_cover.py:244
+#: modules/h_cover.py:245
 msgid "remove_background_failed"
 msgstr ""
 
