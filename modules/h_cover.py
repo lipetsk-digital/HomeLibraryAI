@@ -1,7 +1,8 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports import asyncpg, aioboto3, cv2, get_queue_size, async_remove, sessionHQ, io, uuid, np, _, env, eng
+from modules.imports import asyncpg, aioboto3, cv2, io, uuid, np, _, env, eng
 from modules.imports import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
+from modules.aiorembg import async_remove, get_queue_size, get_session
 import modules.h_brief as h_brief # For run brief commands
 
 # =========================================================
@@ -87,7 +88,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             try:
                 # Remove background
                 photo_bytesio2 = io.BytesIO(photo_bytes)
-                mask_bytes = await async_remove(photo_bytesio2.getvalue(), session=sessionHQ, only_mask=True)
+                mask_bytes = await async_remove(photo_bytesio2.getvalue(), session=get_session(), only_mask=True)
                 
                 # Decode mask using cv2
                 mask_np = cv2.imdecode(np.frombuffer(mask_bytes, np.uint8), cv2.IMREAD_UNCHANGED)

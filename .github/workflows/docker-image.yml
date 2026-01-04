@@ -79,6 +79,8 @@ jobs:
         push: true
         tags: ${{ steps.meta-tg.outputs.tags }}
         labels: ${{ steps.meta-tg.outputs.labels }}
+        build-args: |
+          BASE_IMAGE=${{ env.IMAGE_NAME }}-base:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
           
@@ -90,6 +92,8 @@ jobs:
         push: true
         tags: ${{ steps.meta-web.outputs.tags }}
         labels: ${{ steps.meta-web.outputs.labels }}
+        build-args: |
+          BASE_IMAGE=${{ env.IMAGE_NAME }}-base:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
