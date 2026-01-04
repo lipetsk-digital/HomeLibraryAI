@@ -23,13 +23,6 @@ async def mainmenu_callback(callback: CallbackQuery, callback_data: env.MainMenu
     await RunMainMenuAction(action, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
-# Handler for entered text on main menu state
-@eng.first_router.message(env.State.wait_for_command, F.text)
-async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
-    await h_search.DoSearch("text", message.text, state, pool, bot, event_chat, event_from_user)
-
-# -------------------------------------------------------
 # Run main menu action
 async def RunMainMenuAction(action: str, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     if action == "add":

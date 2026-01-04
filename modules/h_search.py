@@ -28,6 +28,7 @@ async def recent_books(callback: CallbackQuery, callback_data: env.SearchMenu, s
 
 # -------------------------------------------------------
 # Handler for entered text when the user is searching for a book
+@eng.first_router.message(env.State.wait_for_command, F.text) # Also in main menu state
 @eng.base_router.message(env.State.wait_for_search_query, F.text)
 async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await eng.RemovePreviousBotMessage(state, bot, event_chat)
