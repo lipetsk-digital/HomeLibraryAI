@@ -60,6 +60,10 @@ jobs:
           type=ref,event=branch
           latest
 
+    - name: Set lower case repository name
+      run: |
+        echo "IMAGE_LOWER=$(echo '${{ env.IMAGE_NAME }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
     - name: Build and push base image
       uses: docker/build-push-action@v5
       with:
@@ -80,7 +84,7 @@ jobs:
         tags: ${{ steps.meta-tg.outputs.tags }}
         labels: ${{ steps.meta-tg.outputs.labels }}
         build-args: |
-          BASE_IMAGE=${{ env.IMAGE_NAME }}-base:latest
+          BASE_IMAGE=${{ env.IMAGE_LOWER }}-base:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
           
@@ -93,7 +97,7 @@ jobs:
         tags: ${{ steps.meta-web.outputs.tags }}
         labels: ${{ steps.meta-web.outputs.labels }}
         build-args: |
-          BASE_IMAGE=${{ env.IMAGE_NAME }}-base:latest
+          BASE_IMAGE=${{ env.IMAGE_LOWER }}-base:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
