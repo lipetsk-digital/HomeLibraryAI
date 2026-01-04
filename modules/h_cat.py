@@ -65,7 +65,6 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
             else:
                 await bot.send_message(event_chat.id, _("no_books"))
                 await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-                await state.set_state(env.State.wait_for_command)
                 return
         await state.set_state(env.State.select_category)
 
