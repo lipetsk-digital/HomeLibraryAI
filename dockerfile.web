@@ -1,4 +1,4 @@
-FROM homelib-base:latest AS builder
+FROM ghcr.io/lipetsk-digital/homelibraryai/homelib-base:latest AS builder
 
 COPY homelib-web.py .
 COPY web ./web
