@@ -1,4 +1,5 @@
-FROM ghcr.io/lipetsk-digital/homelibraryai/homelib-base:latest AS builder
+ARG BASE_IMAGE=homelib-base:latest
+FROM ${BASE_IMAGE}
 
 COPY homelib-web.py .
 COPY web ./web

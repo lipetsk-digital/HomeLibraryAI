@@ -2,7 +2,15 @@ import asyncio
 from typing import Optional, Any
 from rembg import remove, new_session
 
-sessionHQ = new_session('birefnet-general')
+# Lazy initialization of session - will be created on first use
+_sessionHQ = None
+
+def get_session():
+    """Get or create rembg session (lazy initialization)"""
+    global _sessionHQ
+    if _sessionHQ is None:
+        _sessionHQ = new_session('birefnet-general')
+    return _sessionHQ
 
 # Semaphore to limit concurrent rembg operations to 1
 _rembg_semaphore = asyncio.Semaphore(1)
