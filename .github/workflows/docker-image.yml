@@ -68,11 +68,14 @@ jobs:
         push: true
         tags: ${{ steps.meta-base.outputs.tags }}
         labels: ${{ steps.meta-base.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - name: Build and push telegram image
       uses: docker/build-push-action@v5
       with:
         context: .
+        file: ./dockerfile.tg
         push: true
         tags: ${{ steps.meta-tg.outputs.tags }}
         labels: ${{ steps.meta-tg.outputs.labels }}
@@ -83,6 +86,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
+        file: ./dockerfile.web
         push: true
         tags: ${{ steps.meta-web.outputs.tags }}
         labels: ${{ steps.meta-web.outputs.labels }}
