@@ -1,4 +1,4 @@
-FROM homelib-base:latest AS builder
+FROM ghcr.io/lipetsk-digital/homelibraryai/homelib-base:latest AS builder
 
 COPY homelib-tg.py .
 ADD https://github.com/danielgatis/rembg/releases/download/v0.0.0/BiRefNet-general-epoch_244.onnx /root/.u2net/birefnet-general.onnx
