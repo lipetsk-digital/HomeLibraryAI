@@ -24,9 +24,10 @@
             display: flex;
             max-width: 1600px;
             margin: 0 auto;
-            min-height: 100vh;
+            height: 100vh;
             background: white;
             box-shadow: 0 0 50px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
 
         .sidebar {
@@ -35,6 +36,9 @@
             color: white;
             overflow-y: auto;
             padding: 20px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
         }
 
         .sidebar h2 {
@@ -531,7 +535,7 @@
 
     <script>
         const books = 
-//*BOOKS*
+[]//*BOOKS*
 ;
         
         let selectedCategory = null;

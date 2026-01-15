@@ -36,7 +36,10 @@ GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
 GPT_MODEL = os.getenv("GPT_MODEL")
 
 # WEB parameters
-WEB_PORT = 80
+HTTP_PORT = int(os.getenv("HTTP_PORT", "80"))
+HTTPS_PORT = int(os.getenv("HTTPS_PORT", "443"))
+SSL_CERT_PATH = os.getenv("SSL_CERT_PATH")
+SSL_KEY_PATH = os.getenv("SSL_KEY_PATH")
 URL_KEY = os.getenv("URL_KEY")
 URL_BASE = os.getenv("URL_BASE")
 

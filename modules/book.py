@@ -276,7 +276,7 @@ async def library_html(request):
         # Prepare HTML content
         with open('web/template.html', 'r', encoding='utf-8') as f:
             html_content = f.read()
-        html_content = html_content.replace('//*BOOKS*', json_data)
+        html_content = html_content.replace('[]//*BOOKS*', json_data)
 
         # Return HTML response
         return web.Response(text=html_content, content_type='text/html')
