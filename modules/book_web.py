@@ -3,6 +3,7 @@ import json # For JSON handling
 from datetime import datetime # For handling date and time
 
 # Internal modules
+import modules.engine_common as engc # For common engine functions and definitions
 import modules.engine_web as engw # For basic engine functions and defenitions
 
 # -------------------------------------------------------
@@ -18,7 +19,7 @@ async def library_html(request):
         return web.Response(text="Invalid link", content_type='text/html')
     
     # Fetch books from database
-    async with engw.pool.acquire() as conn:
+    async with engc.pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT *
             FROM books
