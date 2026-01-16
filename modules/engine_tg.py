@@ -23,8 +23,6 @@ first_router = Router() # Router for global commands
 base_router = Router() # Router for base commands
 last_router = Router() # Router for trash messages
 
-pool = None  # Placeholder for database connection pool
-
 # ========================================================
 # Routines defenitions
 # ========================================================

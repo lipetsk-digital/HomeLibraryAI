@@ -1,0 +1,13 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements-max.txt .
+RUN pip install --no-cache-dir -r requirements-max.txt
+
+COPY modules ./modules
+COPY locales ./locales
+COPY homelib-max.py .
+#ADD https://github.com/danielgatis/rembg/releases/download/v0.0.0/BiRefNet-general-epoch_244.onnx /root/.u2net/birefnet-general.onnx
+
+CMD ["python", "homelib-max.py"]

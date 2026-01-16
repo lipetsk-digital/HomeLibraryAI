@@ -50,6 +50,16 @@ jobs:
           type=ref,event=branch
           latest
 
+    - name: Extract metadata
+      id: meta-max
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.IMAGE_NAME }}-max
+        tags: |
+          type=sha,prefix=
+          type=ref,event=branch
+          latest
+
     - name: Build and push telegram image
       uses: docker/build-push-action@v5
       with:
@@ -72,6 +82,17 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - name: Build and push max image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./dockerfile.max
+        push: true
+        tags: ${{ steps.meta-max.outputs.tags }}
+        labels: ${{ steps.meta-max.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
   deploy:
     needs: [build-and-push]
     runs-on: self-hosted
@@ -90,12 +111,15 @@ jobs:
           # Пуллим последний образ
           docker compose pull homelib-tg
           docker compose pull homelib-web
+          docker compose pull homelib-max
           
           # Останавливаем и удаляем старый контейнер
           docker compose down homelib-tg
           docker compose up homelib-tg -d
           docker compose down homelib-web
           docker compose up homelib-web -d
+          docker compose down homelib-max
+          docker compose up homelib-max -d
 
           # Очищаем старые образы для экономии места
           docker image prune -f

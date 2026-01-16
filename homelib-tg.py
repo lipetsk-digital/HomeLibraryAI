@@ -3,7 +3,7 @@ from aiogram import Bot, Dispatcher # For Telegram bot framework
 from aiogram.utils.i18n import I18n, FSMI18nMiddleware # For internationalization and localization
 
 # Internal modules
-import modules.engine_tg as engt # For basic engine functions and definitions
+import modules.engine_tg as engt # For telegram engine functions and definitions
 import modules.engine_common as engc # For common engine functions and definitions
 import modules.environment as env # For environment variables and configurations
 from modules.postgresstorage import PostgresStorage # For PostgreSQL storage of bot state

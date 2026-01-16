@@ -3,7 +3,6 @@
 from modules.imports_tg import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, engb, engw
 from modules.imports_tg import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
 import modules.h_start as h_start # For handling start command
-import modules.engine_web as engw # For basic web functions and definitions
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
@@ -98,7 +97,7 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
             builder.adjust(1)
             if photo:
-                photo_url = engb.AWS_EXTERNAL_URL + "/" + photo
+                photo_url = engw.AWS_EXTERNAL_URL + "/" + photo
                 await bot.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
                 await bot.send_message(event_chat.id, f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
