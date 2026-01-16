@@ -1,6 +1,12 @@
-ARG BASE_IMAGE=homelib-base:latest
-FROM ${BASE_IMAGE}
+FROM python:3.13-slim
 
+WORKDIR /app
+
+COPY requirements-web.txt .
+RUN pip install --no-cache-dir -r requirements-web.txt
+
+COPY modules ./modules
+COPY locales ./locales
 COPY homelib-web.py .
 COPY web ./web
 

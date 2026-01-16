@@ -1,0 +1,3 @@
+asyncpg==0.31.0
+aiohttp==3.11.18
+pycryptodome==3.23.0

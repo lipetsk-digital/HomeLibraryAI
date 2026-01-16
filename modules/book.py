@@ -1,8 +1,9 @@
 # Module for get and put books to database
 
-from modules.imports import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, eng
-from modules.imports import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
+from modules.imports_tg import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, engb, engw
+from modules.imports_tg import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
 import modules.h_start as h_start # For handling start command
+import modules.engine_web as engw # For basic web functions and definitions
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
@@ -97,7 +98,7 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
             builder.button(text=_("edit"), callback_data=env.EditBook(book_id=book_id))
             builder.adjust(1)
             if photo:
-                photo_url = eng.AWS_EXTERNAL_URL + "/" + photo
+                photo_url = engb.AWS_EXTERNAL_URL + "/" + photo
                 await bot.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
             else:
                 await bot.send_message(event_chat.id, f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode="HTML", reply_markup=builder.as_markup())
@@ -124,7 +125,7 @@ async def PrintBooksList(rows: list, state: FSMContext, bot: Bot, event_chat: Ch
                 prev_category = category
             lines_to_add += f"{emoji} {book_id}.{favorites}{likes} {title} - {authors}, {year}\n"
             # Check if adding this would exceed the limit
-            if len(message_text + lines_to_add) >= eng.MaxCharsInMessage:
+            if len(message_text + lines_to_add) >= engb.MaxCharsInMessage:
                 # Send current message and start a new one
                 await bot.send_message(event_chat.id, message_text, parse_mode="HTML")
                 message_text = lines_to_add
@@ -170,10 +171,10 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
                 row["isbn"],
                 row["favorites"],
                 row["likes"],
-                eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                engw.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                engw.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                engw.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                engw.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
                 row["brief"],
                 row["annotation"],
                 row["datetime"].isoformat()
@@ -190,10 +191,10 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
                 "isbn": row["isbn"],
                 "favorites": row["favorites"],
                 "likes": row["likes"],
-                "cover_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                "photo_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                "brief_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                "brief2_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                "cover_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                "photo_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                "brief_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                "brief2_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
                 "brief": row["brief"],
                 "annotation": row["annotation"],
                 "datetime": row["datetime"].isoformat()
@@ -216,67 +217,8 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
         )
 
         # Encrypte user ID and send link to web-export
-        url = eng.URL_BASE + "lib/" + eng.encrypt_for_url(str(event_from_user.id))
+        url = engw.URL_BASE + "lib/" + engw.encrypt_for_url(str(event_from_user.id))
         await bot.send_message(event_chat.id, _("books_{url}_export").format(url=url))
 
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     
-
-# -------------------------------------------------------
-# 
-async def library_html(request):
-    encrypted = request.match_info.get('user', '')
-
-    # Decrypt user ID
-    try:
-        user_id = eng.decrypt_from_url(encrypted)
-        user_id = int(user_id)
-    except Exception:
-        return web.Response(text="Invalid link", content_type='text/html')
-    
-    # Fetch books from database
-    async with eng.pool.acquire() as conn:
-        rows = await conn.fetch("""
-            SELECT *
-            FROM books
-            WHERE user_id = $1
-            ORDER BY category ASC, book_id ASC
-        """, user_id)
-
-    if len(rows) == 0:
-        # Answer if no books found
-        return web.Response(text="No books found", content_type='text/html')
-
-    else:
-        # Prepare JSON data
-        json_list = []
-        for row in rows:
-            json_list.append({
-                "book_id": row["book_id"],
-                "category": row["category"],
-                "title": row["title"],
-                "authors": row["authors"],
-                "authors_full_names": row["authors_full_names"],
-                "pages": row["pages"],
-                "publisher": row["publisher"],
-                "year": row["year"],
-                "isbn": row["isbn"],
-                "favorites": row["favorites"],
-                "likes": row["likes"],
-                "cover_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                "photo_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                "brief_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                "brief2_filename": eng.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
-                "brief": row["brief"],
-                "annotation": row["annotation"],
-                "datetime": row["datetime"].isoformat()
-            })
-        json_data = json.dumps(json_list, ensure_ascii=False, indent=4)
-
-        # Prepare HTML content
-        with open('web/template.html', 'r', encoding='utf-8') as f:
-            html_content = f.read()
-        html_content = html_content.replace('[]//*BOOKS*', json_data)
-
-        # Return HTML response
-        return web.Response(text=html_content, content_type='text/html')

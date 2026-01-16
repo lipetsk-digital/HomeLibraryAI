@@ -1,7 +1,7 @@
 # Module for handling bot messages related to select cathegories
 
 from email.mime import message
-from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, InlineKeyboardBuilder, CallbackQuery, FSMContext, env, eng
+from modules.imports_tg import asyncpg, _, Bot, F, Chat, User, Message, InlineKeyboardBuilder, CallbackQuery, FSMContext, env, engt, engb
 import modules.h_start as h_start # For handling start command
 import modules.h_cover as h_cover # For do book cover photos
 import modules.book as book # For generating list of the books
@@ -45,7 +45,7 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
             for row in result:
                 builder.button(text=f"{row[0]}  ({row[1]})", callback_data=env.Category(name=row[0]) )
                 buttons_count += 1
-                if  buttons_count >= eng.MaxButtonsInMessage:
+                if  buttons_count >= engb.MaxButtonsInMessage:
                     builder.adjust(1)
                     sent_message = await bot.send_message(event_chat.id, text, reply_markup=builder.as_markup())
                     sent_messages.append(sent_message.message_id)
@@ -70,26 +70,26 @@ async def SelectCategory(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_
 
 # -------------------------------------------------------
 # Handler for inline button "cancel" in category selection
-@eng.base_router.callback_query(env.Category.filter(F.name == "cancel"))
+@engt.base_router.callback_query(env.Category.filter(F.name == "cancel"))
 async def category_selection_cancel(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await engt.RemovePreviousBotMessage(state, bot, event_chat)
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for inline button selection of a category
-@eng.base_router.callback_query(env.Category.filter())
+@engt.base_router.callback_query(env.Category.filter())
 async def category_selected(callback: CallbackQuery, callback_data: env.Category, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await engt.RemovePreviousBotMessage(state, bot, event_chat)
     await DoCategory(callback_data.name, callback.message, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
-@eng.base_router.message(env.State.select_category, F.text)
+@engt.base_router.message(env.State.select_category, F.text)
 async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     data = await state.get_data()
     action = data.get("action")
     if (action == "add_book") or (action == "edit_book"):
-        if len(message.text.encode()) < eng.MaxBytesInCategoryName:
+        if len(message.text.encode()) < engb.MaxBytesInCategoryName:
             if message.text.lower() == "cancel":
                 await message.delete()
                 await message.answer(_("no_such_category_name"))
@@ -97,7 +97,7 @@ async def category_entered(message: Message, state: FSMContext, pool: asyncpg.Po
                 await DoCategory(message.text, message, state, pool, bot, event_chat, event_from_user)
         else:
             await message.delete()
-            await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))
+            await message.answer(_("category_name_{size}").format(size=engb.MaxBytesInCategoryName))
     else:
         await message.delete()
         await message.answer(_("can_not_add_category"))
@@ -126,10 +126,10 @@ async def DoCategory(category: str, message: Message, state: FSMContext, pool: a
 
 # -------------------------------------------------------
 # Handler for entered text when the user enters new category name
-@eng.base_router.message(env.State.wait_for_new_category_name, F.text)
+@engt.base_router.message(env.State.wait_for_new_category_name, F.text)
 async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     # Check the length of the new category name
-    if len(message.text.encode()) < eng.MaxBytesInCategoryName:
+    if len(message.text.encode()) < engb.MaxBytesInCategoryName:
         # Extract information about field editing
         data = await state.get_data()
         old_cat = data.get("category")
@@ -147,4 +147,4 @@ async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncp
         await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
     else:
         await message.delete()
-        await message.answer(_("category_name_{size}").format(size=eng.MaxBytesInCategoryName))
+        await message.answer(_("category_name_{size}").format(size=engb.MaxBytesInCategoryName))
