@@ -1,8 +1,8 @@
 # Module for edit values of book fields
 
 from email.mime import message
-from modules.imports import asyncpg, _, as_key_value, env, eng
-from modules.imports import Bot, F, Chat, User, Message, ReactionTypeEmoji, InlineKeyboardBuilder, CallbackQuery, FSMContext
+from modules.imports_tg import asyncpg, _, as_key_value, env, engt
+from modules.imports_tg import Bot, F, Chat, User, Message, ReactionTypeEmoji, InlineKeyboardBuilder, CallbackQuery, FSMContext
 import modules.book as book # For save book to database
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_start as h_start # For main menu routines
@@ -11,7 +11,7 @@ import modules.h_brief as h_brief # For brief routines
 # -------------------------------------------------------
 # Send message with inline-buttons of the book fields selection
 async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await eng.RemoveInlineKeyboards(None, state, bot, event_chat)
+    await engt.RemoveInlineKeyboards(None, state, bot, event_chat)
     data = await state.get_data()
     action = data.get("action")
     # Create new inline keyboard
@@ -30,9 +30,9 @@ async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, b
 
 # -------------------------------------------------------
 # Handle button of field selection
-@eng.base_router.callback_query(env.BookFields.filter())
+@engt.base_router.callback_query(env.BookFields.filter())
 async def field_selected(callback: CallbackQuery, callback_data: env.BookFields, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
     field = callback_data.field
     data = await state.get_data()
     action = data.get("action")
@@ -91,7 +91,7 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
 
 # -------------------------------------------------------
 # Handler for entered text when the user edits field value
-@eng.base_router.message(env.State.wait_for_field_value, F.text)
+@engt.base_router.message(env.State.wait_for_field_value, F.text)
 async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     # Extract information about field editing
     data = await state.get_data()
@@ -115,7 +115,7 @@ async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool,
 
 # -------------------------------------------------------
 # Handler for edit buttons of books
-@eng.base_router.callback_query(env.EditBook.filter())
+@engt.base_router.callback_query(env.EditBook.filter())
 async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBook, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await state.update_data(action="edit_book")
     book_id = callback_data.book_id
@@ -140,9 +140,9 @@ async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBoo
 
 # -------------------------------------------------------
 # Handler for confirm delete button
-@eng.base_router.callback_query(env.ConfirmDelete.filter(F.action == "delete"))
+@engt.base_router.callback_query(env.ConfirmDelete.filter(F.action == "delete"))
 async def confirm_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
     data = await state.get_data()
     book_id = data.get("book_id")
     # Delete the book from the database
@@ -157,9 +157,9 @@ async def confirm_delete_callback(callback: CallbackQuery, callback_data: env.Co
 
 # -------------------------------------------------------
 # Handler for cancel delete button
-@eng.base_router.callback_query(env.ConfirmDelete.filter(F.action == "cancel"))
+@engt.base_router.callback_query(env.ConfirmDelete.filter(F.action == "cancel"))
 async def cancel_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemoveInlineKeyboards(callback, state, bot, event_chat)
+    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await callback.message.answer(_("cancel"))
     # Return to editing field selection
     await SelectField(callback.message, state, pool, bot, event_chat)

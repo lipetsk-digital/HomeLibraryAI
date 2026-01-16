@@ -1,6 +1,6 @@
 # Module for handling bot messages related to start bot
 
-from modules.imports import asyncpg, _, Bot, Chat, User, Message, Command, InlineKeyboardBuilder, FSMContext, env, eng
+from modules.imports_tg import asyncpg, _, Bot, Chat, User, Message, Command, InlineKeyboardBuilder, FSMContext, env, engc, engt
 from aiogram.types import BotCommand, BotCommandScopeDefault # For setting bot commands
 import modules.book as book # For book routines
 
@@ -8,18 +8,18 @@ import modules.book as book # For book routines
 # Prepare the bot's bottom left main menu commands
 async def PrepareGlobalMenu(bot: Bot):
     # Loop through all available languages and set the bot commands for each one    
-    available_languages = eng.i18n.available_locales
-    eng.logging.debug(f"Available languages: {available_languages}")
+    available_languages = engt.i18n.available_locales
+    engc.logging.debug(f"Available languages: {available_languages}")
     for lang in available_languages:
         commands = []
         actions = env.MAIN_MENU_ACTIONS + env.ADVANCED_ACTIONS
         for action in actions:
-            commands.append(BotCommand(command=action, description=eng.i18n.gettext(action, locale=lang)))
+            commands.append(BotCommand(command=action, description=engt.i18n.gettext(action, locale=lang)))
         await bot.set_my_commands(commands, BotCommandScopeDefault(), lang)
 
 # -------------------------------------------------------
 # Handler for the /start command
-@eng.base_router.message(Command("start"))
+@engt.base_router.message(Command("start"))
 async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     async with pool.acquire() as conn:
         await conn.execute(
@@ -31,7 +31,7 @@ async def start_command(message: Message, state: FSMContext, pool: asyncpg.Pool,
 # -------------------------------------------------------
 # Prepare and send the main menu inline-buttons for the user
 async def MainMenu(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await engt.RemovePreviousBotMessage(state, bot, event_chat)
     message = await book.BriefStatistic(pool, bot, event_from_user, event_chat)
     builder = InlineKeyboardBuilder()
     for action in env.MAIN_MENU_ACTIONS:

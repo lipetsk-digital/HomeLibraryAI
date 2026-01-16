@@ -1,6 +1,6 @@
 # Handlers for main menu commands and inline buttons
 
-from modules.imports import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, InlineKeyboardBuilder, FSMContext, env, eng
+from modules.imports_tg import asyncpg, _, Bot, F, Chat, User, Message, Command, CallbackQuery, InlineKeyboardBuilder, FSMContext, env, engt
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_search as h_search # For books search routines
 import modules.h_lang as h_lang # For language selection routines
@@ -8,17 +8,17 @@ import modules.book as book # For book routines
 
 # -------------------------------------------------------
 # Handler for main menu commands
-@eng.first_router.message(Command(*(env.MAIN_MENU_ACTIONS+env.ADVANCED_ACTIONS)))
+@engt.first_router.message(Command(*(env.MAIN_MENU_ACTIONS+env.ADVANCED_ACTIONS)))
 async def mainmenu_command(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await engt.RemovePreviousBotMessage(state, bot, event_chat)
     command = message.text.split()[0].lstrip('/')
     await RunMainMenuAction(command, state, pool, bot, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for main menu inline buttons
-@eng.first_router.callback_query(env.MainMenu.filter())
+@engt.first_router.callback_query(env.MainMenu.filter())
 async def mainmenu_callback(callback: CallbackQuery, callback_data: env.MainMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await eng.RemovePreviousBotMessage(state, bot, event_chat)
+    await engt.RemovePreviousBotMessage(state, bot, event_chat)
     action = callback_data.action
     await RunMainMenuAction(action, state, pool, bot, event_chat, event_from_user)
 

@@ -1,4 +1,4 @@
-from modules.imports import CallbackData, StatesGroup, State
+from modules.imports_tg import CallbackData, StatesGroup, State
 
 # -------------------------------------------------------
 # Finite State Machine
