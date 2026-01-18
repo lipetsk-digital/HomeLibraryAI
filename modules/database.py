@@ -39,6 +39,7 @@ async def init():
     conn = await asyncpg.connect(**POSTGRES_CONFIG)
     await conn.execute('''
         CREATE TABLE IF NOT EXISTS logs (
+            platform "char",
             user_id BIGINT,
             nickname TEXT,
             username TEXT,
@@ -47,6 +48,7 @@ async def init():
     ''')
     await conn.execute('''
         CREATE TABLE IF NOT EXISTS books (
+            platform "char",
             user_id BIGINT,
             book_id BIGINT,
             category TEXT,
@@ -66,7 +68,7 @@ async def init():
             brief2_filename TEXT,
             likes BOOLEAN DEFAULT FALSE,
             favorites BOOLEAN DEFAULT FALSE,
-            PRIMARY KEY (user_id, book_id)
+            PRIMARY KEY (platform, user_id, book_id)
         )
     ''')
     await conn.close()

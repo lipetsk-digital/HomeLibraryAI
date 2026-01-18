@@ -72,3 +72,4 @@ event: MessageCallback
 А когда явно указываю тип context: MemoryContext - этой ошибки нет
 15. Идентификатор сообщения: int+int vs str
 16. Из объекта Message нельзя получить chat_id (? через recipient)
+17. bot send_message разный порядок реквизитов. Поэтому только именованные параметры
