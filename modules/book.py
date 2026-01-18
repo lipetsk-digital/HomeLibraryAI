@@ -1,20 +1,24 @@
 # Module for get and put books to database
 
-from modules.imports_tg import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, engb, engw
-from modules.imports_tg import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
-import modules.h_start as h_start # For handling start command
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.database as db # For database functions and definitions
+#from modules.imports_tg import asyncpg, web, io, random, csv, json, datetime, _, as_list, as_key_value, env, engb, engw
+#from modules.imports_tg import Bot, Chat, User, Message, InlineKeyboardBuilder, FSMContext, BufferedInputFile
+#import modules.h_start as h_start # For handling start command
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
-async def BriefStatistic(pool: asyncpg.Pool, bot: Bot, event_from_user: User, event_chat: Chat) -> Message:
-    async with pool.acquire() as conn:
+async def BriefStatistic(event_from_user: eng.User, event_chat: eng.Chat) -> eng.Message:
+    async with db.pool.acquire() as conn:
         result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", event_from_user.id)
     if (result is None) or (result == 0):
-        message = await bot.send_message(event_chat.id, _("no_books"))
+        message = await eng.bot.send_message(chat_id=event_chat.id, text=_("no_books"))
     else:
-        message = await bot.send_message(event_chat.id, _("{result}_book","{result}_books",result).format(result=result))
+        message = await eng.bot.send_message(chat_id=event_chat.id, text=_("{result}_book","{result}_books",result).format(result=result))
     return message
 
+'''
 # -------------------------------------------------------
 # Send to user current book information from user's data and return Message object
 async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> Message:
@@ -220,4 +224,4 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
         await bot.send_message(event_chat.id, _("books_{url}_export").format(url=url))
 
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-    
+'''
