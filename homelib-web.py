@@ -15,7 +15,7 @@ async def main():
     db.pool = await asyncpg.create_pool(**db.POSTGRES_CONFIG)
     
     # Table creation (if not exists)
-    await db.create_tables(db.POSTGRES_CONFIG)    
+    await db.init()
 
     # ------------ HTTP server initialization ------------
     # Create HTTP app with redirect middleware
