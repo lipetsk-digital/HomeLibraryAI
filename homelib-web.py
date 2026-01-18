@@ -3,9 +3,8 @@ from aiohttp import web # For web server
 import asyncio # For async operations
 
 # Internal modules
-import modules.engine_common as engc # For common engine functions and definitions
-import modules.engine_web as engw # For web engine functions and definitions
-import modules.database as database # For creating tables in PostgreSQL
+import modules.database as db # For creating tables in PostgreSQL
+import modules.web as wb # For web engine functions and definitions
 import modules.book_web as book # For books routines
 
 # Start the server
@@ -13,10 +12,10 @@ async def main():
     
     # ------------ Database initialization ------------
     # Create a Postgres database connection pool
-    engc.pool = await asyncpg.create_pool(**engc.POSTGRES_CONFIG)
+    db.pool = await asyncpg.create_pool(**db.POSTGRES_CONFIG)
     
     # Table creation (if not exists)
-    await database.create_tables(engc.POSTGRES_CONFIG)    
+    await db.create_tables(db.POSTGRES_CONFIG)    
 
     # ------------ HTTP server initialization ------------
     # Create HTTP app with redirect middleware
@@ -28,9 +27,9 @@ async def main():
     # Start HTTP redirect server
     http_runner = web.AppRunner(http_app)
     await http_runner.setup()
-    http_site = web.TCPSite(http_runner, port=engw.HTTP_PORT)
+    http_site = web.TCPSite(http_runner, port=wb.HTTP_PORT)
     await http_site.start()
-    print(f"HTTP server started on port {engw.HTTP_PORT}")
+    print(f"HTTP server started on port {wb.HTTP_PORT}")
     
     # ------------ Main loop ------------
     # Keep server running
@@ -38,7 +37,7 @@ async def main():
         await asyncio.Event().wait() # Run forever
     finally:
         await http_runner.cleanup()
-        await engc.pool.close()
+        await db.pool.close()
     
 # Run the bot in global thread
 if __name__ == "__main__":

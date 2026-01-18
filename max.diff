@@ -1,0 +1,74 @@
+1. Собираем несколько пакетов из одного репозитория - или один пакет в несколько экземпляров?
+2. Либо потратить время и переделать бот под универсальный, либо придётся всегда вести рядом два бота
+2.5 Есть два варианта: полностью переделать maxapi под телеграм, либо сделать универсальный движок и обёртки для каждого мессенджера. Первый вариант для ленивых, но он непредсказуем. Второй вариант даёт больше контроля.
+
+3. FSM без связки с базой данных, для чего создаётся PostgresDispatcher
+
+4. Заменить основное тело программы на работу с объектами engine, добавить недостающие middlware
+5. include_router vs include_routers
+6. Нет привычного главного меню с командами - потом нашёл set_my_commands. Мучения с 'Content-Encoding': 'br'. Реверс-инжиниринг официального API ts
+7. dp.on_started (max при создании экземпляра диспетчера) vs dp.startup (tg при начале poolling)
+
+7. Синтаксис событий-сообщений и событий-кнопок - нет привычных полей
+8. В обработчиках придётся отказаться от аннотации типов параметров
+
+9. Отличия в объектах сообщений и состояний между Телеграмом и Максом
+------------ Telegram ------------
+message: Message
+    message_id  : int
+    from_user   : User
+    chat        : Chat
+    date        : datetime
+    text        : str
+state: FSMContext
+    set_state(state: str | None) -> Awaitable[None]
+    get_state() -> Awaitable[Optional[str]]
+    update_data(**kwargs) -> Awaitable[None]
+    get_data() -> Awaitable[Dict[str, Any]]
+    set_data(data: Dict[str, Any]) -> Awaitable[None]
+    clear() -> Awaitable[None]
+callback: CallbackQuery, 
+    from_user: User
+    message: Message
+callback_data: env.BookFields, 
+event_from_user: NotRequired[User]
+event_chat: NotRequired[Chat]
+
+------------ Max ------------
+event: MessageCreated
+    message      : Message
+        sender	Optional[User]	Отправитель сообщения, может быть None, если сообщение отправлено каналом https://github.com/love-apples/maxapi/discussions/14.
+        recipient	Recipient	Получатель сообщения.
+        timestamp	int	Временная метка сообщения.
+        link	Optional[LinkedMessage]	Связанное сообщение. Может быть None.
+        body	Optional[MessageBody]	Тело сообщения. Может быть None.
+            text	str	Текст сообщения. Может быть None.
+            attachments	Optional[List[Union[AttachmentButton, Audio, Video, File, Image, Sticker, Share]]]	Список вложений. По умолчанию пустой.
+        stat	Optional[MessageStat]	Статистика сообщения. Может быть None.
+        url	Optional[str]	URL сообщения. Может быть None.
+        bot	Optional[Bot]
+    get_ids() — получить идентификаторы сообщения (chat_id, user_id)
+context: MemoryContext
+    set_state(state) — установить состояние (State или None для сброса)
+    get_state() — получить текущее состояние
+    get_data() — получить все данные контекста
+    update_data(**kwargs) — обновить данные
+    set_data(data) — полностью заменить данные
+    clear()
+event: MessageCallback
+    timestamp: int
+    message: Message
+    callback: Callback
+        timestamp: int
+        payload: str
+        user: User
+    get_ids() — получить идентификаторы сообщения (chat_id, user_id)
+
+10. Даже дата и время передаются по-разному datetime vs timestamp
+11. Бот не может поставить лайк сообщению
+12. В телеграм команда /start, в макс - отдельное событие
+13. Событие bot_started в макс не передаёт context
+14. Современный python стал плохо читаем. Проанализируй исходники библиотеки maxapi и объясни, почему когда я в декораторе указываю аргумент context у функции wrapper_max без аннотации типа, выходит ошибка cause=TypeError: on_message.<locals>.decorator.<locals>.wrapper_max() missing 1 required positional argument: 'context'))
+А когда явно указываю тип context: MemoryContext - этой ошибки нет
+15. Идентификатор сообщения: int+int vs str
+16. Из объекта Message нельзя получить chat_id (? через recipient)
