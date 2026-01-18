@@ -1,4 +1,4 @@
-# Unified module for all imports used in the project
+# Unified module for all telegram-imports used in the project
 
 import asyncpg # For asynchronous PostgreSQL connection
 import aioboto3 # For AWS S3 storage
@@ -34,8 +34,8 @@ from aiogram.fsm.context import FSMContext # For finite state machine context
 from aiogram.fsm.state import State, StatesGroup # For finite state machine of Telegram-bot
 
 import modules.environment as env # For bot configurations
-import modules.engine_common as engc # For common engine functions and defenitions
+import modules.common as engc # For common engine functions and defenitions
 import modules.engine_bot as engb # For bot-specific engine functions and defenitions
 import modules.engine_tg as engt # For Telegram-specific engine functions and defenitions
-import modules.engine_web as engw # For web-specific engine functions and defenitions
+import modules.web as engw # For web-specific engine functions and defenitions
 

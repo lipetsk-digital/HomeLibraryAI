@@ -6,8 +6,7 @@ COPY requirements-web.txt .
 RUN pip install --no-cache-dir -r requirements-web.txt
 
 COPY modules ./modules
-COPY locales ./locales
-COPY homelib-web.py .
 COPY web ./web
+COPY homelib-web.py .
 
 CMD ["python", "homelib-web.py"]

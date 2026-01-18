@@ -7,12 +7,35 @@
 # - books: for storing book information
 # ========================================================
 
+import os # For environment variables
 import asyncpg # For asynchronous PostgreSQL connection
+
+# ========================================================
+# Configuration data
+# ========================================================
+
+# PostgreSQL connection settings
+POSTGRES_CONFIG = {
+    "host": os.getenv("POSTGRES_HOST"),
+    "port": os.getenv("POSTGRES_PORT"),
+    "database": os.getenv("POSTGRES_DATABASE"),
+    "user": os.getenv("POSTGRES_USERNAME"),
+    "password": os.getenv("POSTGRES_PASSWORD")
+}
+
+# ========================================================
+# Environment variables
+# ========================================================
+
+pool = None  # Database connection pool
 
 # ========================================================
 # Create tables in PostgreSQL if they doesn't exist
 # ========================================================
-async def create_tables(POSTGRES_CONFIG):
+async def init():
+    global pool
+    pool = await asyncpg.create_pool(**POSTGRES_CONFIG)
+
     conn = await asyncpg.connect(**POSTGRES_CONFIG)
     await conn.execute('''
         CREATE TABLE IF NOT EXISTS logs (

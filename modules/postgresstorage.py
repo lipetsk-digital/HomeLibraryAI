@@ -1,3 +1,5 @@
+# PostgreSQL storage library for aiogram's FSM (finite state machine)
+
 from typing import Any, Dict, Optional
 import json
 import asyncpg
@@ -22,6 +24,11 @@ class PostgresStorage(BaseStorage):
         self.user = user
         self._password = password
         self._db = None # internal field for asyncpg.Connection
+
+    # Dummy init method (no action needed, connection created on demand)
+    # Added for compatibility with maxapi storage interface
+    async def init(self) -> None:
+        None
 
     # Connect to the database and create tables if they do not exist. 
     # Return existing connection if it is open

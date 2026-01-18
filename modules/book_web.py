@@ -3,8 +3,8 @@ import json # For JSON handling
 from datetime import datetime # For handling date and time
 
 # Internal modules
-import modules.engine_common as engc # For common engine functions and definitions
-import modules.engine_web as engw # For basic engine functions and defenitions
+import modules.database as db # For common engine functions and definitions
+import modules.web as wb # For basic engine functions and defenitions
 
 # -------------------------------------------------------
 # Generate HTML page with user's library
@@ -13,13 +13,13 @@ async def library_html(request):
 
     # Decrypt user ID
     try:
-        user_id = engw.decrypt_from_url(encrypted)
+        user_id = wb.decrypt_from_url(encrypted)
         user_id = int(user_id)
     except Exception:
         return web.Response(text="Invalid link", content_type='text/html')
     
     # Fetch books from database
-    async with engc.pool.acquire() as conn:
+    async with db.pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT *
             FROM books
@@ -47,10 +47,10 @@ async def library_html(request):
                 "isbn": row["isbn"],
                 "favorites": row["favorites"],
                 "likes": row["likes"],
-                "cover_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                "photo_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                "brief_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                "brief2_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                "cover_filename": wb.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                "photo_filename": wb.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                "brief_filename": wb.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                "brief2_filename": wb.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
                 "brief": row["brief"],
                 "annotation": row["annotation"],
                 "datetime": row["datetime"].isoformat()

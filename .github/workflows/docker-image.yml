@@ -31,10 +31,10 @@ jobs:
       uses: docker/setup-buildx-action@v3
     
     - name: Extract metadata
-      id: meta-tg
+      id: meta-bot
       uses: docker/metadata-action@v5
       with:
-        images: ${{ env.IMAGE_NAME }}-tg
+        images: ${{ env.IMAGE_NAME }}-bot
         tags: |
           type=sha,prefix=
           type=ref,event=branch
@@ -50,24 +50,14 @@ jobs:
           type=ref,event=branch
           latest
 
-    - name: Extract metadata
-      id: meta-max
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.IMAGE_NAME }}-max
-        tags: |
-          type=sha,prefix=
-          type=ref,event=branch
-          latest
-
-    - name: Build and push telegram image
+    - name: Build and push bot image
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./dockerfile.tg
+        file: ./dockerfile-bot
         push: true
-        tags: ${{ steps.meta-tg.outputs.tags }}
-        labels: ${{ steps.meta-tg.outputs.labels }}
+        tags: ${{ steps.meta-bot.outputs.tags }}
+        labels: ${{ steps.meta-bot.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
           
@@ -75,21 +65,10 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: ./dockerfile.web
+        file: ./dockerfile-web
         push: true
         tags: ${{ steps.meta-web.outputs.tags }}
         labels: ${{ steps.meta-web.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-
-    - name: Build and push max image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./dockerfile.max
-        push: true
-        tags: ${{ steps.meta-max.outputs.tags }}
-        labels: ${{ steps.meta-max.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -110,16 +89,16 @@ jobs:
 
           # Пуллим последний образ
           docker compose pull homelib-tg
-          docker compose pull homelib-web
           docker compose pull homelib-max
+          docker compose pull homelib-web
           
           # Останавливаем и удаляем старый контейнер
           docker compose down homelib-tg
           docker compose up homelib-tg -d
-          docker compose down homelib-web
-          docker compose up homelib-web -d
           docker compose down homelib-max
           docker compose up homelib-max -d
+          docker compose down homelib-web
+          docker compose up homelib-web -d
 
           # Очищаем старые образы для экономии места
           docker image prune -f
