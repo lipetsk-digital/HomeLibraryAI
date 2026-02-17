@@ -36,7 +36,7 @@ from aiogram.filters.command import Command as Command_tg
 from maxapi.types import Command as Command_max
 
 from aiogram.filters import CommandStart as CommandStart_tg
-from maxapi.types import BotStarted as BotStarted_max
+from maxapi.types import BotStarted as CommandStart_max
 
 from aiogram.types import Chat as Chat_tg
 from maxapi.types.chats import Chat as Chat_max
@@ -49,6 +49,17 @@ from maxapi.types.message import Message as Message_max
 from maxapi.types import MessageCreated as MessageCreated_max
 
 from maxapi.types.updates.update import Update as Update_max
+
+from aiogram.filters.callback_data import CallbackData as CallbackData_tg
+from maxapi.filters.callback_payload import CallbackPayload as CallbackData_max
+
+from aiogram.utils.keyboard import InlineKeyboardBuilder as InlineKeyboardBuilder_tg
+from maxapi.utils.inline_keyboard import InlineKeyboardBuilder as InlineKeyboardBuilder_max
+
+from maxapi.types import CallbackButton as CallbackButton_max
+
+from aiogram.types.callback_query import CallbackQuery as CallbackQuery_tg
+from maxapi.types import MessageCallback as CallbackQuery_max
 
 from aiogram.fsm.context import FSMContext as FSMContext_tg
 from modules.maxstorage import PostgresContext as PostgresContext_max
@@ -148,26 +159,48 @@ class Message:
             self.from_user = User(source.from_user) if source.from_user else None
             self.text = source.message.body.text or "" if source.message.body else None
 
-class CallbackQuery:
-    """ Universal CallbackQuery class for both Telegram and MAX messengers."""
-    message: Message
-    data: str
-    from_user: User
-    id: str
+CallbackData = CallbackData_tg | CallbackData_max
 
-class FSMContext(Protocol):
-    """ Protocol class for FSMContext to define typical methods used in both telegram and maxapi contexts."""
-    async def get_data(self) -> dict[str, any]:
-        pass
-    async def update_data(self, **kwargs) -> None:
-        pass
-    async def get_state(self) -> State_tg | State_max | None:
-        pass
-    async def set_state(self, state: State_tg | State_max | None) -> None:
-        pass
+def CallbackData():
+    """ Universal CallbackData class fabrique for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        return CallbackData_tg
+    elif MESSENGER == b'M':
+        return CallbackData_max
+
+class CallbackButton:
+    """ Universal CallbackButton class for both Telegram and MAX messengers."""
+    text: str
+    payload: CallbackData
+    def __init__(self, text: str, payload: CallbackData_tg | CallbackData_max):
+        self.text = text
+        self.payload = payload
+
+FSMContext = FSMContext_tg | PostgresContext_max
+
+def State():
+    """ Universal State class fabrique for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        return State_tg()
+    elif MESSENGER == b'M':
+        return State_max()
+    
+def StatesGroup():
+    """ Universal StatesGroup class fabrique for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        return StatesGroup_tg
+    elif MESSENGER == b'M':
+        return StatesGroup_max
+    
+def Command(*args, **kwargs):
+    """ Universal Command class fabrique for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        return Command_tg(*args, **kwargs)
+    elif MESSENGER == b'M':
+        return Command_max(*args, **kwargs)
 
 # ========================================================
-# Routines defenitions
+# Bot startup routines definitions
 # ========================================================
 
 def init_bot(messenger: str, postgres_config: dict) -> None:
@@ -256,19 +289,109 @@ async def prepare_commands(actions: list) -> None:
         await bot.set_my_commands(*commands)
 
 # ========================================================
-# Basic decorators defenitions
+# Messages support
+# ========================================================
+
+async def send_message(chat_id: int, text: str) -> Message:
+    """ Send a message to the specified chat.
+
+        Args:
+            chat_id (int): The ID of the chat to send the message to.
+            text (str): The text content of the message.
+
+        Returns:
+            Message: A universal Message object representing the sent message.
+    """
+    if MESSENGER == b'T':
+        message = await bot.send_message(chat_id=chat_id, text=text)
+        return Message(message)
+    elif MESSENGER == b'M':
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=text)
+        return Message(sendedmessage.message)
+
+# ========================================================
+# Inline keyboards support
+# ========================================================
+async def send_inline_keyboard(message: Message, buttons: list[CallbackButton], state: FSMContext, row_width: int = 1, permanently: bool = False) -> None:
+    """ Send an inline keyboard with the given buttons.
+
+        Args:
+            message (Message): The message to which the inline keyboard will be attached.
+            buttons (list[CallbackButton]): A list of CallbackButton instances to be included in the keyboard.
+            row_width (int): The number of buttons per row in the keyboard (default is 1).
+    """
+    if MESSENGER == b'T':
+        builder = InlineKeyboardBuilder_tg()
+        for button in buttons:
+            builder.button(text=button.text, callback_data=button.payload)
+        builder.adjust(row_width)
+        await bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=message.id, reply_markup=builder.as_markup())
+    elif MESSENGER == b'M':
+        builder = InlineKeyboardBuilder_max()
+        counter = 0
+        row = []
+        for button in buttons:
+            row.append(CallbackButton_max(text=button.text, payload=button.payload.pack()))
+            counter += 1
+            if counter >= row_width:
+                builder.row(*row)
+                row = []
+                counter = 0
+        if row: # add remaining buttons if they exist
+            builder.row(*row)
+        await bot.edit_message(message_id=message.id, attachments=[builder.as_markup()])
+    # If the keyboard is not permanent, save the message ID in the FSM context to be able to delete it later
+    if not permanently:
+        data = await state.get_data()
+        inline_messages = data.get("inline", [])
+        if isinstance(inline_messages, list):
+            inline_messages.append(message.id)
+        else:
+            inline_messages = [message.id]
+        await state.update_data(inline=inline_messages)
+
+async def remove_temporary_inline_keyboards(chat_id: int, state: FSMContext) -> None:
+    """ Remove all temporary inline keyboards by their message IDs stored in the FSM context.
+
+        Args:
+            chat_id (int): The ID of the chat where the messages with inline keyboards are located.
+            state (FSMContext): The FSM context where the message IDs of inline keyboards are stored.
+    """
+    data = await state.get_data()
+    inline_messages = data.get("inline", [])
+    if isinstance(inline_messages, list):
+        for message_id in inline_messages:
+            try:
+                if MESSENGER == b'T':
+                    await bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
+                elif MESSENGER == b'M':
+                    await bot.edit_message(message_id=message_id, attachments=[])
+            except Exception as e:
+                logging.warning(f"Failed to remove inline keyboard from message {message_id}: {e}")
+        await state.update_data(inline=[])
+
+# ========================================================
+# Decorators of message handlers
 # ========================================================
 def message_handler(func):
+    """ Universal message handler decorator for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         async def wrapper_tg(message: Message_tg, state: FSMContext_tg, event_chat: Chat_tg, event_from_user: User_tg):
-            return await func(message=Message(message), callback=None, state=state, event_chat=Chat(event_chat), event_from_user=User(event_from_user))
+            await remove_temporary_inline_keyboards(event_chat.id, state)
+            return await func(message=Message(message), state=state, event_chat=Chat(event_chat), event_from_user=User(event_from_user))
         return wrapper_tg
     elif MESSENGER == b'M':
         async def wrapper_max(event: Update_max, context: PostgresContext_max):
-            return await func(message=Message(event), callback=None, state=context, event_chat=Chat(event.chat), event_from_user=User(event.from_user))
+            if isinstance(event, CommandStart_max):
+                await remove_temporary_inline_keyboards(event.chat_id, context)
+                return await func(message=None, state=context, event_chat=Chat(event.chat), event_from_user=User(event.from_user))
+            elif isinstance(event, MessageCreated_max):
+                await remove_temporary_inline_keyboards(event.message.recipient.chat_id, context)
+                return await func(message=Message(event.message), state=context, event_chat=Chat(event.chat), event_from_user=User(event.from_user))
         return wrapper_max
 
 def on_start_conversation(router: any):
+    """ Universal decorator for handling the start of a conversation with the bot for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         def decorator(func):
             return router.message(CommandStart_tg())(func)
@@ -277,14 +400,41 @@ def on_start_conversation(router: any):
         def decorator(func):
             return router.bot_started()(func)
         return decorator
-
-def on_message(router: any):
+    
+def on_message(router: any, *args):
+    """ Universal decorator for handling messages for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         def decorator(func):
-            return router.message()(func)
+            return router.message(*args)(func)
         return decorator
     elif MESSENGER == b'M':
         def decorator(func):
-            return router.message_created()(func)
+            return router.message_created(*args)(func)
         return decorator
 
+# ========================================================
+# Decorators of callback handlers
+# ========================================================
+def callback_handler(func):
+    """ Universal callback query handler decorator for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        async def wrapper_tg(callback: CallbackQuery_tg, callback_data: CallbackData_tg, state: FSMContext_tg, event_chat: Chat_tg, event_from_user: User_tg):
+            await remove_temporary_inline_keyboards(event_chat.id, state)
+            return await func(message=Message(callback.message), callback=callback_data, state=state, event_chat=Chat(event_chat), event_from_user=User(event_from_user))
+        return wrapper_tg
+    elif MESSENGER == b'M':
+        async def wrapper_max(event: CallbackQuery_max, payload: CallbackData_tg | CallbackData_max, context: PostgresContext_max):
+            await remove_temporary_inline_keyboards(event.message.recipient.chat_id, context)
+            return await func(message=event.message, callback=payload, state=context, event_chat=Chat(event.message.recipient.chat_id), event_from_user=User(event.callback.user))
+        return wrapper_max
+
+def on_callback(router: any, *args):
+    """ Universal decorator for handling callback queries for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        def decorator(func):
+            return router.callback_query(*args)(func)
+        return decorator
+    elif MESSENGER == b'M':
+        def decorator(func):
+            return router.message_callback(*args)(func)
+        return decorator
