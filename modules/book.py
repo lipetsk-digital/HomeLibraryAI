@@ -11,11 +11,11 @@ import modules.database as db # For database functions and definitions
 # Send a brief statistic about the user's library
 async def BriefStatistic(event_from_user: eng.User, event_chat: eng.Chat) -> eng.Message:
     async with db.pool.acquire() as conn:
-        result = await conn.fetchval("""SELECT count(*) FROM books WHERE "user_id"=$1""", event_from_user.id)
+        result = await conn.fetchval("""SELECT count(*) FROM books WHERE "platform"=$1 AND "user_id"=$2""", eng.MESSENGER, event_from_user.id)
     if (result is None) or (result == 0):
-        message = await eng.bot.send_message(chat_id=event_chat.id, text=_("no_books"))
+        message = await eng.send_message(chat_id=event_chat.id, text=_("no_books"))
     else:
-        message = await eng.bot.send_message(chat_id=event_chat.id, text=_("{result}_book","{result}_books",result).format(result=result))
+        message = await eng.send_message(chat_id=event_chat.id, text=_("{result}_book","{result}_books",result).format(result=result))
     return message
 
 '''

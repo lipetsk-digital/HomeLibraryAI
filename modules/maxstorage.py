@@ -192,7 +192,7 @@ class PostgresContext(MemoryContext):
         Args:
             state: New state or None to clear state
         """
-        _state = state.state if isinstance(state, State) else state
+        _state = state.name if isinstance(state, State) else state
         
         async with self._storage.get_connection() as conn:
             if _state is None:

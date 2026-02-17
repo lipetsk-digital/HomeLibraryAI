@@ -27,6 +27,7 @@ async def main():
 
         # Import events handlers
         import modules.h_start as h_start # For start handlers
+        import modules.h_menu as h_menu # For main menu handlers
 
         # Register routers handlers
         eng.dp.include_routers(eng.first_router, eng.base_router, eng.last_router)
