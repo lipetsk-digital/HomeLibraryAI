@@ -1,46 +1,57 @@
 # Module for handling bot messages related to search a book
 
-from modules.imports_tg import asyncpg, _, Locale, Bot, F, Chat, User, Message, CallbackQuery, FSMContext, env, engt, engb
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.environment as env # For bot states and callback data factories
+import modules.database as db # For database functions and definitions
+import modules.book as book # For book routines
+
 import modules.h_start as h_start # For handling start command
-import modules.book as book # For generating list of the books
 import modules.h_cat as h_cat # For handling category selection
+
+from babel import Locale
+
+# -------------------------------------------------------
+# Constants
+
+CountOfRecentBooks = 5 # Number of recent books to show in "recent books" search
 
 # -------------------------------------------------------
 # Handler for inline button "cancel"
-@engt.base_router.callback_query(env.SearchMenu.filter(F.action == "cancel"))
-async def search_cancel(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemovePreviousBotMessage(state, bot, event_chat)
-    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+@eng.on_callback(eng.base_router,env.SearchMenu.filter(eng.F.action == "cancel"))
+@eng.callback_handler
+async def search_cancel(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await h_start.MainMenu(state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for inline button "search by category"
-@engt.base_router.callback_query(env.SearchMenu.filter(F.action == "cat"))
-async def view_cat(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemovePreviousBotMessage(state, bot, event_chat)
-    await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+@eng.on_callback(eng.base_router,env.SearchMenu.filter(eng.F.action == "cat"))
+@eng.callback_handler
+async def view_cat(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await h_cat.SelectCategory(state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for inline buttons "recent books", "favorite books", "liked books"
-@engt.base_router.callback_query(env.SearchMenu.filter())
-async def recent_books(callback: CallbackQuery, callback_data: env.SearchMenu, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemovePreviousBotMessage(state, bot, event_chat)
-    await DoSearch(callback_data.action, "", state, pool, bot, event_chat, event_from_user)
+@eng.on_callback(eng.base_router,env.SearchMenu.filter())
+@eng.callback_handler
+async def recent_books(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await DoSearch(callback.action, "", state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user is searching for a book
-@engt.base_router.message(env.State.wait_for_command, F.text)
-@engt.base_router.message(env.State.wait_for_search_query, F.text)
-async def search_query_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemovePreviousBotMessage(state, bot, event_chat)
-    await DoSearch("text", message.text, state, pool, bot, event_chat, event_from_user)
+@eng.on_message(eng.first_router, env.State.wait_for_command, eng.F.text)
+@eng.on_message(eng.first_router, env.State.wait_for_search_query, eng.F.text)
+@eng.message_handler
+async def search_query_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await DoSearch("text", message.text, state, event_chat, event_from_user)
 
 # -------------------------------------------------------
-async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+async def DoSearch(action: str, text: str, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
 
-    await bot.send_message(event_chat.id, _(action + "_intro"))
+    await eng.send_message(event_chat.id, _(action + "_intro"))
 
     # Prepare the query
-    async with pool.acquire() as conn:
+    async with db.pool.acquire() as conn:
         query = """
         SELECT book_id, title, authors, year, cover_filename, category, favorites, likes
         FROM books
@@ -89,11 +100,11 @@ async def DoSearch(action: str, text: str, state: FSMContext, pool: asyncpg.Pool
                 ORDER BY book_id DESC 
                 LIMIT $2
             """
-            rows = await conn.fetch(query, event_from_user.id, engb.CountOfRecentBooks)
+            rows = await conn.fetch(query, event_from_user.id, CountOfRecentBooks)
             rows.reverse() # Reverse the rows order
 
         # Print the books list
-        await book.PrintBooksList(rows, state, bot, event_chat, event_from_user)
+        await book.PrintBooksList(rows, state, event_chat, event_from_user)
         
     # Send main menu to the user
-    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+    await h_start.MainMenu(state, event_chat, event_from_user)

@@ -6,7 +6,7 @@ import modules.engine as eng
 # States of conversation with the user
 # -------------------------------------------------------
 
-class State(eng.StatesGroup()):
+class State(eng.StatesGroup):
     wait_for_command = eng.State()
     select_lang = eng.State()
     select_category = eng.State()
@@ -66,3 +66,43 @@ class State(eng.StatesGroup()):
 # Callback factory for main menu
 class MainMenu(eng.CallbackData(), prefix="main"):
     action: str
+
+# Callback factory for search menu
+class SearchMenu(eng.CallbackData(), prefix="search"):
+    action: str
+
+# Callback factory for category selection
+class Category(eng.CallbackData(), prefix="cat"):
+    name: str
+
+# Callback factory for language selection
+class Language(eng.CallbackData(), prefix="lang"):
+    lang: str
+
+# Callback factory for cover actions
+class CoverActions(eng.CallbackData(), prefix="cover"):
+    action: str
+
+# Callback factory for the annotation page actions
+class BriefActions(eng.CallbackData(), prefix="brief"):
+    action: str
+
+# Callback factory for the next actions
+class NextActions(eng.CallbackData(), prefix="next"):
+    action: str
+
+# Callback factory for the book fields
+class BookFields(eng.CallbackData(), prefix="field"):
+    field: str
+
+# Callback factory for editing book
+class EditBook(eng.CallbackData(), prefix="edit"):
+    book_id: int
+
+# Callback factory for confirming deletion
+class ConfirmDelete(eng.CallbackData(), prefix="confirm"):
+    action: str
+
+# Callback factory for take two brief photos
+class BriefPhotos(eng.CallbackData(), prefix="photos"):
+    count: int

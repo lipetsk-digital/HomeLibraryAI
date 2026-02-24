@@ -64,6 +64,14 @@ from maxapi.types import MessageCallback as CallbackQuery_max
 from aiogram.fsm.context import FSMContext as FSMContext_tg
 from modules.maxstorage import PostgresContext as PostgresContext_max
 
+from aiogram import F as F_tg
+from maxapi import F as F_max
+
+from aiogram.enums.parse_mode import ParseMode as ParseMode_tg
+from maxapi.enums.parse_mode import ParseMode as ParseMode_max
+
+from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
+
 # ========================================================
 # Configuration data
 # ========================================================
@@ -86,6 +94,15 @@ last_router: Router_tg | Router_max = None # Router for trash messages
 
 i18n: I18n_tg | gettext_max.GNUTranslations = None  # Placeholder for i18n instance (both telegram and max use aiogram.i18n)
 FSMi18n: FSMI18nMiddleware_tg | None = None  # Placeholder for FSMi18n instance (telegram only)
+
+StatesGroup: StatesGroup_tg | StatesGroup_max = None # Placeholder for StatesGroup class fabrique
+ParseMode: ParseMode_tg | ParseMode_max = None # Placeholder for ParseMode type (telegram and max have different ParseMode classes, but we will use the same variable for both)
+
+F = None # Placeholder for F magic filter constant
+
+MaxBytesInButtonCaption: int = None # Placeholder for maximum bytes in button caption
+MaxCharsInMessage: int = None # Placeholder for maximum characters in message
+MaxButtonsInMessage: int = None # Placeholder for maximum buttons in message
 
 # ========================================================
 # Universal classes defenitions: see like telegram, bu works for max too
@@ -136,6 +153,8 @@ class Message:
     chat: Chat
     from_user: User
     text: str
+    message_tg: Message_tg = None # Original Telegram message object, needed for editing messages in Telegram
+    message_max: Message_max = None # Original MAX message object, needed for editing messages in MAX
     def __init__(self, source=None):
         if isinstance(source, Message_tg):
             # https://docs.aiogram.dev/en/dev-3.x/api/types/message.html
@@ -144,6 +163,7 @@ class Message:
             self.chat = Chat(source.chat)
             self.from_user = User(source.from_user) if source.from_user else None
             self.text = source.text
+            self.message_tg = source
         elif isinstance(source, Message_max):
             # https://love-apples.github.io/maxapi/types/message/#maxapi.types.message.Message
             self.id = source.body.mid
@@ -151,6 +171,7 @@ class Message:
             self.chat = Chat(source.recipient.chat_id) if source.recipient else None # Danger! Abstrace Max's Message does not have chat object, only recipient with chat_id
             self.from_user = User(source.sender) if source.sender else None
             self.text = source.body.text or "" if source.body else None
+            self.message_max = source
         elif isinstance(source, MessageCreated_max):
             # https://love-apples.github.io/maxapi/types/message/#maxapi.types.message.Message
             self.id = source.message.body.mid
@@ -158,6 +179,12 @@ class Message:
             self.chat = Chat(source.chat) if source.chat else None
             self.from_user = User(source.from_user) if source.from_user else None
             self.text = source.message.body.text or "" if source.message.body else None
+            self.message_max = source.message
+    async def delete(self):
+        if MESSENGER == b'T':
+            return await bot.delete_message(chat_id=self.chat.id, message_id=self.id)
+        elif MESSENGER == b'M':
+            return await bot.delete_message(message_id=self.id)
 
 CallbackData = CallbackData_tg | CallbackData_max
 
@@ -185,20 +212,15 @@ def State():
     elif MESSENGER == b'M':
         return State_max()
     
-def StatesGroup():
-    """ Universal StatesGroup class fabrique for both Telegram and MAX messengers."""
-    if MESSENGER == b'T':
-        return StatesGroup_tg
-    elif MESSENGER == b'M':
-        return StatesGroup_max
-    
 def Command(*args, **kwargs):
     """ Universal Command class fabrique for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         return Command_tg(*args, **kwargs)
     elif MESSENGER == b'M':
         return Command_max(*args, **kwargs)
+    
 
+    
 # ========================================================
 # Bot startup routines definitions
 # ========================================================
@@ -214,7 +236,8 @@ def init_bot(messenger: str, postgres_config: dict) -> None:
         raise ValueError("Messenger must be 'T' or 'M'")
     
     global MESSENGER, MESSENGER_TOKEN, MESSENGER_PROXY
-    global bot, storage, dp
+    global bot, storage, dp, StatesGroup, ParseMode, F
+    global MaxBytesInButtonCaption, MaxCharsInMessage, MaxButtonsInMessage
     MESSENGER = messenger.encode('utf-8')
 
     if MESSENGER == b'T':
@@ -223,12 +246,24 @@ def init_bot(messenger: str, postgres_config: dict) -> None:
         bot = Bot_tg(token=MESSENGER_TOKEN, proxy=MESSENGER_PROXY)
         storage = PostgresStorage_tg(**postgres_config)
         dp = Dispatcher_tg(storage=storage)
+        StatesGroup = StatesGroup_tg
+        ParseMode = ParseMode_tg
+        F = F_tg
+        MaxBytesInButtonCaption = 64 # Telegram supports up to 64 bytes in callback data, but we need to reserve some bytes for the payload structure, so we will use 60 bytes for the actual data and 4 bytes for the structure. MAX supports up to 255 bytes in callback data, but we will use the same limit for consistency.
+        MaxCharsInMessage = 4096 # Telegram supports up to 4096 characters in a message, but we will use 4000 characters for safety. MAX supports up to 2000 characters in a message, but we will use the same limit for consistency.
+        MaxButtonsInMessage = 60 # Telegram supports up to 100 buttons in an inline keyboard, but 80+ buttons got REPLY_MARKUP_TOO_LONG error from Telegram
 
     elif MESSENGER == b'M':
         MESSENGER_TOKEN = os.getenv("MAX_TOKEN")
         bot = Bot_max(MESSENGER_TOKEN)
         storage = PostgresStorage_max(**postgres_config)
         dp = Dispatcher_max(storage=storage)
+        StatesGroup = StatesGroup_max
+        ParseMode = ParseMode_max
+        F = F_max
+        MaxBytesInButtonCaption = 64 # Same limit in Telegram and Max
+        MaxCharsInMessage = 4096 # It works both
+        MaxButtonsInMessage = 30 # 30+ buttons got empty message in Max.
 
 # -------------------------------------------------------
 def init_router():
@@ -258,7 +293,10 @@ def _(*args, **kwargs):
     if MESSENGER == b'T':
         return gettext_tg(*args, **kwargs)
     elif MESSENGER == b'M':
-        return i18n.gettext(*args, **kwargs)
+        if len(args)+len(kwargs) <= 1:
+            return i18n.gettext(*args, **kwargs)
+        else:
+            return i18n.ngettext(*args, **kwargs)
     
 # -------------------------------------------------------
 async def prepare_commands(actions: list) -> None:
@@ -292,7 +330,7 @@ async def prepare_commands(actions: list) -> None:
 # Messages support
 # ========================================================
 
-async def send_message(chat_id: int, text: str) -> Message:
+async def send_message(chat_id: int, text: str, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
     """ Send a message to the specified chat.
 
         Args:
@@ -303,10 +341,39 @@ async def send_message(chat_id: int, text: str) -> Message:
             Message: A universal Message object representing the sent message.
     """
     if MESSENGER == b'T':
-        message = await bot.send_message(chat_id=chat_id, text=text)
+        message = await bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode)
         return Message(message)
     elif MESSENGER == b'M':
-        sendedmessage = await bot.send_message(chat_id=chat_id, text=text)
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode)
+        return Message(sendedmessage.message)
+
+async def send_photo(chat_id: int, photo: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a photo message to the specified chat.
+
+        Args:
+            chat_id (int): The ID of the chat to send the message to.
+            photo (str): The URL of the photo to send.
+            caption (str): The caption for the photo (optional).
+
+        Returns:
+            Message: A universal Message object representing the sent message.
+    """
+    if MESSENGER == b'T':
+        message = await bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode=parse_mode)
+        return Message(message)
+    elif MESSENGER == b'M':
+        import aiohttp
+
+        async def download_bytes(url: str) -> bytes:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout=aiohttp.ClientTimeout(total=20)) as resp:
+                    resp.raise_for_status()
+                    return await resp.read()
+                
+        img = await download_bytes(photo)
+        media = InputMediaBuffer_max(buffer=img, filename="image.png")
+        
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
 
 # ========================================================
@@ -339,7 +406,7 @@ async def send_inline_keyboard(message: Message, buttons: list[CallbackButton], 
                 counter = 0
         if row: # add remaining buttons if they exist
             builder.row(*row)
-        await bot.edit_message(message_id=message.id, attachments=[builder.as_markup()])
+        await bot.edit_message(message_id=message.id, attachments=(message.message_max.body.attachments + [builder.as_markup()]))
     # If the keyboard is not permanent, save the message ID in the FSM context to be able to delete it later
     if not permanently:
         data = await state.get_data()
@@ -363,9 +430,11 @@ async def remove_temporary_inline_keyboards(chat_id: int, state: FSMContext) -> 
         for message_id in inline_messages:
             try:
                 if MESSENGER == b'T':
-                    await bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
+                    #await bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
+                    await bot.delete_message(chat_id=chat_id, message_id=message_id)
                 elif MESSENGER == b'M':
-                    await bot.edit_message(message_id=message_id, attachments=[])
+                    #await bot.edit_message(message_id=message_id, attachments=[])
+                    await bot.delete_message(message_id=message_id)
             except Exception as e:
                 logging.warning(f"Failed to remove inline keyboard from message {message_id}: {e}")
         await state.update_data(inline=[])
