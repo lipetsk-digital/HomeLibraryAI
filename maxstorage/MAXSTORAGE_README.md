@@ -8,11 +8,10 @@
 
 ## Решение
 
-Модуль `maxstorage.py` предоставляет три класса:
+Модуль `maxstorage.py` предоставляет два класса:
 
 - **PostgresStorage** - глобальный менеджер подключений к базе данных
 - **PostgresContext** - наследник `MemoryContext`, который сохраняет данные в PostgreSQL
-- **PostgresDispatcher** - наследник `Dispatcher`, который использует `PostgresContext`
 
 ## Архитектура
 
@@ -21,10 +20,10 @@ PostgresStorage (singleton)
     │
     ├── Управляет connection pool
     ├── Создаёт таблицы при инициализации
-    └── Используется PostgresDispatcher
+    └── Используется Dispatcher
          │
-         └── PostgresDispatcher (extends Dispatcher)
-              ├── Переопределяет __get_memory_context()
+         └── Dispatcher (maxapi)
+              ├── Принимает storage=PostgresContext
               └── Создаёт PostgresContext для каждого пользователя
                    │
                    └── PostgresContext (для каждого пользователя)
@@ -38,8 +37,8 @@ PostgresStorage (singleton)
 ### 1. Инициализация
 
 ```python
-from modules.maxstorage import PostgresStorage, PostgresDispatcher
-from maxapi import Bot
+from modules.maxstorage import PostgresStorage, PostgresContext
+from maxapi import Bot, Dispatcher
 
 # Создаём storage
 storage = PostgresStorage(
@@ -55,7 +54,7 @@ await storage.init()
 
 # Создаём диспетчер с PostgreSQL storage
 bot = Bot(token="YOUR_TOKEN")
-dp = PostgresDispatcher(storage=storage)
+dp = Dispatcher(storage=PostgresContext, postgres_storage=storage)
 ```
 
 ### 2. Использование в обработчиках
@@ -134,21 +133,22 @@ from maxapi import Dispatcher
 dp = Dispatcher()  # использует MemoryContext по умолчанию
 
 # Стало
-from modules.maxstorage import PostgresStorage, PostgresDispatcher
+from modules.maxstorage import PostgresStorage, PostgresContext
+from maxapi import Dispatcher
 
 storage = PostgresStorage(host='localhost', port=5432, database='maxapi_fsm', user='bot', password='password')
 await storage.init()
-dp = PostgresDispatcher(storage=storage)
+dp = Dispatcher(storage=PostgresContext, postgres_storage=storage)
 ```
 
 Код обработчиков остаётся без изменений!
 
 ## Как это работает
 
-`PostgresDispatcher` использует приём **name mangling** в Python для переопределения приватного метода `__get_memory_context()` из родительского класса `Dispatcher`. 
+Dispatcher из maxapi принимает параметр `storage` - класс контекста для хранения данных. По умолчанию это `MemoryContext`.
 
-Когда диспетчер обрабатывает событие, он вызывает этот метод для получения контекста пользователя. Наша переопределённая версия создаёт `PostgresContext` вместо `MemoryContext`, что обеспечивает сохранение данных в PostgreSQL.
+Передавая `storage=PostgresContext`, мы указываем диспетчеру создавать экземпляры `PostgresContext` для каждого пользователя. Параметр `storage_kwargs` передаётся в конструктор контекста - так мы передаём ссылку на `PostgresStorage` с пулом подключений к БД.
 
 ## Пример
 
-См. полный пример в [examples/maxapi_postgres_example.py](../examples/maxapi_postgres_example.py)
+См. полный пример в [maxapi_postgres_example.py](maxapi_postgres_example.py)

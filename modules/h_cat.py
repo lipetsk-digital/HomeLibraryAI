@@ -9,7 +9,7 @@ import modules.book as book # For book routines
 
 import modules.h_start as h_start # For handling start command
 import modules.h_search as h_search # For handling book search routines
-#import modules.h_cover as h_cover # For do book cover photos
+import modules.h_cover as h_cover # For do book cover photos
 #import modules.h_edit as h_edit # For handling book editing
 
 from email.mime import message
@@ -87,7 +87,7 @@ async def category_selected(message: eng.Message, callback: eng.CallbackData, st
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
-@eng.on_message(eng.first_router, env.State.select_category, eng.F.text)
+@eng.on_message(eng.base_router, env.State.select_category, eng.F_text())
 @eng.message_handler
 async def category_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     data = await state.get_data()
@@ -117,7 +117,7 @@ async def DoCategory(category: str, state: eng.FSMContext, event_chat: eng.Chat,
     action = data.get("action")
     if action == "add_book":
         await eng.send_message(event_chat.id, _("adding_book_in_{category}").format(category=category))
-        #await h_cover.AskForCover(state, pool, bot, event_chat)
+        await h_cover.AskForCover(state, event_chat)
     elif action == "search":
         await h_search.DoSearch("cat", category, state, event_chat, event_from_user)
         pass

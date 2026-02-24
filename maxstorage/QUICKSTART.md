@@ -10,9 +10,9 @@ pip install maxapi asyncpg
 
 ```python
 import asyncio
-from maxapi import Bot, F
+from maxapi import Bot, Dispatcher, F
 from maxapi.types import MessageCreated
-from modules.maxstorage import PostgresStorage, PostgresDispatcher
+from modules.maxstorage import PostgresStorage, PostgresContext
 
 # Storage и dispatcher
 storage = PostgresStorage(
@@ -24,7 +24,7 @@ storage = PostgresStorage(
 )
 
 bot = Bot(token="YOUR_TOKEN")
-dp = PostgresDispatcher(storage=storage)
+dp = Dispatcher(storage=PostgresContext, postgres_storage=storage)
 
 # Обработчик
 @dp.message_created(F.message.body.text)
@@ -81,7 +81,7 @@ await context.clear()
 
 ## Интеграция в существующий проект
 
-Измените только 2 строки:
+Измените только инициализацию диспетчера:
 
 ```python
 # Было:
@@ -89,10 +89,12 @@ from maxapi import Dispatcher
 dp = Dispatcher()
 
 # Стало:
-from modules.maxstorage import PostgresStorage, PostgresDispatcher
+from maxapi import Dispatcher
+from modules.maxstorage import PostgresStorage, PostgresContext
+
 storage = PostgresStorage(host='localhost', port=5432, database='maxapi_fsm', user='bot', password='password')
 await storage.init()
-dp = PostgresDispatcher(storage=storage)
+dp = Dispatcher(storage=PostgresContext, postgres_storage=storage)
 ```
 
 Всё остальное работает без изменений!

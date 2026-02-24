@@ -9,4 +9,4 @@ aiogram==3.24.0
 babel==2.17.0
 #rembg[cpu]==2.0.69
 pycryptodome==3.23.0
-maxapi==0.9.12
+maxapi==0.9.15

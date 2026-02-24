@@ -6,14 +6,14 @@
 """
 
 import asyncio
-from maxapi import Bot, F
+from maxapi import Bot, Dispatcher, F
 from maxapi.types import MessageCreated
 from maxapi.context import StatesGroup, State
 
-# Импортируем наш PostgreSQL storage и dispatcher
+# Импортируем наш PostgreSQL storage и context
 import sys
 sys.path.append('..')
-from modules.maxstorage import PostgresStorage, PostgresDispatcher
+from modules.maxstorage import PostgresStorage, PostgresContext
 
 
 # Определяем состояния FSM
@@ -36,7 +36,7 @@ storage = PostgresStorage(
 )
 
 # Создаём диспетчер с PostgreSQL storage
-dp = PostgresDispatcher(storage=storage)
+dp = Dispatcher(storage=PostgresContext, postgres_storage=storage)
 
 
 # Обработчик команды /start
@@ -140,7 +140,7 @@ async def main():
         await storage.init()
         print("PostgreSQL storage инициализирован")
         
-        # PostgresDispatcher уже настроен на использование PostgreSQL
+        # Dispatcher настроен на использование PostgresContext
         # Каждый пользователь будет автоматически получать свой PostgresContext
         
         print("Бот запущен с PostgreSQL хранилищем")

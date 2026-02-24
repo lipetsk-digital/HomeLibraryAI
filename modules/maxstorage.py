@@ -134,9 +134,9 @@ class PostgresContext(MemoryContext):
     and passed to handlers.
     """
 
-    def __init__(self, chat_id: Optional[int], user_id: Optional[int], storage: PostgresStorage):
+    def __init__(self, chat_id: Optional[int], user_id: Optional[int], postgres_storage: PostgresStorage):
         super().__init__(chat_id=chat_id, user_id=user_id)
-        self._storage = storage
+        self._storage = postgres_storage
 
     async def get_data(self) -> Dict[str, Any]:
         """
@@ -228,59 +228,3 @@ class PostgresContext(MemoryContext):
         async with self._lock:
             await self.set_state(None)
             await self.set_data({})
-
-
-class PostgresDispatcher(Dispatcher):
-    """
-    Extended Dispatcher that uses PostgreSQL for context storage.
-    
-    This class overrides the __get_memory_context method to create
-    PostgresContext instances instead of MemoryContext instances.
-    
-    Usage:
-    
-    # Initialize storage
-    storage = PostgresStorage(
-        host='localhost',
-        port=5432,
-        database='maxapi_fsm',
-        user='bot',
-        password='password'
-    )
-    await storage.init()
-    
-    # Create dispatcher with PostgreSQL storage
-    dp = PostgresDispatcher(storage=storage)
-    
-    # Use as normal dispatcher
-    @dp.message_created(F.message.body.text)
-    async def handler(event, context):
-        await context.update_data(name="John")
-    """
-    
-    def __init__(self, storage: PostgresStorage, router_id: str = None, use_create_task: bool = False):
-        super().__init__(router_id=router_id, use_create_task=use_create_task)
-        self._storage = storage
-    
-    def _Dispatcher__get_memory_context(self, chat_id: Optional[int], user_id: Optional[int]) -> PostgresContext:
-        """
-        Override private method to return PostgresContext instead of MemoryContext.
-        
-        This method uses name mangling to override the private method from parent class.
-        
-        Args:
-            chat_id: Chat identifier
-            user_id: User identifier
-            
-        Returns:
-            PostgresContext: Context for this user
-        """
-        # Check if context already exists for this user
-        for ctx in self.contexts:
-            if ctx.chat_id == chat_id and ctx.user_id == user_id:
-                return ctx
-        
-        # Create new PostgresContext
-        new_ctx = PostgresContext(chat_id=chat_id, user_id=user_id, storage=self._storage)
-        self.contexts.append(new_ctx)
-        return new_ctx

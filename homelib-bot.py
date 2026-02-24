@@ -9,7 +9,7 @@ import modules.actions as act # For bot commands and actions
 logging.basicConfig(level=logging.INFO)
 
 # Initialize bot
-eng.init_bot(os.getenv("MESSENGER"), db.POSTGRES_CONFIG)
+eng.init_bot(os.getenv("MESSENGER"), db.POSTGRES_CONFIG, os.getenv("ONLY_USER"), os.getenv("EXCLUDE_USER"))
 
 # Initialize routers
 eng.first_router = eng.init_router()
@@ -28,6 +28,9 @@ async def main():
         # Import events handlers
         import modules.h_start as h_start # For start handlers
         import modules.h_menu as h_menu # For main menu handlers
+        import modules.h_cat as h_cat # For category selection handlers
+        import modules.h_cover as h_cover # For book cover photo handlers
+        import modules.h_search as h_search # For book search handlers
 
         # Register routers handlers
         eng.dp.include_routers(eng.first_router, eng.base_router, eng.last_router)

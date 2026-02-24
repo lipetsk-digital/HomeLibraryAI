@@ -1,9 +1,17 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports_tg import asyncpg, aioboto3, cv2, io, uuid, np, _, env, engt, engc, engb
-from modules.imports_tg import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
+import numpy as np # For arrays processing
+import aioboto3 # For AWS S3 storage
+
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.actions as act # For bot commands and actions
+import modules.environment as env # For bot states and callback data factories
+import modules.database as db # For database functions and definitions
+import modules.book as book # For book routines
 from modules.aiorembg import async_remove, get_queue_size, get_session
-import modules.h_brief as h_brief # For run brief commands
+#import modules.h_brief as h_brief # For run brief commands
+
 
 # =========================================================
 # Calculate distance between two points
@@ -12,22 +20,23 @@ def distance(p1, p2):
 
 # =========================================================
 # Ask user for the photo of the book cover
-async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def AskForCover(state: eng.FSMContext, event_chat: eng.Chat) -> None:
     # Forget old books: clear all book fields in the state
     values = {}
-    for key in (env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS):
+    for key in (act.PUBLIC_BOOK_FIELDS + act.HIDDEN_BOOK_FIELDS):
         if key != "category":
             values[key] = None
-    await state.update_data(values)
+    await state.update_data(**values)
     # Ask for the cover text
-    await bot.send_message(event_chat.id, _("photo_cover"))
+    await eng.send_message(event_chat.id, _("photo_cover"))
     # Set the state to wait for the cover text
     await state.set_state(env.State.wait_for_cover_photo)
 
 # =========================================================
 # Handler for sended photo of book cover
-@engt.base_router.message(env.State.wait_for_cover_photo, F.photo)
-async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+@eng.on_message(eng.base_router, env.State.wait_for_cover_photo, eng.F_photo())
+@eng.message_handler
+async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Initialize variables for cleanup
     photo_bytesio = None
     photo_bytesio2 = None
@@ -43,7 +52,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     original = None
     warped = None
     buffer = None
+    pass
     
+    '''
     try:
         # Get the photo from the message
         photo = message.photo[-1]
@@ -299,7 +310,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         
         # Explicitly delete large numpy arrays
         del mask_np, mask_bw, binary_mask, kernel, original, warped, buffer
+    '''
 
+'''
 # =========================================================
 # Handler for inline button use_cover
 @engt.base_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
@@ -332,3 +345,4 @@ async def use_original_photo(callback: CallbackQuery, callback_data: env.CoverAc
 async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await engtRemoveInlineKeyboards(callback, state, bot, event_chat)
     await AskForCover(state, pool, bot, event_chat)
+'''

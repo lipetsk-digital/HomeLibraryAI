@@ -4,12 +4,13 @@ import logging # For logging
 import os # For environment variables
 import datetime # For date and time
 from typing import Protocol # For define typical class interfaces
+import aiohttp # For async HTTP requests
 
 from aiogram import Bot as Bot_tg
 from maxapi import Bot as Bot_max
 
 from aiogram import Dispatcher as Dispatcher_tg
-from modules.maxstorage import PostgresDispatcher as Dispatcher_max
+from maxapi import Dispatcher as Dispatcher_max
 
 from aiogram import Router as Router_tg
 from maxapi import Router as Router_max
@@ -70,8 +71,15 @@ from maxapi import F as F_max
 from aiogram.enums.parse_mode import ParseMode as ParseMode_tg
 from maxapi.enums.parse_mode import ParseMode as ParseMode_max
 
+from aiogram.types import BufferedInputFile as BufferedInputFile_tg
 from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
+'''
+# ========================================================
+# Constants and settings
+# ========================================================
 
+HTTP_TIMEOUT_sec = 20 # Timeout for HTTP requests in seconds
+'''
 # ========================================================
 # Configuration data
 # ========================================================
@@ -87,6 +95,9 @@ MESSENGER_PROXY: str = None # Placeholder for messenger token
 bot: Bot_tg | Bot_max = None  # Placeholder for bot instance
 storage: PostgresStorage_tg | PostgresStorage_max = None  # Placeholder for storage instance
 dp: Dispatcher_tg | Dispatcher_max = None  # Placeholder for dispatcher instance
+
+only_user: int = 0 # Placeholder for only_user environment variable
+exclude_user: int = 0 # Placeholder for exclude_user environment variable
 
 first_router: Router_tg | Router_max = None # Router for global commands handlers
 base_router: Router_tg | Router_max = None # Router for current situative handlers
@@ -225,12 +236,15 @@ def Command(*args, **kwargs):
 # Bot startup routines definitions
 # ========================================================
 
-def init_bot(messenger: str, postgres_config: dict) -> None:
+def init_bot(messenger: str, postgres_config: dict, _only_user: str = None, _exclude_user: str = None) -> None:
     """ Initialize bot, storage, dispatcher, and routers based on the selected messenger.
         
         Args:
             messenger (str): 'T' for Telegram, 'M' for MAX.
             postgres_config (dict): Configuration dictionary for PostgreSQL connection.
+        For testing a bot without another developer key:
+            only_user (str, optional): Only allow this user to interact with the bot. Defaults to None.
+            exclude_user (str, optional): Exclude this user from interacting with the bot. Defaults to None.
     """
     if messenger not in ('T', 'M'):
         raise ValueError("Messenger must be 'T' or 'M'")
@@ -238,7 +252,11 @@ def init_bot(messenger: str, postgres_config: dict) -> None:
     global MESSENGER, MESSENGER_TOKEN, MESSENGER_PROXY
     global bot, storage, dp, StatesGroup, ParseMode, F
     global MaxBytesInButtonCaption, MaxCharsInMessage, MaxButtonsInMessage
+    global only_user, exclude_user
     MESSENGER = messenger.encode('utf-8')
+
+    only_user = int(_only_user) if _only_user else 0
+    exclude_user = int(_exclude_user) if _exclude_user else 0
 
     if MESSENGER == b'T':
         MESSENGER_TOKEN = os.getenv("TELEGRAM_TOKEN")
@@ -256,8 +274,9 @@ def init_bot(messenger: str, postgres_config: dict) -> None:
     elif MESSENGER == b'M':
         MESSENGER_TOKEN = os.getenv("MAX_TOKEN")
         bot = Bot_max(MESSENGER_TOKEN)
-        storage = PostgresStorage_max(**postgres_config)
-        dp = Dispatcher_max(storage=storage)
+        postgres_storage = PostgresStorage_max(**postgres_config)
+        storage = postgres_storage  # Alias for compatibility
+        dp = Dispatcher_max(storage=PostgresContext_max, postgres_storage=postgres_storage)
         StatesGroup = StatesGroup_max
         ParseMode = ParseMode_max
         F = F_max
@@ -347,6 +366,19 @@ async def send_message(chat_id: int, text: str, parse_mode: ParseMode_tg | Parse
         sendedmessage = await bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode)
         return Message(sendedmessage.message)
 
+'''
+async def download_bytes(url: str) -> bytes:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
+            resp.raise_for_status()
+            return await resp.read()
+
+async def upload_file_from_url(url: str, filename: str) -> str:
+    buffer = await download_bytes(url)
+    if MESSENGER == b'T':
+        document=BufferedInputFile_tg(buffer, filename=filename)
+        logging.debug(f"Uploading file from URL {url} with filename {filename}")
+
 async def send_photo(chat_id: int, photo: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
     """ Send a photo message to the specified chat.
 
@@ -362,20 +394,13 @@ async def send_photo(chat_id: int, photo: str, caption: str = None, parse_mode: 
         message = await bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode=parse_mode)
         return Message(message)
     elif MESSENGER == b'M':
-        import aiohttp
-
-        async def download_bytes(url: str) -> bytes:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, timeout=aiohttp.ClientTimeout(total=20)) as resp:
-                    resp.raise_for_status()
-                    return await resp.read()
                 
         img = await download_bytes(photo)
         media = InputMediaBuffer_max(buffer=img, filename="image.png")
         
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
-
+'''
 # ========================================================
 # Inline keyboards support
 # ========================================================
@@ -442,21 +467,50 @@ async def remove_temporary_inline_keyboards(chat_id: int, state: FSMContext) -> 
 # ========================================================
 # Decorators of message handlers
 # ========================================================
+
+def F_text():
+    """ Universal F.text magic filter constant for both Telegram and MAX messengers."""
+    if MESSENGER == b'T':
+        return F_tg.text
+    elif MESSENGER == b'M':
+        return F_max.message.body.text
+    
+def F_photo():
+    """ Universal F.photo magic filter constant for both Telegram and MAX messengers.
+        For MAX-messenger returns True if the message contains attachments (photos), False otherwise.
+    """
+    if MESSENGER == b'T':
+        return F_tg.photo
+    elif MESSENGER == b'M':
+        return F_max.message.body.attachments
+
 def message_handler(func):
     """ Universal message handler decorator for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         async def wrapper_tg(message: Message_tg, state: FSMContext_tg, event_chat: Chat_tg, event_from_user: User_tg):
+            if only_user != 0:
+                if event_from_user.id != only_user:
+                    return
+            if exclude_user != 0:
+                if event_from_user.id == exclude_user:
+                    return
             await remove_temporary_inline_keyboards(event_chat.id, state)
             return await func(message=Message(message), state=state, event_chat=Chat(event_chat), event_from_user=User(event_from_user))
         return wrapper_tg
     elif MESSENGER == b'M':
         async def wrapper_max(event: Update_max, context: PostgresContext_max):
+            if only_user != 0:
+                if event.from_user.user_id != only_user:
+                    return
+            if exclude_user != 0:
+                if event.from_user.user_id == exclude_user:
+                    return
             if isinstance(event, CommandStart_max):
                 await remove_temporary_inline_keyboards(event.chat_id, context)
-                return await func(message=None, state=context, event_chat=Chat(event.chat), event_from_user=User(event.from_user))
+                return await func(message=None, state=context, event_chat=Chat(event.chat_id), event_from_user=User(event.from_user))
             elif isinstance(event, MessageCreated_max):
                 await remove_temporary_inline_keyboards(event.message.recipient.chat_id, context)
-                return await func(message=Message(event.message), state=context, event_chat=Chat(event.chat), event_from_user=User(event.from_user))
+                return await func(message=Message(event.message), state=context, event_chat=Chat(event.message.recipient.chat_id), event_from_user=User(event.from_user))
         return wrapper_max
 
 def on_start_conversation(router: any):
@@ -488,11 +542,23 @@ def callback_handler(func):
     """ Universal callback query handler decorator for both Telegram and MAX messengers."""
     if MESSENGER == b'T':
         async def wrapper_tg(callback: CallbackQuery_tg, callback_data: CallbackData_tg, state: FSMContext_tg, event_chat: Chat_tg, event_from_user: User_tg):
+            if only_user != 0:
+                if event_from_user.id != only_user:
+                    return
+            if exclude_user != 0:
+                if event_from_user.id == exclude_user:
+                    return
             await remove_temporary_inline_keyboards(event_chat.id, state)
             return await func(message=Message(callback.message), callback=callback_data, state=state, event_chat=Chat(event_chat), event_from_user=User(event_from_user))
         return wrapper_tg
     elif MESSENGER == b'M':
         async def wrapper_max(event: CallbackQuery_max, payload: CallbackData_tg | CallbackData_max, context: PostgresContext_max):
+            if only_user != 0:
+                if event.callback.user.user_id != only_user:
+                    return
+            if exclude_user != 0:
+                if event.callback.user.user_id == exclude_user:
+                    return
             await remove_temporary_inline_keyboards(event.message.recipient.chat_id, context)
             return await func(message=event.message, callback=payload, state=context, event_chat=Chat(event.message.recipient.chat_id), event_from_user=User(event.callback.user))
         return wrapper_max

@@ -103,7 +103,7 @@ async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat
             keyboard.append(eng.CallbackButton(text=_("edit"), payload=env.EditBook(book_id=book_id)))
             if photo:
                 photo_url = web.AWS_EXTERNAL_URL + "/" + photo
-                message = await eng.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode=eng.ParseMode.HTML)
+                #!!!!!!message = await eng.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode=eng.ParseMode.HTML)
             else:
                 message = await eng.send_message(event_chat.id, f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode=eng.ParseMode.HTML)
             await eng.send_inline_keyboard(message, keyboard, state, 1, True)
