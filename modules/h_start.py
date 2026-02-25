@@ -1,12 +1,13 @@
 # Module for handling bot messages related to start bot
 
-import logging # For logging
 import modules.engine as eng # For crossplatform bot engine functions and definitions
 from modules.engine import _  # For internationalization and localization
 import modules.actions as act # For bot commands and actions
 import modules.environment as env # For bot states and callback data factories
 import modules.database as db # For database functions and definitions
 import modules.book as book # For book routines
+
+import logging # For logging
 
 # -------------------------------------------------------
 # Handler for the /start command
@@ -32,3 +33,10 @@ async def MainMenu(state: eng.FSMContext, event_chat: eng.Chat, event_from_user:
         keyboard.append(eng.CallbackButton(text=_(action), payload=env.MainMenu(action=action)))
     await eng.send_inline_keyboard(message, keyboard, state, 2)
     await state.set_state(env.State.wait_for_command)
+
+# -------------------------------------------------------
+# Handler for trash messages
+@eng.on_message(eng.last_router)
+@eng.message_handler
+async def trash_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await message.delete()

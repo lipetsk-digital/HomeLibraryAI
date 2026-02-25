@@ -1,9 +1,19 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-from modules.imports_tg import asyncpg, aioboto3, cv2, io, uuid, np, _, env, engt, engc, engb
-from modules.imports_tg import Bot, F, Chat, User, Message, ReactionTypeEmoji, BufferedInputFile, InlineKeyboardBuilder, CallbackQuery, FSMContext
-from modules.aiorembg import async_remove, get_queue_size, get_session
-import modules.h_brief as h_brief # For run brief commands
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.actions as act # For bot commands and actions
+import modules.environment as env # For bot states and callback data factories
+import modules.database as db # For database functions and definitions
+import modules.book as book # For book routines
+import modules.common as com # For common functions and definitions
+import aiohttp # For HTTP requests to rembg service
+#import modules.h_brief as h_brief # For run brief commands
+
+import numpy as np # For arrays processing
+import aioboto3 # For AWS S3 storage
+import io # For handling byte streams
+import uuid # For generating unique filenames
 
 # =========================================================
 # Calculate distance between two points
@@ -12,22 +22,23 @@ def distance(p1, p2):
 
 # =========================================================
 # Ask user for the photo of the book cover
-async def AskForCover(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def AskForCover(state: eng.FSMContext, event_chat: eng.Chat) -> None:
     # Forget old books: clear all book fields in the state
     values = {}
-    for key in (env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS):
+    for key in (act.PUBLIC_BOOK_FIELDS + act.HIDDEN_BOOK_FIELDS):
         if key != "category":
             values[key] = None
-    await state.update_data(values)
+    await state.update_data(**values)
     # Ask for the cover text
-    await bot.send_message(event_chat.id, _("photo_cover"))
+    await eng.send_message(event_chat.id, _("photo_cover"))
     # Set the state to wait for the cover text
     await state.set_state(env.State.wait_for_cover_photo)
 
 # =========================================================
 # Handler for sended photo of book cover
-@engt.base_router.message(env.State.wait_for_cover_photo, F.photo)
-async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+@eng.on_message(eng.base_router, env.State.wait_for_cover_photo, eng.F_photo())
+@eng.message_handler
+async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Initialize variables for cleanup
     photo_bytesio = None
     photo_bytesio2 = None
@@ -45,22 +56,18 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     buffer = None
     
     try:
-        # Get the photo from the message
-        photo = message.photo[-1]
-        photo_file = await bot.get_file(photo.file_id)
-        photo_bytesio = await bot.download_file(photo_file.file_path)
-        photo_bytes = photo_bytesio.read()
-        photo_bytesio2 = io.BytesIO(photo_bytes)
+        photo = await eng.get_photo(message)
+        photo_bytesio = io.BytesIO(photo.bytes)
 
         # Start the S3 client
         session = aioboto3.Session()
-        async with session.client(service_name='s3', endpoint_url=engb.AWS_ENDPOINT_URL) as s3:
+        async with session.client(service_name='s3', endpoint_url=com.AWS_ENDPOINT_URL) as s3:
 
             # -------------------------------------------------------
             # Upload the photo to S3 storage
             try:
                 photo_filename = f"{event_from_user.id}/photo/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-                await s3.upload_fileobj(photo_bytesio2, engb.AWS_BUCKET_NAME, photo_filename)
+                await s3.upload_fileobj(photo_bytesio2, com.AWS_BUCKET_NAME, photo_filename)
                 await state.update_data(photo_filename=photo_filename) # Save the filename in the state
                 # Give like to user's photo
                 await bot.set_message_reaction(chat_id=event_chat.id,
@@ -77,7 +84,10 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             
             # Add temporal message for waiting
             # Check queue size before processing
-            queue_size = await get_queue_size()
+            async with aiohttp.ClientSession() as http_session:
+                async with http_session.get(f"{com.REMBG_URL}/queue") as resp:
+                    queue_data = await resp.json()
+                    queue_size = queue_data.get("queue_size", 0)
             if queue_size > 0:
                 waiting_message = await message.reply(_("{wait}_in_queue","{wait}_in_queues",queue_size).format(wait=queue_size))
             else:
@@ -86,9 +96,16 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             # -------------------------------------------------------
             # Remove the background from the image
             try:
-                # Remove background
+                # Remove background via rembg service
                 photo_bytesio2 = io.BytesIO(photo_bytes)
-                mask_bytes = await async_remove(photo_bytesio2.getvalue(), session=get_session(), only_mask=True)
+                async with aiohttp.ClientSession() as http_session:
+                    async with http_session.post(
+                        f"{com.REMBG_URL}/remove?only_mask=true",
+                        data=photo_bytesio2.getvalue(),
+                    ) as resp:
+                        if resp.status != 200:
+                            raise Exception(f"rembg service error: {resp.status} {await resp.text()}")
+                        mask_bytes = await resp.read()
                 
                 # Decode mask using cv2
                 mask_np = cv2.imdecode(np.frombuffer(mask_bytes, np.uint8), cv2.IMREAD_UNCHANGED)
@@ -287,6 +304,7 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             await state.set_state(env.State.wait_reaction_on_cover)
             
     finally:
+        '''
         # Final cleanup - ensure all resources are freed
         if photo_bytesio:
             photo_bytesio.close()
@@ -299,7 +317,9 @@ async def cover_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
         
         # Explicitly delete large numpy arrays
         del mask_np, mask_bw, binary_mask, kernel, original, warped, buffer
+    '''
 
+'''
 # =========================================================
 # Handler for inline button use_cover
 @engt.base_router.callback_query(env.CoverActions.filter(F.action == "use_cover"))
@@ -332,3 +352,4 @@ async def use_original_photo(callback: CallbackQuery, callback_data: env.CoverAc
 async def take_new_cover_photo(callback: CallbackQuery, callback_data: env.CoverActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
     await engtRemoveInlineKeyboards(callback, state, bot, event_chat)
     await AskForCover(state, pool, bot, event_chat)
+'''
