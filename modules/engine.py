@@ -3,8 +3,8 @@
 import logging # For logging
 import os # For environment variables
 import datetime # For date and time
-from typing import Protocol # For define typical class interfaces
 import aiohttp # For async HTTP requests
+from dataclasses import dataclass # For data classes
 
 from aiogram import Bot as Bot_tg
 from maxapi import Bot as Bot_max
@@ -73,13 +73,13 @@ from maxapi.enums.parse_mode import ParseMode as ParseMode_max
 
 from aiogram.types import BufferedInputFile as BufferedInputFile_tg
 from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
-'''
+
 # ========================================================
 # Constants and settings
 # ========================================================
 
 HTTP_TIMEOUT_sec = 20 # Timeout for HTTP requests in seconds
-'''
+
 # ========================================================
 # Configuration data
 # ========================================================
@@ -230,7 +230,12 @@ def Command(*args, **kwargs):
     elif MESSENGER == b'M':
         return Command_max(*args, **kwargs)
     
-
+@dataclass
+class Attachment():
+    """ Universal Attachment class for both Telegram and MAX messengers"""
+    body: bytes
+    url: str
+    token: str
     
 # ========================================================
 # Bot startup routines definitions
@@ -365,6 +370,35 @@ async def send_message(chat_id: int, text: str, parse_mode: ParseMode_tg | Parse
     elif MESSENGER == b'M':
         sendedmessage = await bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode)
         return Message(sendedmessage.message)
+
+async def get_photo(message: Message) -> Attachment:
+    """ Get the photo bytes from the message.
+
+        Args:
+            message (Message): The universal Message object containing the photo.
+
+        Returns:
+            Attachment: A universal Attachment object containing the photo bytes, URL, and token.
+    """
+    if MESSENGER == b'T':
+        photo = message.message_tg.photo[-1]
+        photo_file = await bot.get_file(photo.file_id)
+        photo_bytesio = await bot.download_file(photo_file.file_path)
+        photo_bytes = photo_bytesio.read()
+        return Attachment(body=photo_bytes, url=photo_file.file_path, token=photo.file_id)
+    elif MESSENGER == b'M':
+        if message.message_max.body.attachments:
+            if message.message_max.body.attachments[0].type != "image":
+                raise ValueError("The attachment is not a photo")
+            photo_url = message.message_max.body.attachments[0].payload.url
+            async with aiohttp.ClientSession() as session:
+                async with session.get(photo_url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
+                    resp.raise_for_status()
+                    photo_bytes = await resp.read()
+                    return Attachment(body=photo_bytes, url=photo_url, token=message.message_max.body.attachments[0].payload.token)
+        else:
+            raise ValueError("No attachments found in the message")
+
 
 '''
 async def download_bytes(url: str) -> bytes:

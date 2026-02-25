@@ -50,6 +50,16 @@ jobs:
           type=ref,event=branch
           latest
 
+    - name: Extract metadata
+      id: meta-rembg
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.IMAGE_NAME }}-rembg
+        tags: |
+          type=sha,prefix=
+          type=ref,event=branch
+          latest
+
     - name: Build and push bot image
       uses: docker/build-push-action@v5
       with:
@@ -72,6 +82,17 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
+    - name: Build and push rembg image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./dockerfile-rembg
+        push: true
+        tags: ${{ steps.meta-rembg.outputs.tags }}
+        labels: ${{ steps.meta-rembg.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
   deploy:
     needs: [build-and-push]
     runs-on: self-hosted
@@ -91,8 +112,11 @@ jobs:
           docker compose pull homelib-tg
           docker compose pull homelib-max
           docker compose pull homelib-web
+          docker compose pull homelib-rembg
           
           # Останавливаем и удаляем старый контейнер
+          docker compose down homelib-rembg
+          docker compose up homelib-rembg -d
           docker compose down homelib-tg
           docker compose up homelib-tg -d
           docker compose down homelib-max

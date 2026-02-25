@@ -13,3 +13,6 @@ GPT_URL = os.getenv("GPT_URL")
 GPT_API_TOKEN = os.getenv("GPT_API_TOKEN")
 GPT_MODEL = os.getenv("GPT_MODEL")
 
+# Rembg service URL
+REMBG_URL = os.getenv("REMBG_URL")
+

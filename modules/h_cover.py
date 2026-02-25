@@ -1,17 +1,19 @@
 # Module for handling bot messages related to prcessing book covers photos
 
-import numpy as np # For arrays processing
-import aioboto3 # For AWS S3 storage
-
 import modules.engine as eng # For crossplatform bot engine functions and definitions
 from modules.engine import _  # For internationalization and localization
 import modules.actions as act # For bot commands and actions
 import modules.environment as env # For bot states and callback data factories
 import modules.database as db # For database functions and definitions
 import modules.book as book # For book routines
-from modules.aiorembg import async_remove, get_queue_size, get_session
+import modules.common as com # For common functions and definitions
+import aiohttp # For HTTP requests to rembg service
 #import modules.h_brief as h_brief # For run brief commands
 
+import numpy as np # For arrays processing
+import aioboto3 # For AWS S3 storage
+import io # For handling byte streams
+import uuid # For generating unique filenames
 
 # =========================================================
 # Calculate distance between two points
@@ -52,26 +54,20 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
     original = None
     warped = None
     buffer = None
-    pass
     
-    '''
     try:
-        # Get the photo from the message
-        photo = message.photo[-1]
-        photo_file = await bot.get_file(photo.file_id)
-        photo_bytesio = await bot.download_file(photo_file.file_path)
-        photo_bytes = photo_bytesio.read()
-        photo_bytesio2 = io.BytesIO(photo_bytes)
+        photo = await eng.get_photo(message)
+        photo_bytesio = io.BytesIO(photo.bytes)
 
         # Start the S3 client
         session = aioboto3.Session()
-        async with session.client(service_name='s3', endpoint_url=engb.AWS_ENDPOINT_URL) as s3:
+        async with session.client(service_name='s3', endpoint_url=com.AWS_ENDPOINT_URL) as s3:
 
             # -------------------------------------------------------
             # Upload the photo to S3 storage
             try:
                 photo_filename = f"{event_from_user.id}/photo/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-                await s3.upload_fileobj(photo_bytesio2, engb.AWS_BUCKET_NAME, photo_filename)
+                await s3.upload_fileobj(photo_bytesio2, com.AWS_BUCKET_NAME, photo_filename)
                 await state.update_data(photo_filename=photo_filename) # Save the filename in the state
                 # Give like to user's photo
                 await bot.set_message_reaction(chat_id=event_chat.id,
@@ -88,7 +84,10 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
             
             # Add temporal message for waiting
             # Check queue size before processing
-            queue_size = await get_queue_size()
+            async with aiohttp.ClientSession() as http_session:
+                async with http_session.get(f"{com.REMBG_URL}/queue") as resp:
+                    queue_data = await resp.json()
+                    queue_size = queue_data.get("queue_size", 0)
             if queue_size > 0:
                 waiting_message = await message.reply(_("{wait}_in_queue","{wait}_in_queues",queue_size).format(wait=queue_size))
             else:
@@ -97,9 +96,16 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
             # -------------------------------------------------------
             # Remove the background from the image
             try:
-                # Remove background
+                # Remove background via rembg service
                 photo_bytesio2 = io.BytesIO(photo_bytes)
-                mask_bytes = await async_remove(photo_bytesio2.getvalue(), session=get_session(), only_mask=True)
+                async with aiohttp.ClientSession() as http_session:
+                    async with http_session.post(
+                        f"{com.REMBG_URL}/remove?only_mask=true",
+                        data=photo_bytesio2.getvalue(),
+                    ) as resp:
+                        if resp.status != 200:
+                            raise Exception(f"rembg service error: {resp.status} {await resp.text()}")
+                        mask_bytes = await resp.read()
                 
                 # Decode mask using cv2
                 mask_np = cv2.imdecode(np.frombuffer(mask_bytes, np.uint8), cv2.IMREAD_UNCHANGED)
@@ -298,6 +304,7 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
             await state.set_state(env.State.wait_reaction_on_cover)
             
     finally:
+        '''
         # Final cleanup - ensure all resources are freed
         if photo_bytesio:
             photo_bytesio.close()
