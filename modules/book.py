@@ -1,13 +1,14 @@
 # Module for get and put books to database
 
 import modules.engine as eng # For crossplatform bot engine functions and definitions
-from modules.engine import _  # For internationalization and localization
+from modules.engine import HTTP_TIMEOUT_sec, _  # For internationalization and localization
 import modules.database as db # For database functions and definitions
 import modules.environment as env # For bot states and callback data factories
 import modules.actions as act # For bot commands and actions
 import modules.web as web # For web-related functions and definitions
 
 import random # For random choices
+import aiohttp # For async HTTP requests
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
@@ -20,63 +21,64 @@ async def BriefStatistic(event_from_user: eng.User, event_chat: eng.Chat) -> eng
         message = await eng.send_message(chat_id=event_chat.id, text=_("{result}_book","{result}_books",result).format(result=result))
     return message
 
-'''
 # -------------------------------------------------------
 # Send to user current book information from user's data and return Message object
-async def PrintBook(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot) -> Message:
+async def PrintBook(message: eng.Message, state: eng.FSMContext) -> eng.Message:
     # Get the book data from the state
     data = await state.get_data() # Get stored user's data
-    items = []
+    text = ""
     # Loop through the book fields and add them to the items list
-    for field in ["book_id"] + env.PUBLIC_BOOK_FIELDS + ["category"]:
+    for field in ["book_id"] + act.PUBLIC_BOOK_FIELDS + ["category"]:
         if field in data:
             value = data[field]
             if value:
                 if (field == "favorites") or (field == "likes"):
-                    items.append(_(field))
+                    text += _(field) + "\n"
                 else:
-                    items.append(as_key_value(_(field), value))
-    content = as_list(*items)
+                    text += "<b>" + _(field) + ":</b> " + str(value) + "\n"
+    text = text.strip() # Remove trailing newline
     # Send the message with the book information and the keyboard
-    sent_message = await message.answer(**content.as_kwargs())
+    sent_message = await message.reply(text=text, parse_mode=eng.ParseMode.HTML)
     return sent_message
 
 # -------------------------------------------------------
 # Save book to database
-async def SaveBookToDatabase(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_from_user: User) -> None:
+async def SaveBookToDatabase(state: eng.FSMContext, event_from_user: eng.User) -> None:
     # Get stored user's data
     data = await state.get_data()
     data["user_id"] = event_from_user.id
     # Build book dictionary
-    fields = env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS
+    fields = act.PUBLIC_BOOK_FIELDS + act.HIDDEN_BOOK_FIELDS
     for field in fields:
         if field not in data:
             data[field] = None
     if data["book_id"]: # If book_id is already set, we are updating existing book
         book_id = data["book_id"]
         # Update the book data in the database
-        async with pool.acquire() as connection:
+        async with db.pool.acquire() as connection:
             await connection.execute(
-                f"UPDATE books SET {', '.join([f'{field} = ${i + 2}' for i, field in enumerate(fields)])} WHERE user_id = $1 AND book_id = ${len(fields) + 2}",
+                f"UPDATE books SET {', '.join([f'{field} = ${i + 2}' for i, field in enumerate(fields)])} WHERE user_id = $1 AND book_id = ${len(fields) + 2} AND platform = ${len(fields) + 3}",
                 event_from_user.id,
                 *[data[field] for field in fields],
-                book_id
+                book_id,
+                eng.MESSENGER
             )
     else:
         # Select max book_id of current user from the database
-        async with pool.acquire() as connection:
+        async with db.pool.acquire() as connection:
             result = await connection.fetchval("SELECT COALESCE(MAX(book_id),0) FROM books WHERE user_id = $1", event_from_user.id)
             book_id = result + 1 # Increment the max book_id by 1
         # Add manual fields
         data["book_id"] = book_id # Add book ID to the book data
+        data["platform"] = eng.MESSENGER # Add platform to the book data
         await state.update_data(book_id=book_id) # Save book ID in the state
         # Insert the book data into the database
-        async with pool.acquire() as connection:
+        async with db.pool.acquire() as connection:
             await connection.execute(
                 f"INSERT INTO books ({', '.join(fields)}) VALUES ({', '.join(['$' + str(i + 1) for i in range(len(fields))])})",
                 *[data[field] for field in fields]
             )
-'''
+
 # -------------------------------------------------------
 # Loop through books dataset and send to user the books list
 async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
@@ -92,7 +94,8 @@ async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat
             title = row.get("title")
             authors = row.get("authors")
             year = row.get("year")
-            photo = row.get("cover_filename")  # Adjust field name as needed
+            photo = row.get("cover_filename")
+            token = row.get("cover_token")
             category = row.get("category")
             favorites = " ⭐" if row.get("favorites") else ""
             likes = " 👍" if row.get("likes") else ""
@@ -101,12 +104,28 @@ async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat
                 prev_category = category
             keyboard = []
             keyboard.append(eng.CallbackButton(text=_("edit"), payload=env.EditBook(book_id=book_id)))
-            if photo:
+            caption = f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}"
+            if token:
+                message = await eng.send_photo_from_token(event_chat.id, token=token, caption=caption, parse_mode=eng.ParseMode.HTML)
+            elif photo:
                 photo_url = web.AWS_EXTERNAL_URL + "/" + photo
-                #!!!!!!message = await eng.send_photo(event_chat.id, photo=photo_url, caption=f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode=eng.ParseMode.HTML)
+                # Download books cover from S3 storage
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(photo_url, timeout=aiohttp.ClientTimeout(total=eng.HTTP_TIMEOUT_sec)) as resp:
+                        resp.raise_for_status()
+                        photo_bytes = await resp.read()
+                message = await eng.send_photo_from_bytes(event_chat.id, photo_bytes=photo_bytes, filename=photo, caption=caption, parse_mode=eng.ParseMode.HTML)
+                photo = await message.get_photo()
+                # Update loaded to messenger cover token in the database
+                async with db.pool.acquire() as conn:
+                    await conn.execute("""
+                        UPDATE books
+                        SET cover_token = $1
+                        WHERE book_id = $2 AND user_id = $3 AND platform = $4
+                    """, photo.token, book_id, event_from_user.id, eng.MESSENGER)
             else:
-                message = await eng.send_message(event_chat.id, f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}", parse_mode=eng.ParseMode.HTML)
-            await eng.send_inline_keyboard(message, keyboard, state, 1, True)
+                message = await eng.send_message(event_chat.id, caption, parse_mode=eng.ParseMode.HTML)
+            await eng.send_inline_keyboard(message, keyboard, state, 1, eng.onButtonClick.KeepKeyboardAndMessage)
     else:
         # Send one message for all books with HTML formatting
         message_text = _("{books}_found","{books}_founds",len(rows)).format(books=len(rows))+"\n"

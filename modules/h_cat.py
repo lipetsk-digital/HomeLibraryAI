@@ -73,7 +73,6 @@ async def SelectCategory(state: eng.FSMContext, event_chat: eng.Chat, event_from
 @eng.on_callback(eng.base_router,env.Category.filter(eng.F.name == "cancel"))
 @eng.callback_handler
 async def category_selection_cancel(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    #await eng.RemovePreviousBotMessage(state, bot, event_chat)
     await h_start.MainMenu(state, event_chat, event_from_user)
 
 # -------------------------------------------------------
@@ -82,7 +81,6 @@ async def category_selection_cancel(message: eng.Message, callback: eng.Callback
 @eng.on_callback(eng.base_router,env.Category.filter())
 @eng.callback_handler
 async def category_selected(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    #await engt.RemovePreviousBotMessage(state, bot, event_chat)
     await DoCategory(callback.name, state, event_chat, event_from_user)
 
 # -------------------------------------------------------
@@ -148,8 +146,8 @@ async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncp
             await conn.execute("""
                 UPDATE books
                 SET category = $1
-                WHERE user_id = $2 AND category = $3
-            """, new_cat, event_from_user.id, old_cat)
+                WHERE user_id = $2 AND category = $3 AND platform = $4
+            """, new_cat, event_from_user.id, old_cat, engb.MESSENGER)
         # Acknowledge the renaming
         await message.answer(_("category_renamed"))
         # Return to the main menu

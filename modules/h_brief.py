@@ -1,53 +1,61 @@
 # Module for handling bot messages related to prcessing book annotations
 
-from modules.imports_tg import asyncpg, aioboto3, AsyncOpenAI, io, uuid, base64, _, env, engt, engc, engb
-from modules.imports_tg import Bot, F, Chat, User, Message, ReactionTypeEmoji, InlineKeyboardBuilder, CallbackQuery, FSMContext
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.actions as act # For bot commands and actions
+import modules.environment as env # For bot states and callback data factories
+import modules.common as com # For common functions and definitions
 import modules.book as book # For save book to database
-import modules.h_edit as h_edit # For editing book information
+
+#import modules.h_edit as h_edit # For editing book information
 import modules.h_cover as h_cover # For do book cover photos
 import modules.h_start as h_start # For handling start command
 
+import logging # For logging
+import uuid # For generating unique filenames
+import aioboto3 # For AWS S3 storage
+import io # For handling byte streams
+import base64 # For encoding and decoding base64
+from openai import AsyncOpenAI # For OpenAI API client
+
 # =========================================================
 # Ask user for the photo of the first page of the book with annotation
-async def AskForBrief(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def AskForBrief(state: eng.FSMContext, event_chat: eng.Chat) -> None:
     # Add keyboard for two photos option
-    builder = InlineKeyboardBuilder()
-    await engt.RemoveInlineKeyboards(None, state, bot, event_chat)
-    builder.button(text=_("take_two_brief_photos"), callback_data=env.BriefPhotos(count=2) )
-    builder.adjust(1)
+    keyboard = []
+    keyboard.append(eng.CallbackButton(text=_("take_two_brief_photos"), payload=env.BriefPhotos(count=2)))
     # Ask for the brief photo
-    sent_message = await bot.send_message(event_chat.id, _("photo_brief_1of1"), reply_markup=builder.as_markup())
-    await state.update_data(inline=sent_message.message_id)
+    sent_message = await eng.send_message(event_chat.id, _("photo_brief_1of1"))
+    await eng.send_inline_keyboard(sent_message, keyboard, state, 1, eng.onButtonClick.RemoveKeyboardKeepMessage)
     # Set the state to wait for the brief photo
     await state.set_state(env.State.wait_for_brief_photo1of1)
 
 # =========================================================
 # Handler for inline button take_two_brief_photos
-@engt.base_router.callback_query(env.BriefPhotos.filter(F.count == 2))
-async def take_two_brief_photos(callback: CallbackQuery, callback_data: env.BriefPhotos, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+@eng.on_callback(eng.base_router,env.BriefPhotos.filter(eng.F.count == 2))
+@eng.callback_handler
+async def take_two_brief_photos(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Remove previous message
     try:
         await callback.message.delete()
     except Exception as e:
-        engc.logging.error(f"Error deleting previous message: {e}")
+        logging.error(f"Error deleting previous message: {e}")
     # Ask for the first brief photo
-    sent_message = await bot.send_message(event_chat.id, _("photo_brief_1of2"))
+    sent_message = await eng.send_message(event_chat.id, _("photo_brief_1of2"))
     # Set the state to wait for the first brief photo
     await state.set_state(env.State.wait_for_brief_photo1of2)
 
 # =========================================================
 # Handler for sended photo of the first page of the book with annotation
-@engt.base_router.message(env.State.wait_for_brief_photo1of1, F.photo)
-@engt.base_router.message(env.State.wait_for_brief_photo1of2, F.photo)
-@engt.base_router.message(env.State.wait_for_brief_photo2of2, F.photo)
-async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+@eng.on_message(eng.base_router,env.State.wait_for_brief_photo1of1, eng.F_photo())
+@eng.on_message(eng.base_router,env.State.wait_for_brief_photo1of2, eng.F_photo())
+@eng.on_message(eng.base_router,env.State.wait_for_brief_photo2of2, eng.F_photo())
+@eng.message_handler
+async def brief_photo(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
 
     # Get the photo from the message
-    photo = message.photo[-1]
-    photo_file = await bot.get_file(photo.file_id)
-    photo_bytesio = await bot.download_file(photo_file.file_path)
-    photo_bytes = photo_bytesio.read()
-    photo_bytesio2 = io.BytesIO(photo_bytes)
+    photo = await message.get_photo()
+    photo_bytesio = io.BytesIO(photo.body)
 
     # Get state
     current_state = await state.get_state()
@@ -55,28 +63,25 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     # -------------------------------------------------------
     # Start the S3 client
     session = aioboto3.Session()
-    async with session.client(service_name='s3', endpoint_url=engb.AWS_ENDPOINT_URL) as s3:
+    async with session.client(service_name='s3', endpoint_url=com.AWS_ENDPOINT_URL) as s3:
         # Upload the photo to S3 storage
         try:
             brief_filename = f"{message.from_user.id}/brief/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-            await s3.upload_fileobj(photo_bytesio2, engb.AWS_BUCKET_NAME, brief_filename)
+            await s3.upload_fileobj(photo_bytesio, com.AWS_BUCKET_NAME, brief_filename)
             if current_state == env.State.wait_for_brief_photo2of2:
                 await state.update_data(brief2_filename=brief_filename) # Save the filename in the state
-                await state.update_data(brief2_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8'))
+                await state.update_data(brief2_base64 = base64.b64encode(photo_bytesio.getvalue()).decode('utf-8'))
             else:
                 await state.update_data(brief_filename=brief_filename) # Save the filename in the state
-                await state.update_data(brief_base64 = base64.b64encode(photo_bytesio2.getvalue()).decode('utf-8'))
-            # Give like to user's photo
-            await bot.set_message_reaction(chat_id=event_chat.id,
-                                           message_id=message.message_id,
-                                           reaction=[ReactionTypeEmoji(emoji='👍')])
+                await state.update_data(brief_base64 = base64.b64encode(photo_bytesio.getvalue()).decode('utf-8'))
+            await message.set_like() # Give like to user's photo
         except Exception as e:
             await message.reply(_("upload_failed"))
-            engc.logging.error(f"Error uploading to S3: {e}")
+            logging.error(f"Error uploading to S3: {e}")
 
     # If we are waiting for the second brief photo, ask for it
     if current_state == env.State.wait_for_brief_photo1of2:
-        await bot.send_message(event_chat.id, _("photo_brief_2of2"))
+        await eng.send_message(event_chat.id, _("photo_brief_2of2"))
         await state.set_state(env.State.wait_for_brief_photo2of2)
         return
 
@@ -90,12 +95,12 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
     try:
         # Prepare session for OpenAI API        
         client = AsyncOpenAI(
-            api_key=engb.GPT_API_TOKEN,
-            base_url=engb.GPT_URL
+            api_key=com.GPT_API_TOKEN,
+            base_url=com.GPT_URL
         )
         # Ask GPT-4 Vision to analyze the image and extract book information
         prompt = ""
-        for line in env.BOOK_PROMPT:
+        for line in act.BOOK_PROMPT:
             prompt = prompt + _(line) + "\n"
         data = await state.get_data()
         VLM_messages = [
@@ -109,13 +114,13 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
                 {"role": "user", "content": [ {"type": "text", "text": prompt} ] }
             ]
         response = await client.chat.completions.create(
-            model=engb.GPT_MODEL,
+            model=com.GPT_MODEL,
             messages=VLM_messages,
             max_tokens=2000
         )
     except Exception as e:
         await message.reply(_("gpt_failed"))
-        engc.logging.error(f"Error asking GPT: {e}")
+        logging.error(f"Error asking GPT: {e}")
     
     try:
         # Convert the response to a dictionary
@@ -133,50 +138,43 @@ async def brief_photo(message: Message, state: FSMContext, pool: asyncpg.Pool, b
             raise ValueError()        
     except Exception as e:
         await message.reply(_("gpt_incorrect")+"\n"+response_text)
-        engc.logging.error(f"Error parsing GPT response: {e}")
+        logging.error(f"Error parsing GPT response: {e}")
 
     # Remove temporal message
     await waiting_message.delete()
     # Print book info and ask user for reaction on brief
-    await AskForBriefReaction(message, state, pool, bot, event_chat)
+    await AskForBriefReaction(message, state, event_chat)
 
 
 # =========================================================
 #  Print book info and ask user for reaction on brief
-async def AskForBriefReaction(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+async def AskForBriefReaction(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat) -> None:
     # Print the book information
-    sent_message = await book.PrintBook(message, state, pool, bot)
+    sent_message = await book.PrintBook(message, state)
     # Generate keyboard with further actions
-    builder = InlineKeyboardBuilder()
-    await engt.RemoveInlineKeyboards(None, state, bot, event_chat)
-    for action in env.BRIEF_ACTIONS:
-        builder.button(text=_(action), callback_data=env.BriefActions(action=action) )
-    builder.adjust(2,2,1)
+    keyboard = []
+    for action in act.BRIEF_ACTIONS:
+        keyboard.append(eng.CallbackButton(text=_(action), payload=env.BriefActions(action=action)))
     # Add to the message with book information the keyboard
-    await bot.edit_message_reply_markup(chat_id=event_chat.id, message_id=sent_message.message_id, reply_markup=builder.as_markup())
-    await state.update_data(inline=sent_message.message_id)
+    await eng.send_inline_keyboard(sent_message, keyboard, state, 2, eng.onButtonClick.RemoveKeyboardKeepMessage)
     await state.set_state(env.State.wait_reaction_on_brief)
 
 # =========================================================
 # Handler for inline button use_brief
-@engt.base_router.callback_query(env.BriefActions.filter(F.action == "use_brief"))
-async def use_brief(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    # Give like to brief message
-    await bot.set_message_reaction(chat_id=event_chat.id,
-                                    message_id=callback.message.message_id,
-                                    reaction=[ReactionTypeEmoji(emoji='👍')])
-    await book.SaveBookToDatabase(state, pool, bot, event_from_user)
+@eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "use_brief"))
+@eng.callback_handler
+async def use_brief(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await message.set_like() # Give like to brief
+    await book.SaveBookToDatabase(state, event_from_user)
     # Write about added book and ask about the next one
     data = await state.get_data()
-    builder = InlineKeyboardBuilder()
-    for action in env.NEXT_ACTIONS:
-        builder.button(text=_(action), callback_data=env.NextActions(action=action) )
-    builder.adjust(2)
-    sent_message = await callback.message.answer((_("{bookid}_added")+" "+_("add_next_{category}")).format(bookid=data["book_id"], category=data["category"]), 
-                                                 reply_markup=builder.as_markup())
-    await state.update_data(inline=sent_message.message_id)
+    keyboard = []
+    for action in act.NEXT_ACTIONS:
+        keyboard.append(eng.CallbackButton(text=_(action), payload=env.NextActions(action=action)))
+    sent_message = await message.reply((_("{bookid}_added")+" "+_("add_next_{category}")).format(bookid=data["book_id"], category=data["category"]))
+    await eng.send_inline_keyboard(sent_message, keyboard, state, 2)
     await state.set_state(env.State.wait_next_book)
+'''
 
 # =========================================================
 # Handler for inline button edit_brief
@@ -222,3 +220,4 @@ async def add_another_book(callback: CallbackQuery, callback_data: env.NextActio
 async def no_another_book(callback: CallbackQuery, callback_data: env.NextActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
     await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
     await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+'''
