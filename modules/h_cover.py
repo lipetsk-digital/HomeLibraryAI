@@ -10,10 +10,12 @@ import modules.common as com # For common functions and definitions
 import aiohttp # For HTTP requests to rembg service
 #import modules.h_brief as h_brief # For run brief commands
 
+import logging # For logging
 import numpy as np # For arrays processing
 import aioboto3 # For AWS S3 storage
 import io # For handling byte streams
 import uuid # For generating unique filenames
+import cv2 # For image processing
 
 # =========================================================
 # Calculate distance between two points
@@ -57,7 +59,7 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
     
     try:
         photo = await eng.get_photo(message)
-        photo_bytesio = io.BytesIO(photo.bytes)
+        photo_bytesio = io.BytesIO(photo.body)
 
         # Start the S3 client
         session = aioboto3.Session()
@@ -67,20 +69,17 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
             # Upload the photo to S3 storage
             try:
                 photo_filename = f"{event_from_user.id}/photo/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-                await s3.upload_fileobj(photo_bytesio2, com.AWS_BUCKET_NAME, photo_filename)
+                await s3.upload_fileobj(photo_bytesio, com.AWS_BUCKET_NAME, photo_filename)
                 await state.update_data(photo_filename=photo_filename) # Save the filename in the state
-                # Give like to user's photo
-                await bot.set_message_reaction(chat_id=event_chat.id,
-                                               message_id=message.message_id,
-                                               reaction=[ReactionTypeEmoji(emoji='👍')])
+                await eng.set_like(message) # Give like to user's photo
             except Exception as e:
                 await message.reply(_("upload_failed")+f" {e}")
-                engc.logging.error(f"Error uploading to S3: {e}")
+                logging.error(f"Error uploading to S3: {e}")
             finally:
                 # Close BytesIO after upload
-                if photo_bytesio2:
-                    photo_bytesio2.close()
-                    photo_bytesio2 = None
+                if photo_bytesio:
+                    photo_bytesio.close()
+                    photo_bytesio = None
             
             # Add temporal message for waiting
             # Check queue size before processing
@@ -97,11 +96,11 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
             # Remove the background from the image
             try:
                 # Remove background via rembg service
-                photo_bytesio2 = io.BytesIO(photo_bytes)
+                photo_bytesio = io.BytesIO(photo.body)
                 async with aiohttp.ClientSession() as http_session:
                     async with http_session.post(
                         f"{com.REMBG_URL}/remove?only_mask=true",
-                        data=photo_bytesio2.getvalue(),
+                        data=photo_bytesio.getvalue(),
                     ) as resp:
                         if resp.status != 200:
                             raise Exception(f"rembg service error: {resp.status} {await resp.text()}")
@@ -237,12 +236,13 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
                 del rect, dst
 
                 # Apply perspective transformation
-                original = cv2.imdecode(np.frombuffer(photo_bytes, np.uint8), cv2.IMREAD_COLOR)
+                original = cv2.imdecode(np.frombuffer(photo.body, np.uint8), cv2.IMREAD_COLOR)
                 warped = cv2.warpPerspective(original, M, (final_width, final_height))
                 
                 # Free original and M
                 del original, M
                 original = None
+                M = None
 
                 is_success, buffer = cv2.imencode('.jpg', warped)
                 
@@ -260,13 +260,13 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
 
             except Exception as e:
                 await message.reply(_("remove_background_failed")+f" {e}")
-                engc.logging.error(f"Error removing background: {e}")
+                logging.error(f"Error removing background: {e}")
                 return
             finally:
                 # Close photo_bytesio2
-                if photo_bytesio2:
-                    photo_bytesio2.close()
-                    photo_bytesio2 = None
+                if photo_bytesio:
+                    photo_bytesio.close()
+                    photo_bytesio = None
             
             # -------------------------------------------------------
             # Upload the processed image to S3 storage
@@ -274,11 +274,11 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
                 output_bytes = output_bytesio.getvalue()
                 output_bytesio2 = io.BytesIO(output_bytes)
                 cover_filename = f"{event_from_user.id}/cover/{uuid.uuid4()}.jpg" # Generate a unique filename for the photo
-                await s3.upload_fileobj(output_bytesio2, engb.AWS_BUCKET_NAME, cover_filename)
+                await s3.upload_fileobj(output_bytesio2, com.AWS_BUCKET_NAME, cover_filename)
                 await state.update_data(cover_filename=cover_filename) # Save the filename in the state
             except Exception as e:
                 await message.reply(_("upload_failed")+f" {e}")
-                engc.logging.error(f"Error uploading to S3: {e}")
+                logging.error(f"Error uploading to S3: {e}")
             finally:
                 # Close output_bytesio2
                 if output_bytesio2:
@@ -292,24 +292,18 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
 
             # -------------------------------------------------------
             # Send the processed image back to the user
-            builder = InlineKeyboardBuilder()
-            await engt.RemoveInlineKeyboards(None, state, bot, event_chat)
-            for action in env.COVER_ACTIONS:
-                builder.button(text=_(action), callback_data=env.CoverActions(action=action) )
-            builder.adjust(1)
-            
+            keyboard = []
+            for action in act.COVER_ACTIONS:
+                keyboard.append(eng.CallbackButton(text=_(action), payload=env.CoverActions(action=action) ))
             output_bytes = output_bytesio.getvalue()
-            sent_message = await bot.send_photo(event_chat.id, photo=BufferedInputFile(output_bytes, filename=cover_filename), reply_markup=builder.as_markup())
-            await state.update_data(inline=sent_message.message_id)
+            sent_message = await eng.send_photo_from_bytes(event_chat.id, photo_bytes=output_bytes, filename=cover_filename)
+            await eng.send_inline_keyboard(sent_message, keyboard, state)
             await state.set_state(env.State.wait_reaction_on_cover)
             
     finally:
-        '''
         # Final cleanup - ensure all resources are freed
         if photo_bytesio:
             photo_bytesio.close()
-        if photo_bytesio2:
-            photo_bytesio2.close()
         if output_bytesio:
             output_bytesio.close()
         if output_bytesio2:
@@ -317,7 +311,6 @@ async def cover_photo(message: eng.Message, state: eng.FSMContext, event_chat: e
         
         # Explicitly delete large numpy arrays
         del mask_np, mask_bw, binary_mask, kernel, original, warped, buffer
-    '''
 
 '''
 # =========================================================

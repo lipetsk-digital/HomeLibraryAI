@@ -5,6 +5,7 @@ import os # For environment variables
 import datetime # For date and time
 import aiohttp # For async HTTP requests
 from dataclasses import dataclass # For data classes
+from typing import Self # For type hinting of self return type
 
 from aiogram import Bot as Bot_tg
 from maxapi import Bot as Bot_max
@@ -70,6 +71,8 @@ from maxapi import F as F_max
 
 from aiogram.enums.parse_mode import ParseMode as ParseMode_tg
 from maxapi.enums.parse_mode import ParseMode as ParseMode_max
+
+from aiogram.types import ReactionTypeEmoji as ReactionTypeEmoji_tg
 
 from aiogram.types import BufferedInputFile as BufferedInputFile_tg
 from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
@@ -192,10 +195,19 @@ class Message:
             self.text = source.message.body.text or "" if source.message.body else None
             self.message_max = source.message
     async def delete(self):
+        ''' Delete the message'''
         if MESSENGER == b'T':
             return await bot.delete_message(chat_id=self.chat.id, message_id=self.id)
         elif MESSENGER == b'M':
             return await bot.delete_message(message_id=self.id)
+    async def reply(self, text: str, parse_mode: ParseMode_tg | ParseMode_max = None) -> Self:
+        ''' Reply to the message with the given text and parse mode, and return the new message as a universal Message object.'''
+        if MESSENGER == b'T':
+            reply_message = await self.message_tg.reply(text=text, parse_mode=parse_mode)
+            return self.__class__(reply_message)
+        elif MESSENGER == b'M':
+            sendedmessage = await self.message_max.reply(text=text, parse_mode=parse_mode)
+            return self.__class__(sendedmessage.message)
 
 CallbackData = CallbackData_tg | CallbackData_max
 
@@ -381,10 +393,15 @@ async def get_photo(message: Message) -> Attachment:
             Attachment: A universal Attachment object containing the photo bytes, URL, and token.
     """
     if MESSENGER == b'T':
-        photo = message.message_tg.photo[-1]
-        photo_file = await bot.get_file(photo.file_id)
-        photo_bytesio = await bot.download_file(photo_file.file_path)
-        photo_bytes = photo_bytesio.read()
+        try:
+            photo = message.message_tg.photo[-1]
+            photo_file = await bot.get_file(photo.file_id)
+            photo_bytesio = await bot.download_file(photo_file.file_path)
+            photo_bytes = photo_bytesio.read()
+        finally: # Close photo_bytesio
+            if photo_bytesio:
+                photo_bytesio.close()
+                photo_bytesio = None
         return Attachment(body=photo_bytes, url=photo_file.file_path, token=photo.file_id)
     elif MESSENGER == b'M':
         if message.message_max.body.attachments:
@@ -399,42 +416,39 @@ async def get_photo(message: Message) -> Attachment:
         else:
             raise ValueError("No attachments found in the message")
 
-
-'''
-async def download_bytes(url: str) -> bytes:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
-            resp.raise_for_status()
-            return await resp.read()
-
-async def upload_file_from_url(url: str, filename: str) -> str:
-    buffer = await download_bytes(url)
-    if MESSENGER == b'T':
-        document=BufferedInputFile_tg(buffer, filename=filename)
-        logging.debug(f"Uploading file from URL {url} with filename {filename}")
-
-async def send_photo(chat_id: int, photo: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
-    """ Send a photo message to the specified chat.
+async def set_like(message: Message) -> None:
+    """ Set a like reaction to the message.
 
         Args:
-            chat_id (int): The ID of the chat to send the message to.
-            photo (str): The URL of the photo to send.
+            message (Message): The universal Message object to which the like reaction will be added.
+    """
+    if MESSENGER == b'T':
+        await bot.set_message_reaction(chat_id=message.chat.id,
+                                        message_id=message.id,
+                                        reaction=[ReactionTypeEmoji_tg(emoji='👍')])
+    elif MESSENGER == b'M':
+        pass; # MAX does not support reactions yet, so we will skip this step
+
+async def send_photo_from_bytes(chat_id: int, photo_bytes: bytes, filename: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a photo to the specified chat using raw bytes.
+
+        Args:
+            chat_id (int): The ID of the chat to send the photo to.
+            photo_bytes (bytes): The raw bytes of the photo to be sent.
+            filename (str): The filename to be used for the photo.
             caption (str): The caption for the photo (optional).
 
         Returns:
             Message: A universal Message object representing the sent message.
     """
     if MESSENGER == b'T':
-        message = await bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode=parse_mode)
+        message = await bot.send_photo(chat_id=chat_id, photo=BufferedInputFile_tg(photo_bytes, filename=filename), caption=caption, parse_mode=parse_mode)
         return Message(message)
     elif MESSENGER == b'M':
-                
-        img = await download_bytes(photo)
-        media = InputMediaBuffer_max(buffer=img, filename="image.png")
-        
+        media = InputMediaBuffer_max(buffer=photo_bytes, filename=filename)
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
-'''
+
 # ========================================================
 # Inline keyboards support
 # ========================================================
