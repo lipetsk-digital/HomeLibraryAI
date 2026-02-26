@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-18 22:58+0300\n"
+"POT-Creation-Date: 2026-02-26 03:07+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -46,16 +46,16 @@ msgstr "🕓 Недавние"
 msgid "cat"
 msgstr "🗂️ Категории"
 
-#: modules/actions.py:22 modules/actions.py:46 modules/actions.py:87
+#: modules/actions.py:22 modules/actions.py:46 modules/actions.py:89
 msgid "favorites"
 msgstr "⭐ Хочу прочитать"
 
-#: modules/actions.py:23 modules/actions.py:47 modules/actions.py:88
+#: modules/actions.py:23 modules/actions.py:47 modules/actions.py:90
 msgid "likes"
 msgstr "👍 Нравится"
 
-#: modules/actions.py:24 modules/actions.py:64 modules/actions.py:97
-#: modules/h_cat.py:56 modules/h_edit.py:51 modules/h_edit.py:163
+#: modules/actions.py:24 modules/actions.py:66 modules/actions.py:99
+#: modules/h_cat.py:58 modules/h_edit.py:51 modules/h_edit.py:163
 msgid "cancel"
 msgstr "Отмена"
 
@@ -87,7 +87,7 @@ msgstr "✅ Да, использовать эту обложку"
 msgid "use_original_photo"
 msgstr "🖼️ Нет, использовать оригинальное фото"
 
-#: modules/actions.py:36 modules/actions.py:89
+#: modules/actions.py:36 modules/actions.py:91
 msgid "take_new_photo"
 msgstr "📷 Стоп, сделать новое фото"
 
@@ -119,123 +119,123 @@ msgstr "🆔 ISBN"
 msgid "brief"
 msgstr "⏱️ Кратко"
 
-#: modules/actions.py:54
+#: modules/actions.py:55
 msgid "authors"
 msgstr "🧑‍🎨 Автор (сокр.)"
 
-#: modules/actions.py:55
+#: modules/actions.py:56
 msgid "annotation"
 msgstr "📜 Аннотация"
 
-#: modules/actions.py:57
+#: modules/actions.py:58
 msgid "book_id"
 msgstr "#️⃣ ID книги"
 
-#: modules/actions.py:58
+#: modules/actions.py:59
 msgid "category"
 msgstr "📂 Категория"
 
-#: modules/actions.py:61
+#: modules/actions.py:63
 msgid "move_book"
 msgstr "Переместить 📁"
 
-#: modules/actions.py:62
+#: modules/actions.py:64
 msgid "delete_book"
 msgstr "Удалить ❌"
 
-#: modules/actions.py:63
+#: modules/actions.py:65
 msgid "save_changes"
 msgstr "✅ Cохранить"
 
-#: modules/actions.py:67
+#: modules/actions.py:69
 msgid "prompt_photo"
 msgstr "На фотографии страница с аннотацией к книге."
 
-#: modules/actions.py:68
+#: modules/actions.py:70
 msgid "prompt_result"
 msgstr "Твой ответ должен представлять собой только секцию [book] ini-файла без вводных и заключительных фраз."
 
-#: modules/actions.py:69
+#: modules/actions.py:71
 msgid "prompt_count"
 msgstr "В секции всегда должно быть 9 параметров. Если какого-то параметра нет, то его значение должно быть пустым."
 
-#: modules/actions.py:70
+#: modules/actions.py:72
 msgid "prompt_lang"
 msgstr "Значения параметоров приводи на том же языке, что и сфотографированная страница."
 
-#: modules/actions.py:71
+#: modules/actions.py:73
 msgid "prompt_characters"
 msgstr "Если значение параметра содержит символы перевода строки или знаки равенства - замени их на пробелы."
 
-#: modules/actions.py:72
+#: modules/actions.py:74
 msgid "prompt_plaintext"
 msgstr "Выводи содержимое ini-флайла в виде обычного текста. Не используй язык разметки markdown."
 
-#: modules/actions.py:73
+#: modules/actions.py:75
 msgid "prompt_fields"
 msgstr "Ниже приведены названия каждого параметра и выделенная из изображения информация, которую должно содержать его значение:"
 
-#: modules/actions.py:74
+#: modules/actions.py:76
 msgid "prompt_title"
 msgstr "title - название книги"
 
-#: modules/actions.py:75
+#: modules/actions.py:77
 msgid "prompt_authors"
 msgstr "authors - авторы книги. Не включай сюда составителей, иллюстраторов, редакторов, авторов рецезий или предисловий, только авторов текста книги"
 
-#: modules/actions.py:76
+#: modules/actions.py:78
 msgid "prompt_pages"
 msgstr "pages - количество страниц"
 
-#: modules/actions.py:77
+#: modules/actions.py:79
 msgid "prompt_publisher"
 msgstr "publisher - издательство"
 
-#: modules/actions.py:78
+#: modules/actions.py:80
 msgid "prompt_year"
 msgstr "year - год издания"
 
-#: modules/actions.py:79
+#: modules/actions.py:81
 msgid "prompt_isbn"
 msgstr "isbn - код ISBN"
 
-#: modules/actions.py:80
+#: modules/actions.py:82
 msgid "prompt_annotation"
 msgstr "annotation - заново весь полный текст всей аннотации, дословно приведённый на фотографии страницы"
 
-#: modules/actions.py:81
+#: modules/actions.py:83
 msgid "prompt_brief"
 msgstr "brief - перефразируй поле annotation: сформулируй на его основе одно предложение, лучшим образом раскрывающее содержание книги"
 
-#: modules/actions.py:82
+#: modules/actions.py:84
 msgid "prompt_authors_full_names"
 msgstr "authors_full_names - полные имена, фамилии и (при наличии) отчества всех авторов книги из поля authors. На странице наверняка есть упоминания их полных имён. Найди и приведи их в этом поле"
 
-#: modules/actions.py:85
+#: modules/actions.py:87
 msgid "use_brief"
 msgstr "✅ Всё верно"
 
-#: modules/actions.py:86
+#: modules/actions.py:88
 msgid "edit_brief"
 msgstr "✏️ Редактировать"
 
-#: modules/actions.py:92
+#: modules/actions.py:94
 msgid "add_another_book"
 msgstr "➕ Добавить"
 
-#: modules/actions.py:93
+#: modules/actions.py:95
 msgid "no_another_book"
 msgstr "❌ Не нужно"
 
-#: modules/actions.py:96
+#: modules/actions.py:98
 msgid "delete"
 msgstr "🗑️ Удалить"
 
-#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:66
+#: modules/book.py:25 modules/book.py:180 modules/h_cat.py:66
 msgid "no_books"
 msgstr "Пока нет книг в библиотеке 🥺"
 
-#: modules/book.py:15
+#: modules/book.py:27
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
@@ -243,11 +243,11 @@ msgstr[0] "У вас {result} книга 📕 в библиотеке"
 msgstr[1] "У вас {result} книги 📚 в библиотеке"
 msgstr[2] "У вас {result} книг 📚 в библиотеке"
 
-#: modules/book.py:79
+#: modules/book.py:93
 msgid "no_books_found"
 msgstr "Книги не найдены 🥺"
 
-#: modules/book.py:81 modules/book.py:106
+#: modules/book.py:95 modules/book.py:137
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
@@ -255,90 +255,90 @@ msgstr[0] "Найдена {books} книга 📕:"
 msgstr[1] "Найдены {books} книги 📚:"
 msgstr[2] "Найдено {books} книг 📚:"
 
-#: modules/book.py:97
+#: modules/book.py:112
 msgid "edit"
 msgstr "✏️ Правка"
 
-#: modules/book.py:140
+#: modules/book.py:171
 msgid "exporting_books"
 msgstr "Выгружаю книги... ⏳"
 
-#: modules/book.py:207
+#: modules/book.py:239
 msgid "books_export_csv"
-msgstr "𝄜 CSV-таблица книг"
+msgstr "💾 CSV-таблица книг"
 
-#: modules/book.py:215
+#: modules/book.py:248
 msgid "books_export_json"
 msgstr "{ } JSON-файл книг"
 
-#: modules/book.py:220
+#: modules/book.py:253
 #, python-brace-format
 msgid "books_{url}_export"
 msgstr "📚 Ваша библиотека теперь всегда доступна по этой ссылке: {url} Поделись ею с друзьями!"
 
-#: modules/h_brief.py:16
+#: modules/h_brief.py:26
 msgid "take_two_brief_photos"
 msgstr "Сфотографировать две 📸📸 страницы"
 
-#: modules/h_brief.py:19
+#: modules/h_brief.py:28
 msgid "photo_brief_1of1"
 msgstr "Сфотографируйте страницу книги с аннотацией и реквизитами 📸"
 
-#: modules/h_brief.py:34
+#: modules/h_brief.py:44
 msgid "photo_brief_1of2"
 msgstr "Сфотографируйте 1 из 2 страниц книги с аннотацией и реквизитами 📸"
 
-#: modules/h_brief.py:74 modules/h_cover.py:70 modules/h_cover.py:263
+#: modules/h_brief.py:79 modules/h_cover.py:76 modules/h_cover.py:280
 msgid "upload_failed"
 msgstr "Извините, загрузка не удалась 🥺"
 
-#: modules/h_brief.py:79
+#: modules/h_brief.py:84
 msgid "photo_brief_2of2"
 msgstr "Сфотографируйте 2 из 2 страниц книги с аннотацией и реквизитами 📸"
 
-#: modules/h_brief.py:85
+#: modules/h_brief.py:90
 msgid "wait2"
 msgstr "⏳ Пожалуйста, подождите, ИИ обрабатывает фотографии..."
 
-#: modules/h_brief.py:87 modules/h_cover.py:84
+#: modules/h_brief.py:92 modules/h_cover.py:93
 msgid "wait"
 msgstr "⏳ Пожалуйста, подождите, ИИ обрабатывает фотографию..."
 
-#: modules/h_brief.py:117
+#: modules/h_brief.py:122
 msgid "gpt_failed"
 msgstr "ИИ недоступен 🥺"
 
-#: modules/h_brief.py:135
+#: modules/h_brief.py:140
 msgid "gpt_incorrect"
 msgstr "ИИ выдал что-то неопнятное 🥺"
 
-#: modules/h_brief.py:176
+#: modules/h_brief.py:174
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr "📗 Книга сохранена в библиотеку под номером {bookid}."
 
-#: modules/h_brief.py:176
+#: modules/h_brief.py:174
 #, python-brace-format
 msgid "add_next_{category}"
 msgstr "Добавить следующую книгу в категорию {category}?"
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:42
 msgid "select_or_enter_category_add_book"
 msgstr "➕ Выберите 📂 категорию, в которую добавить новую книгу или введите название новой категории:"
 
-#: modules/h_cat.py:40
+#: modules/h_cat.py:44
 msgid "select_category_to_view_books"
 msgstr "Выберите 📂 категорию, чтобы посмотреть книги:"
 
-#: modules/h_cat.py:42
+#: modules/h_cat.py:46
 msgid "select_category_to_rename"
 msgstr "Выберите 📂 категорию, которую нужно переименовать:"
 
-#: modules/h_cat.py:44
+#: modules/h_cat.py:48
 msgid "select_category_to_move_book"
 msgstr "Выберите 📂 категорию, в которую перенести книгу или напишите название новой категории:"
 
-#: modules/h_cat.py:55
+#: modules/h_cat.py:57
 msgid "continue_selecting_category"
 msgstr "... продолжение ..."
 
@@ -346,37 +346,29 @@ msgstr "... продолжение ..."
 msgid "enter_category_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:98
 msgid "no_such_category_name"
 msgstr "Извините, но нельзя использовать эти слова в качестве названия категории 🥺"
 
-#: modules/h_cat.py:100 modules/h_cat.py:150
+#: modules/h_cat.py:103
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr "Слишком длинное название категории 🥺 (максимум {size} байт)"
 
-#: modules/h_cat.py:103
+#: modules/h_cat.py:106
 msgid "can_not_add_category"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
-#: modules/h_cat.py:114
+#: modules/h_cat.py:117
 #, python-brace-format
 msgid "adding_book_in_{category}"
 msgstr "➕ Добавляем книгу в категорию {category}"
 
-#: modules/h_cat.py:119
-msgid "rename_category"
-msgstr "Напишите новое название 📂 категории:"
-
-#: modules/h_cat.py:145
-msgid "category_renamed"
-msgstr "✅ Категория успешно переименована"
-
-#: modules/h_cover.py:23
+#: modules/h_cover.py:34
 msgid "photo_cover"
 msgstr "Сфотографируйте обложку книги 📸"
 
-#: modules/h_cover.py:82
+#: modules/h_cover.py:91
 #, python-brace-format
 msgid "{wait}_in_queue"
 msgid_plural "{wait}_in_queues"
@@ -384,11 +376,11 @@ msgstr[0] "⏳ Ваша задача поставлена в очередь дл
 msgstr[1] "⏳ Ваша задача поставлена в очередь для обработки ИИ. Перед вами {wait} задания. Пожалуйста, подождите..."
 msgstr[2] "⏳ Ваша задача поставлена в очередь для обработки ИИ. Перед вами {wait} заданий. Пожалуйста, подождите..."
 
-#: modules/h_cover.py:138 modules/h_cover.py:242
+#: modules/h_cover.py:154 modules/h_cover.py:259
 msgid "contour_failed"
 msgstr "Извините, не удалось найти книгу на фото 🥺"
 
-#: modules/h_cover.py:245
+#: modules/h_cover.py:262
 msgid "remove_background_failed"
 msgstr "Извините, не удалось удалить фон 🥺"
 
@@ -422,24 +414,30 @@ msgstr "Книга не найдена 🥺"
 msgid "{bookid}_deleted"
 msgstr "🗑️ Книга {bookid} удалена"
 
-#: modules/h_lang.py:18
+#: modules/h_lang.py:25
 msgid "select_lang"
 msgstr "Выберите язык / Select language:"
 
-#: modules/h_lang.py:31
+#: modules/h_lang.py:39
 #, python-brace-format
 msgid "{language}_selected"
 msgstr "Вы выбрали {language} язык"
 
-#: modules/h_menu.py:36
+#: modules/h_menu.py:39
 msgid "enter_search_query"
 msgstr "🔍 Введите слова из названия книги, её авторов, часть isbn, её id или выберите кнопку:"
 
-#: modules/h_search.py:40
+#: modules/h_search.py:51
 msgid "_intro"
 msgstr ""
 
-#: modules/h_start.py:14
+#: modules/h_start.py:18
 msgid "welcome_message"
 msgstr "Бот для упорядочивания и каталогизации вашей домашней библиотеки. Две фотки - и книга в базе данных! ИИ обработает обложку, распознает автора и название книги, сократит аннотацию. Поделись с друзьями!"
+
+#~ msgid "rename_category"
+#~ msgstr "Напишите новое название 📂 категории:"
+
+#~ msgid "category_renamed"
+#~ msgstr "✅ Категория успешно переименована"
 

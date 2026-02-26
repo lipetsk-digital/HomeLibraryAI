@@ -33,6 +33,7 @@ async def main():
         import modules.h_search as h_search # For book search handlers
         import modules.h_cover as h_cover # For book brief photo handlers
         import modules.h_brief as h_brief # For book brief photo handlers
+        import modules.h_lang as h_lang # For language selection handlers
 
         # Register routers handlers
         eng.dp.include_routers(eng.first_router, eng.base_router, eng.last_router)

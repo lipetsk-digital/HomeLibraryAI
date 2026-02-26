@@ -1,14 +1,20 @@
 # Module for get and put books to database
 
 import modules.engine as eng # For crossplatform bot engine functions and definitions
-from modules.engine import HTTP_TIMEOUT_sec, _  # For internationalization and localization
+from modules.engine import _  # For internationalization and localization
 import modules.database as db # For database functions and definitions
 import modules.environment as env # For bot states and callback data factories
 import modules.actions as act # For bot commands and actions
 import modules.web as web # For web-related functions and definitions
 
+import modules.h_start as h_start # For handling start command
+
 import random # For random choices
 import aiohttp # For async HTTP requests
+from datetime import datetime # For handling date and time
+import csv # For CSV handling
+import json # For JSON handling
+import io # For in-memory file handling
 
 # -------------------------------------------------------
 # Send a brief statistic about the user's library
@@ -158,12 +164,12 @@ async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat
         # Send any remaining text
         if message_text:
             await eng.send_message(event_chat.id, message_text, parse_mode=eng.ParseMode.HTML)
-'''
+
 # -------------------------------------------------------
 # Export books to files and send to user
-async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await bot.send_message(event_chat.id, _("exporting_books"))
-    async with pool.acquire() as conn:
+async def ExportBooks(state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await eng.send_message(event_chat.id, _("exporting_books"))
+    async with db.pool.acquire() as conn:
         rows = await conn.fetch("""
             SELECT *
             FROM books
@@ -171,7 +177,7 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
             ORDER BY category ASC, book_id ASC
         """, event_from_user.id)
     if len(rows) == 0:
-        await bot.send_message(event_chat.id, _("no_books"))
+        await eng.send_message(event_chat.id, _("no_books"))
     else:
         # Prepare CSV and JSON data
         timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M")
@@ -195,10 +201,10 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
                 row["isbn"],
                 row["favorites"],
                 row["likes"],
-                engw.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                engw.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                engw.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                engw.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                web.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                web.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                web.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                web.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
                 row["brief"],
                 row["annotation"],
                 row["datetime"].isoformat()
@@ -215,10 +221,10 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
                 "isbn": row["isbn"],
                 "favorites": row["favorites"],
                 "likes": row["likes"],
-                "cover_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
-                "photo_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
-                "brief_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
-                "brief2_filename": engw.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
+                "cover_filename": web.AWS_EXTERNAL_URL + "/" + str(row["cover_filename"]),
+                "photo_filename": web.AWS_EXTERNAL_URL + "/" + str(row["photo_filename"]),
+                "brief_filename": web.AWS_EXTERNAL_URL + "/" + str(row["brief_filename"]),
+                "brief2_filename": web.AWS_EXTERNAL_URL + "/" + str(row["brief2_filename"]),
                 "brief": row["brief"],
                 "annotation": row["annotation"],
                 "datetime": row["datetime"].isoformat()
@@ -226,23 +232,24 @@ async def ExportBooks(state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_cha
 
         # Send CSV file
         csv_file.seek(0)
-        await bot.send_document(
+        await eng.send_file_from_bytes(
             event_chat.id,
-            document=BufferedInputFile(csv_file.getvalue().encode(), filename=f"{timestamp}.csv"),
+            file_bytes=csv_file.getvalue().encode(),
+            filename=f"{timestamp}.csv",
             caption=_("books_export_csv")
         )
 
         # Send JSON file
         json_data = json.dumps(json_list, ensure_ascii=False, indent=4)
-        await bot.send_document(
+        await eng.send_file_from_bytes(
             event_chat.id,
-            document=BufferedInputFile(json_data.encode(), filename=f"{timestamp}.json"),
+            file_bytes=json_data.encode(),
+            filename=f"{timestamp}.json",
             caption=_("books_export_json")
         )
 
         # Encrypte user ID and send link to web-export
-        url = engw.URL_BASE + "lib/" + engw.encrypt_for_url(str(event_from_user.id))
-        await bot.send_message(event_chat.id, _("books_{url}_export").format(url=url))
+        url = web.URL_BASE + "lib/" + web.encrypt_for_url(str(event_from_user.id))
+        await eng.send_message(event_chat.id, _("books_{url}_export").format(url=url))
 
-    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-'''
+    await h_start.MainMenu(state, event_chat, event_from_user)

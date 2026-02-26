@@ -7,8 +7,7 @@ import modules.environment as env # For bot states and callback data factories
 import modules.book as book # For book routines
 
 import modules.h_cat as h_cat # For category selection routines
-#import modules.h_search as h_search # For books search routines
-#import modules.h_lang as h_lang # For language selection routines
+import modules.h_lang as h_lang # For language selection routines
 
 # -------------------------------------------------------
 # Handler for main menu commands
@@ -41,13 +40,11 @@ async def RunMainMenuAction(action: str, state: eng.FSMContext, event_chat: eng.
         await eng.send_inline_keyboard(message, keyboard, state, 2)
         await state.update_data(action="search")
         await state.set_state(env.State.wait_for_search_query)
-    '''
     elif action == "rename":
         await state.update_data(action="rename_category")
-        await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+        await h_cat.SelectCategory(state, event_chat, event_from_user)
     elif action == "export":
-        await book.ExportBooks(state, pool, bot, event_chat, event_from_user)
+        await book.ExportBooks(state, event_chat, event_from_user)
     elif action == "settings":
         await state.update_data(action="select_language")
-        await h_lang.SelectLanguage(state, pool, bot, event_chat, event_from_user)
-    '''
+        await h_lang.SelectLanguage(state, event_chat, event_from_user)

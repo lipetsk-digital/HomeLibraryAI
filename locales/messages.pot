@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-01-18 22:58+0300\n"
+"POT-Creation-Date: 2026-02-26 03:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,16 +45,16 @@ msgstr ""
 msgid "cat"
 msgstr ""
 
-#: modules/actions.py:22 modules/actions.py:46 modules/actions.py:87
+#: modules/actions.py:22 modules/actions.py:46 modules/actions.py:89
 msgid "favorites"
 msgstr ""
 
-#: modules/actions.py:23 modules/actions.py:47 modules/actions.py:88
+#: modules/actions.py:23 modules/actions.py:47 modules/actions.py:90
 msgid "likes"
 msgstr ""
 
-#: modules/actions.py:24 modules/actions.py:64 modules/actions.py:97
-#: modules/h_cat.py:56 modules/h_edit.py:51 modules/h_edit.py:163
+#: modules/actions.py:24 modules/actions.py:66 modules/actions.py:99
+#: modules/h_cat.py:58 modules/h_edit.py:51 modules/h_edit.py:163
 msgid "cancel"
 msgstr ""
 
@@ -86,7 +86,7 @@ msgstr ""
 msgid "use_original_photo"
 msgstr ""
 
-#: modules/actions.py:36 modules/actions.py:89
+#: modules/actions.py:36 modules/actions.py:91
 msgid "take_new_photo"
 msgstr ""
 
@@ -118,224 +118,224 @@ msgstr ""
 msgid "brief"
 msgstr ""
 
-#: modules/actions.py:54
+#: modules/actions.py:55
 msgid "authors"
 msgstr ""
 
-#: modules/actions.py:55
+#: modules/actions.py:56
 msgid "annotation"
 msgstr ""
 
-#: modules/actions.py:57
+#: modules/actions.py:58
 msgid "book_id"
 msgstr ""
 
-#: modules/actions.py:58
+#: modules/actions.py:59
 msgid "category"
 msgstr ""
 
-#: modules/actions.py:61
+#: modules/actions.py:63
 msgid "move_book"
 msgstr ""
 
-#: modules/actions.py:62
+#: modules/actions.py:64
 msgid "delete_book"
 msgstr ""
 
-#: modules/actions.py:63
+#: modules/actions.py:65
 msgid "save_changes"
 msgstr ""
 
-#: modules/actions.py:67
+#: modules/actions.py:69
 msgid "prompt_photo"
 msgstr ""
 
-#: modules/actions.py:68
+#: modules/actions.py:70
 msgid "prompt_result"
 msgstr ""
 
-#: modules/actions.py:69
+#: modules/actions.py:71
 msgid "prompt_count"
 msgstr ""
 
-#: modules/actions.py:70
+#: modules/actions.py:72
 msgid "prompt_lang"
 msgstr ""
 
-#: modules/actions.py:71
+#: modules/actions.py:73
 msgid "prompt_characters"
 msgstr ""
 
-#: modules/actions.py:72
+#: modules/actions.py:74
 msgid "prompt_plaintext"
 msgstr ""
 
-#: modules/actions.py:73
+#: modules/actions.py:75
 msgid "prompt_fields"
 msgstr ""
 
-#: modules/actions.py:74
+#: modules/actions.py:76
 msgid "prompt_title"
 msgstr ""
 
-#: modules/actions.py:75
+#: modules/actions.py:77
 msgid "prompt_authors"
 msgstr ""
 
-#: modules/actions.py:76
+#: modules/actions.py:78
 msgid "prompt_pages"
 msgstr ""
 
-#: modules/actions.py:77
+#: modules/actions.py:79
 msgid "prompt_publisher"
 msgstr ""
 
-#: modules/actions.py:78
+#: modules/actions.py:80
 msgid "prompt_year"
 msgstr ""
 
-#: modules/actions.py:79
+#: modules/actions.py:81
 msgid "prompt_isbn"
 msgstr ""
 
-#: modules/actions.py:80
+#: modules/actions.py:82
 msgid "prompt_annotation"
 msgstr ""
 
-#: modules/actions.py:81
+#: modules/actions.py:83
 msgid "prompt_brief"
 msgstr ""
 
-#: modules/actions.py:82
+#: modules/actions.py:84
 msgid "prompt_authors_full_names"
 msgstr ""
 
-#: modules/actions.py:85
+#: modules/actions.py:87
 msgid "use_brief"
 msgstr ""
 
-#: modules/actions.py:86
+#: modules/actions.py:88
 msgid "edit_brief"
 msgstr ""
 
-#: modules/actions.py:92
+#: modules/actions.py:94
 msgid "add_another_book"
 msgstr ""
 
-#: modules/actions.py:93
+#: modules/actions.py:95
 msgid "no_another_book"
 msgstr ""
 
-#: modules/actions.py:96
+#: modules/actions.py:98
 msgid "delete"
 msgstr ""
 
-#: modules/book.py:13 modules/book.py:149 modules/h_cat.py:66
+#: modules/book.py:25 modules/book.py:180 modules/h_cat.py:66
 msgid "no_books"
 msgstr ""
 
-#: modules/book.py:15
+#: modules/book.py:27
 #, python-brace-format
 msgid "{result}_book"
 msgid_plural "{result}_books"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:79
+#: modules/book.py:93
 msgid "no_books_found"
 msgstr ""
 
-#: modules/book.py:81 modules/book.py:106
+#: modules/book.py:95 modules/book.py:137
 #, python-brace-format
 msgid "{books}_found"
 msgid_plural "{books}_founds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/book.py:97
+#: modules/book.py:112
 msgid "edit"
 msgstr ""
 
-#: modules/book.py:140
+#: modules/book.py:171
 msgid "exporting_books"
 msgstr ""
 
-#: modules/book.py:207
+#: modules/book.py:239
 msgid "books_export_csv"
 msgstr ""
 
-#: modules/book.py:215
+#: modules/book.py:248
 msgid "books_export_json"
 msgstr ""
 
-#: modules/book.py:220
+#: modules/book.py:253
 #, python-brace-format
 msgid "books_{url}_export"
 msgstr ""
 
-#: modules/h_brief.py:16
+#: modules/h_brief.py:26
 msgid "take_two_brief_photos"
 msgstr ""
 
-#: modules/h_brief.py:19
+#: modules/h_brief.py:28
 msgid "photo_brief_1of1"
 msgstr ""
 
-#: modules/h_brief.py:34
+#: modules/h_brief.py:44
 msgid "photo_brief_1of2"
 msgstr ""
 
-#: modules/h_brief.py:74 modules/h_cover.py:70 modules/h_cover.py:263
+#: modules/h_brief.py:79 modules/h_cover.py:76 modules/h_cover.py:280
 msgid "upload_failed"
 msgstr ""
 
-#: modules/h_brief.py:79
+#: modules/h_brief.py:84
 msgid "photo_brief_2of2"
 msgstr ""
 
-#: modules/h_brief.py:85
+#: modules/h_brief.py:90
 msgid "wait2"
 msgstr ""
 
-#: modules/h_brief.py:87 modules/h_cover.py:84
+#: modules/h_brief.py:92 modules/h_cover.py:93
 msgid "wait"
 msgstr ""
 
-#: modules/h_brief.py:117
+#: modules/h_brief.py:122
 msgid "gpt_failed"
 msgstr ""
 
-#: modules/h_brief.py:135
+#: modules/h_brief.py:140
 msgid "gpt_incorrect"
 msgstr ""
 
-#: modules/h_brief.py:176
+#: modules/h_brief.py:174
 #, python-brace-format
 msgid "{bookid}_added"
 msgstr ""
 
-#: modules/h_brief.py:176
+#: modules/h_brief.py:174
 #, python-brace-format
 msgid "add_next_{category}"
 msgstr ""
 
-#: modules/h_cat.py:38
+#: modules/h_cat.py:42
 msgid "select_or_enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:40
+#: modules/h_cat.py:44
 msgid "select_category_to_view_books"
 msgstr ""
 
-#: modules/h_cat.py:42
+#: modules/h_cat.py:46
 msgid "select_category_to_rename"
 msgstr ""
 
-#: modules/h_cat.py:44
+#: modules/h_cat.py:48
 msgid "select_category_to_move_book"
 msgstr ""
 
-#: modules/h_cat.py:55
+#: modules/h_cat.py:57
 msgid "continue_selecting_category"
 msgstr ""
 
@@ -343,48 +343,40 @@ msgstr ""
 msgid "enter_category_add_book"
 msgstr ""
 
-#: modules/h_cat.py:95
+#: modules/h_cat.py:98
 msgid "no_such_category_name"
 msgstr ""
 
-#: modules/h_cat.py:100 modules/h_cat.py:150
+#: modules/h_cat.py:103
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr ""
 
-#: modules/h_cat.py:103
+#: modules/h_cat.py:106
 msgid "can_not_add_category"
 msgstr ""
 
-#: modules/h_cat.py:114
+#: modules/h_cat.py:117
 #, python-brace-format
 msgid "adding_book_in_{category}"
 msgstr ""
 
-#: modules/h_cat.py:119
-msgid "rename_category"
-msgstr ""
-
-#: modules/h_cat.py:145
-msgid "category_renamed"
-msgstr ""
-
-#: modules/h_cover.py:23
+#: modules/h_cover.py:34
 msgid "photo_cover"
 msgstr ""
 
-#: modules/h_cover.py:82
+#: modules/h_cover.py:91
 #, python-brace-format
 msgid "{wait}_in_queue"
 msgid_plural "{wait}_in_queues"
 msgstr[0] ""
 msgstr[1] ""
 
-#: modules/h_cover.py:138 modules/h_cover.py:242
+#: modules/h_cover.py:154 modules/h_cover.py:259
 msgid "contour_failed"
 msgstr ""
 
-#: modules/h_cover.py:245
+#: modules/h_cover.py:262
 msgid "remove_background_failed"
 msgstr ""
 
@@ -418,24 +410,24 @@ msgstr ""
 msgid "{bookid}_deleted"
 msgstr ""
 
-#: modules/h_lang.py:18
+#: modules/h_lang.py:25
 msgid "select_lang"
 msgstr ""
 
-#: modules/h_lang.py:31
+#: modules/h_lang.py:39
 #, python-brace-format
 msgid "{language}_selected"
 msgstr ""
 
-#: modules/h_menu.py:36
+#: modules/h_menu.py:39
 msgid "enter_search_query"
 msgstr ""
 
-#: modules/h_search.py:40
+#: modules/h_search.py:51
 msgid "_intro"
 msgstr ""
 
-#: modules/h_start.py:14
+#: modules/h_start.py:18
 msgid "welcome_message"
 msgstr ""
 

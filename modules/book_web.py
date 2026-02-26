@@ -1,6 +1,5 @@
 from aiohttp import web # For web server response handling
 import json # For JSON handling
-from datetime import datetime # For handling date and time
 
 # Internal modules
 import modules.database as db # For common engine functions and definitions

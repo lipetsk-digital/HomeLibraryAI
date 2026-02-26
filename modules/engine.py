@@ -77,7 +77,6 @@ from aiogram.types import ReactionTypeEmoji as ReactionTypeEmoji_tg
 
 from aiogram.types import BufferedInputFile as BufferedInputFile_tg
 from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
-
 from maxapi.types import PhotoAttachmentPayload as PhotoAttachmentPayload_max
 from maxapi.types import Attachment as Attachment_max
 from maxapi.enums.attachment import AttachmentType as AttachmentType_max
@@ -469,7 +468,27 @@ async def send_photo_from_token(chat_id: int, token: str, caption: str = None, p
         #media = Image_max(token=token)
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
-    
+
+async def send_file_from_bytes(chat_id: int, file_bytes: bytes, filename: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a file to the specified chat using raw bytes.
+
+        Args:
+            chat_id (int): The ID of the chat to send the file to.
+            file_bytes (bytes): The raw bytes of the file to be sent.
+            filename (str): The filename to be used for the file.
+            caption (str): The caption for the file (optional).
+
+        Returns:
+            Message: A universal Message object representing the sent message.
+    """
+    if MESSENGER == b'T':
+        message = await bot.send_document(chat_id=chat_id, document=BufferedInputFile_tg(file_bytes, filename=filename), caption=caption, parse_mode=parse_mode)
+        return Message(message)
+    elif MESSENGER == b'M':
+        media = InputMediaBuffer_max(buffer=file_bytes, filename=filename)
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
+        return Message(sendedmessage.message)
+
 # ========================================================
 # Inline keyboards support
 # ========================================================
