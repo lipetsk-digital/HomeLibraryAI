@@ -14,7 +14,7 @@ import modules.h_brief as h_brief # For brief routines
 
 # -------------------------------------------------------
 # Send message with inline-buttons of the book fields selection
-async def SelectField(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat) -> None:
+async def SelectField(state: eng.FSMContext, event_chat: eng.Chat) -> None:
     data = await state.get_data()
     action = data.get("action")
     # Create new inline keyboard
@@ -26,8 +26,8 @@ async def SelectField(message: eng.Message, state: eng.FSMContext, event_chat: e
     for field in fields:
         keyboard.append(eng.CallbackButton(text=_(field), payload=env.BookFields(field=field)))
     # Add to the message with book information the keyboard
-    sent_message = await message.reply(_("select_field"))
-    await eng.send_inline_keyboard(sent_message, keyboard, state, 2, eng.onButtonClick.RemoveKeyboardKeepMessage)
+    sent_message = await eng.send_message(event_chat.id, _("select_field"))
+    await eng.send_inline_keyboard(sent_message, keyboard, state, 2)
     await state.set_state(env.State.select_field)
 
 # -------------------------------------------------------
@@ -45,18 +45,18 @@ async def field_selected(message: eng.Message, callback: eng.CallbackData, state
         keyboard = []
         for action in act.CONFIRM_DELETE:
             keyboard.append(eng.CallbackButton(text=_(action), payload=env.ConfirmDelete(action=action)))
-        sent_message = await message.reply(_("confirm_delete_book"))
+        sent_message = await eng.send_message(event_chat.id, _("confirm_delete_book"))
         await eng.send_inline_keyboard(sent_message, keyboard, state, 2, eng.onButtonClick.RemoveKeyboardKeepMessage)
         await state.set_state(env.State.confirm_delete_book)
     elif field == "cancel":
-        await message.reply(_("cancel"))
+        await eng.send_message(event_chat.id, _("cancel"))
         if action == "edit_book":
             await h_start.MainMenu(state, event_chat, event_from_user)
         else:
             await h_brief.AskForBriefReaction(message, state, event_chat)
     elif field == "save_changes":
         await book.SaveBookToDatabase(state, event_from_user)
-        await message.reply((_("{bookid}_updated")).format(bookid=data["book_id"]))
+        await eng.send_message(event_chat.id, (_("{bookid}_updated")).format(bookid=data["book_id"]))
         await h_start.MainMenu(state, event_chat, event_from_user)
     elif (field == "favorites") or (field == "likes"):
         # Inverse boolean field value
@@ -69,7 +69,7 @@ async def field_selected(message: eng.Message, callback: eng.CallbackData, state
         if action == "edit_book":
             # Return to field selection
             sent_message = await book.PrintBook(message, state)
-            await SelectField(sent_message, state, event_chat)
+            await SelectField(state, event_chat)
         else:
             await h_brief.AskForBriefReaction(message, state, event_chat)
     else:
@@ -79,14 +79,14 @@ async def field_selected(message: eng.Message, callback: eng.CallbackData, state
             value = data[field]
             if value:
                 content = "<b>" + _(field) + ":</b> " + _("edit_field_value")
-                await message.reply(content, parse_mode=eng.ParseMode.HTML)
-                await message.reply(value)
+                await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
+                await eng.send_message(event_chat.id, value)
             else:
                 content = "<b>" + _(field) + ":</b> " + _("edit_field_empty")
-                await message.reply(content, parse_mode=eng.ParseMode.HTML)
+                await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
         else:
             content = "<b>" + _(field) + ":</b> " + _("edit_field_empty")
-            await message.reply(content, parse_mode=eng.ParseMode.HTML)
+            await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
         # Wait for new value of selected field
         await state.set_state(env.State.wait_for_field_value)
 
@@ -110,7 +110,7 @@ async def value_entered(message: eng.Message, state: eng.FSMContext, event_chat:
     if action == "edit_book":
         # Return to field selection
         sent_message = await book.PrintBook(message, state)
-        await SelectField(sent_message, state, event_chat)
+        await SelectField(state, event_chat)
     else:
         await h_brief.AskForBriefReaction(message, state, event_chat)
 
@@ -137,9 +137,9 @@ async def edit_book_callback(message: eng.Message, callback: eng.CallbackData, s
         await state.update_data(**book_dict)
         await state.update_data(book_id=book_id)
         sent_message = await book.PrintBook(message, state)
-        await SelectField(sent_message, state, event_chat)
+        await SelectField(state, event_chat)
     else:
-        await message.reply(_("book_not_found"))
+        await eng.send_message(event_chat.id, _("book_not_found"))
 
 # -------------------------------------------------------
 # Handler for confirm delete button
@@ -154,7 +154,7 @@ async def confirm_delete_callback(message: eng.Message, callback: eng.CallbackDa
             DELETE FROM books
             WHERE user_id = $1 AND book_id = $2
         """, event_from_user.id, book_id)
-    await message.reply((_("{bookid}_deleted")).format(bookid=data["book_id"]))
+    await eng.send_message(event_chat.id, (_("{bookid}_deleted")).format(bookid=data["book_id"]))
     # Return to main menu
     await h_start.MainMenu(state, event_chat, event_from_user)
 
@@ -163,6 +163,6 @@ async def confirm_delete_callback(message: eng.Message, callback: eng.CallbackDa
 @eng.on_callback(eng.base_router,env.ConfirmDelete.filter(eng.F.action == "cancel"))
 @eng.callback_handler
 async def cancel_delete_callback(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    await message.reply(_("cancel"))
+    await eng.send_message(event_chat.id, _("cancel"))
     # Return to editing field selection
-    await SelectField(message, state, event_chat)
+    await SelectField(state, event_chat)

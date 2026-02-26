@@ -125,7 +125,7 @@ async def DoCategory(category: str, message: eng.Message, state: eng.FSMContext,
     elif action == "edit_book":
         # Return to editing book after category selection
         sent_message = await book.PrintBook(message, state)
-        await h_edit.SelectField(sent_message, state, event_chat)
+        await h_edit.SelectField(state, event_chat)
 
 # -------------------------------------------------------
 # Handler for entered text when the user enters new category name

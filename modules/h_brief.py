@@ -180,7 +180,7 @@ async def use_brief(message: eng.Message, callback: eng.CallbackData, state: eng
 @eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "edit_brief"))
 @eng.callback_handler
 async def edit_brief(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    await h_edit.SelectField(message, state, event_chat)
+    await h_edit.SelectField(state, event_chat)
 
 # =========================================================
 # Handler for inline button favorites and likes
