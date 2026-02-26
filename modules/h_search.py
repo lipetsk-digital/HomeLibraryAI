@@ -39,8 +39,8 @@ async def recent_books(message: eng.Message, callback: eng.CallbackData, state: 
 
 # -------------------------------------------------------
 # Handler for entered text when the user is searching for a book
-@eng.on_message(eng.base_router, env.State.wait_for_command, eng.F.text)
-@eng.on_message(eng.base_router, env.State.wait_for_search_query, eng.F.text)
+@eng.on_message(eng.base_router, env.State.wait_for_command, eng.F_text())
+@eng.on_message(eng.base_router, env.State.wait_for_search_query, eng.F_text())
 @eng.message_handler
 async def search_query_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     await DoSearch("text", message.text, state, event_chat, event_from_user)

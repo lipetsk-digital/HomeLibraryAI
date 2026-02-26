@@ -10,9 +10,7 @@ import modules.book as book # For book routines
 import modules.h_start as h_start # For handling start command
 import modules.h_search as h_search # For handling book search routines
 import modules.h_cover as h_cover # For do book cover photos
-#import modules.h_edit as h_edit # For handling book editing
-
-from email.mime import message
+import modules.h_edit as h_edit # For handling book editing
 
 # Constants
 MaxBytesInCategoryName = eng.MaxBytesInButtonCaption-len(env.Category.prefix.encode())-1
@@ -84,7 +82,7 @@ async def category_selection_cancel(message: eng.Message, callback: eng.Callback
 @eng.on_callback(eng.base_router,env.Category.filter())
 @eng.callback_handler
 async def category_selected(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    await DoCategory(callback.name, state, event_chat, event_from_user)
+    await DoCategory(callback.name, message, state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
@@ -99,7 +97,7 @@ async def category_entered(message: eng.Message, state: eng.FSMContext, event_ch
                 await message.delete()
                 await eng.send_message(event_chat.id, _("no_such_category_name"))
             else:
-                await DoCategory(message.text, state, event_chat, event_from_user)
+                await DoCategory(message.text, message, state, event_chat, event_from_user)
         else:
             await message.delete()
             await eng.send_message(event_chat.id, _("category_name_{size}").format(size=MaxBytesInCategoryName))
@@ -109,7 +107,7 @@ async def category_entered(message: eng.Message, state: eng.FSMContext, event_ch
 
 # -------------------------------------------------------
 # Process the selected category
-async def DoCategory(category: str, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+async def DoCategory(category: str, message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Save selected category
     await state.update_data(category=category)
     # Perform the action based on the selected category
@@ -127,7 +125,7 @@ async def DoCategory(category: str, state: eng.FSMContext, event_chat: eng.Chat,
     elif action == "edit_book":
         # Return to editing book after category selection
         sent_message = await book.PrintBook(message, state)
-        #await h_edit.SelectField(sent_message, state, event_chat)
+        await h_edit.SelectField(sent_message, state, event_chat)
 
 # -------------------------------------------------------
 # Handler for entered text when the user enters new category name
@@ -153,4 +151,4 @@ async def new_cat_name_entered(message: eng.Message, state: eng.FSMContext, even
         await h_start.MainMenu(state, event_chat, event_from_user)
     else:
         await message.delete()
-        await message.answer(_("category_name_{size}").format(size=MaxBytesInCategoryName))
+        await message.reply(_("category_name_{size}").format(size=MaxBytesInCategoryName))

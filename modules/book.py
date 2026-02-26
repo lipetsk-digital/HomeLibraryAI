@@ -53,6 +53,7 @@ async def SaveBookToDatabase(state: eng.FSMContext, event_from_user: eng.User) -
     # Get stored user's data
     data = await state.get_data()
     data["user_id"] = event_from_user.id
+    data["platform"] = eng.MESSENGER
     # Build book dictionary
     fields = act.PUBLIC_BOOK_FIELDS + act.HIDDEN_BOOK_FIELDS
     for field in fields:

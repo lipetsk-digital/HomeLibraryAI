@@ -7,7 +7,7 @@ import modules.environment as env # For bot states and callback data factories
 import modules.common as com # For common functions and definitions
 import modules.book as book # For save book to database
 
-#import modules.h_edit as h_edit # For editing book information
+import modules.h_edit as h_edit # For editing book information
 import modules.h_cover as h_cover # For do book cover photos
 import modules.h_start as h_start # For handling start command
 
@@ -37,7 +37,7 @@ async def AskForBrief(state: eng.FSMContext, event_chat: eng.Chat) -> None:
 async def take_two_brief_photos(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Remove previous message
     try:
-        await callback.message.delete()
+        await message.delete()
     except Exception as e:
         logging.error(f"Error deleting previous message: {e}")
     # Ask for the first brief photo
@@ -174,23 +174,22 @@ async def use_brief(message: eng.Message, callback: eng.CallbackData, state: eng
     sent_message = await message.reply((_("{bookid}_added")+" "+_("add_next_{category}")).format(bookid=data["book_id"], category=data["category"]))
     await eng.send_inline_keyboard(sent_message, keyboard, state, 2)
     await state.set_state(env.State.wait_next_book)
-'''
 
 # =========================================================
 # Handler for inline button edit_brief
-@engt.base_router.callback_query(env.BriefActions.filter(F.action == "edit_brief"))
-async def edit_brief(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await h_edit.SelectField(callback.message, state, pool, bot, event_chat)
+@eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "edit_brief"))
+@eng.callback_handler
+async def edit_brief(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await h_edit.SelectField(message, state, event_chat)
 
 # =========================================================
 # Handler for inline button favorites and likes
-@engt.base_router.callback_query(env.BriefActions.filter(F.action == "favorites"))
-@engt.base_router.callback_query(env.BriefActions.filter(F.action == "likes"))
-async def favorites(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
+@eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "favorites"))
+@eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "likes"))
+@eng.callback_handler
+async def favorites(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Inverse boolean field value
-    action = callback_data.action
+    action = callback.action
     data = await state.get_data()
     old_value = data[action]
     new_value = not old_value
@@ -198,26 +197,25 @@ async def favorites(callback: CallbackQuery, callback_data: env.BriefActions, st
     book_dict[action] = new_value
     await state.update_data(**book_dict)
     # Update the book information
-    await AskForBriefReaction(callback.message, state, pool, bot, event_chat)
+    await AskForBriefReaction(message, state, event_chat)
 
 # =========================================================
 # Handler for inline button take_new_photo
-@engt.base_router.callback_query(env.BriefActions.filter(F.action == "take_new_photo"))
-async def take_new_brief_photo(callback: CallbackQuery, callback_data: env.BriefActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await AskForBrief(state, pool, bot, event_chat)
+@eng.on_callback(eng.base_router,env.BriefActions.filter(eng.F.action == "take_new_photo"))
+@eng.callback_handler
+async def take_new_brief_photo(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await AskForBrief(state, event_chat)
 
 # =========================================================
 # Handler for the callback query when the user selects "add another book"
-@engt.base_router.callback_query(env.NextActions.filter(F.action == "add_another_book"))
-async def add_another_book(callback: CallbackQuery, callback_data: env.NextActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await h_cover.AskForCover(state, pool, bot, event_chat)
+@eng.on_callback(eng.base_router,env.NextActions.filter(eng.F.action == "add_another_book"))
+@eng.callback_handler
+async def add_another_book(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await h_cover.AskForCover(state, event_chat)
 
 # =========================================================
 # Handler for the callback query when the user selects "do not add another book"
-@engt.base_router.callback_query(env.NextActions.filter(F.action == "no_another_book"))
-async def no_another_book(callback: CallbackQuery, callback_data: env.NextActions, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
-'''
+@eng.on_callback(eng.base_router,env.NextActions.filter(eng.F.action == "no_another_book"))
+@eng.callback_handler
+async def no_another_book(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await h_start.MainMenu(state, event_chat, event_from_user)
