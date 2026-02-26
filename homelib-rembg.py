@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 log = logging.getLogger("rembg-service")
 
 # ========================================================
-# Session & queue management (from aiorembg.py)
+# Session & queue management
 # ========================================================
 _session_hq = None
 

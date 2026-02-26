@@ -1,62 +1,63 @@
 # Module for edit values of book fields
 
-from email.mime import message
-from modules.imports_tg import asyncpg, _, as_key_value, env, engt
-from modules.imports_tg import Bot, F, Chat, User, Message, ReactionTypeEmoji, InlineKeyboardBuilder, CallbackQuery, FSMContext
+import modules.engine as eng # For crossplatform bot engine functions and definitions
+from modules.engine import _  # For internationalization and localization
+import modules.actions as act # For bot commands and actions
+import modules.environment as env # For bot states and callback data factories
+import modules.common as com # For common functions and definitions
+import modules.database as db # For database functions and definitions
 import modules.book as book # For save book to database
+
 import modules.h_cat as h_cat # For category selection routines
 import modules.h_start as h_start # For main menu routines
 import modules.h_brief as h_brief # For brief routines
 
 # -------------------------------------------------------
 # Send message with inline-buttons of the book fields selection
-async def SelectField(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
-    await engt.RemoveInlineKeyboards(None, state, bot, event_chat)
+async def SelectField(state: eng.FSMContext, event_chat: eng.Chat) -> None:
     data = await state.get_data()
     action = data.get("action")
     # Create new inline keyboard
-    builder = InlineKeyboardBuilder()
+    keyboard = []
     if action == "edit_book":
-        fields = env.PUBLIC_BOOK_FIELDS + env.BOOK_ACTIONS
+        fields = act.PUBLIC_BOOK_FIELDS + act.BOOK_ACTIONS
     else:
-        fields = env.PUBLIC_BOOK_FIELDS + ["cancel"]
+        fields = act.PUBLIC_BOOK_FIELDS + ["cancel"]
     for field in fields:
-        builder.button(text=_(field), callback_data=env.BookFields(field=field))
-    builder.adjust(2)
+        keyboard.append(eng.CallbackButton(text=_(field), payload=env.BookFields(field=field)))
     # Add to the message with book information the keyboard
-    sent_message = await message.answer(_("select_field"), reply_markup=builder.as_markup())
-    await state.update_data(inline=sent_message.message_id)
+    sent_message = await eng.send_message(event_chat.id, _("select_field"))
+    await eng.send_inline_keyboard(sent_message, keyboard, state, 2)
     await state.set_state(env.State.select_field)
 
 # -------------------------------------------------------
 # Handle button of field selection
-@engt.base_router.callback_query(env.BookFields.filter())
-async def field_selected(callback: CallbackQuery, callback_data: env.BookFields, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    field = callback_data.field
+@eng.on_callback(eng.base_router,env.BookFields.filter())
+@eng.callback_handler
+async def field_selected(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    field = callback.field
     data = await state.get_data()
     action = data.get("action")
     # Handle special books actions
     if field == "move_book":
-        await h_cat.SelectCategory(state, pool, bot, event_chat, event_from_user)
+        await h_cat.SelectCategory(state, event_chat, event_from_user)
     elif field == "delete_book":
-        builder = InlineKeyboardBuilder()
-        for action in env.CONFIRM_DELETE:
-            builder.button(text=_(action), callback_data=env.ConfirmDelete(action=action))
-        builder.adjust(2)
-        sent_message = await callback.message.answer(_("confirm_delete_book"), reply_markup=builder.as_markup())
-        await state.update_data(inline=sent_message.message_id)
+        keyboard = []
+        for action in act.CONFIRM_DELETE:
+            keyboard.append(eng.CallbackButton(text=_(action), payload=env.ConfirmDelete(action=action)))
+        sent_message = await eng.send_message(event_chat.id, _("confirm_delete_book"))
+        await eng.send_inline_keyboard(sent_message, keyboard, state, 2, eng.onButtonClick.RemoveKeyboardKeepMessage)
         await state.set_state(env.State.confirm_delete_book)
     elif field == "cancel":
-        await callback.message.answer(_("cancel"))
+        await eng.send_message(event_chat.id, _("cancel"))
         if action == "edit_book":
-            await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+            await h_start.MainMenu(state, event_chat, event_from_user)
         else:
-            await h_brief.AskForBriefReaction(callback.message, state, pool, bot, event_chat)
+            await h_brief.AskForBriefReaction(message, state, event_chat)
     elif field == "save_changes":
-        await book.SaveBookToDatabase(state, pool, bot, event_from_user)
-        await callback.message.answer((_("{bookid}_updated")).format(bookid=data["book_id"]))
-        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+        await book.SaveBookToDatabase(state, event_from_user)
+        await eng.send_message(event_chat.id, (_("{bookid}_updated")).format(bookid=data["book_id"]))
+        await h_start.MainMenu(state, event_chat, event_from_user)
     elif (field == "favorites") or (field == "likes"):
         # Inverse boolean field value
         old_value = data[field]
@@ -67,32 +68,33 @@ async def field_selected(callback: CallbackQuery, callback_data: env.BookFields,
         # Update the book information
         if action == "edit_book":
             # Return to field selection
-            sent_message = await book.PrintBook(callback.message, state, pool, bot)
-            await SelectField(sent_message, state, pool, bot, event_chat)
+            sent_message = await book.PrintBook(message, state)
+            await SelectField(state, event_chat)
         else:
-            await h_brief.AskForBriefReaction(callback.message, state, pool, bot, event_chat)
+            await h_brief.AskForBriefReaction(message, state, event_chat)
     else:
         # Print current value of selected field
         await state.update_data(field=field)
         if field in data:
             value = data[field]
             if value:
-                content = as_key_value(_(field), _("edit_field_value"))
-                await callback.message.answer(**content.as_kwargs())
-                await callback.message.answer(value)
+                content = "<b>" + _(field) + ":</b> " + _("edit_field_value")
+                await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
+                await eng.send_message(event_chat.id, value)
             else:
-                content = as_key_value(_(field), _("edit_field_empty"))
-                await callback.message.answer(**content.as_kwargs())
+                content = "<b>" + _(field) + ":</b> " + _("edit_field_empty")
+                await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
         else:
-            content = as_key_value(_(field), _("edit_field_empty"))
-            await callback.message.answer(**content.as_kwargs())
+            content = "<b>" + _(field) + ":</b> " + _("edit_field_empty")
+            await eng.send_message(event_chat.id, content, parse_mode=eng.ParseMode.HTML)
         # Wait for new value of selected field
         await state.set_state(env.State.wait_for_field_value)
 
 # -------------------------------------------------------
 # Handler for entered text when the user edits field value
-@engt.base_router.message(env.State.wait_for_field_value, F.text)
-async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat) -> None:
+@eng.on_message(eng.base_router, env.State.wait_for_field_value, eng.F_text())
+@eng.message_handler
+async def value_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Extract information about field editing
     data = await state.get_data()
     field = data.get("field")
@@ -103,24 +105,24 @@ async def value_entered(message: Message, state: FSMContext, pool: asyncpg.Pool,
     # Moify the book information in the user's state
     await state.update_data(**book_dict)
     # Get like to user's input
-    await bot.set_message_reaction(chat_id=message.chat.id,
-                                    message_id=message.message_id,
-                                    reaction=[ReactionTypeEmoji(emoji='👍')])
+    await message.set_like()
+
     if action == "edit_book":
         # Return to field selection
-        sent_message = await book.PrintBook(message, state, pool, bot)
-        await SelectField(sent_message, state, pool, bot, event_chat)
+        sent_message = await book.PrintBook(message, state)
+        await SelectField(state, event_chat)
     else:
-        await h_brief.AskForBriefReaction(message, state, pool, bot, event_chat)
+        await h_brief.AskForBriefReaction(message, state, event_chat)
 
 # -------------------------------------------------------
 # Handler for edit buttons of books
-@engt.base_router.callback_query(env.EditBook.filter())
-async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBook, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+@eng.on_callback(eng.base_router,env.EditBook.filter())
+@eng.callback_handler
+async def edit_book_callback(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     await state.update_data(action="edit_book")
-    book_id = callback_data.book_id
+    book_id = callback.book_id
     # Fetch book information from the database
-    async with pool.acquire() as connection:
+    async with db.pool.acquire() as connection:
         row = await connection.fetchrow("""
             SELECT *
             FROM books
@@ -129,37 +131,38 @@ async def edit_book_callback(callback: CallbackQuery, callback_data: env.EditBoo
     if row:
         # Store book information in the state
         book_dict = {}
-        for field in env.PUBLIC_BOOK_FIELDS + env.HIDDEN_BOOK_FIELDS:
-            book_dict[field] = row.get(field)
+        for field in act.PUBLIC_BOOK_FIELDS + act.HIDDEN_BOOK_FIELDS:
+            if field != "platform":
+                book_dict[field] = row.get(field)
         await state.update_data(**book_dict)
         await state.update_data(book_id=book_id)
-        sent_message = await book.PrintBook(callback.message, state, pool, bot)
-        await SelectField(sent_message, state, pool, bot, event_chat)
+        sent_message = await book.PrintBook(message, state)
+        await SelectField(state, event_chat)
     else:
-        await callback.message.answer(_("book_not_found"))
+        await eng.send_message(event_chat.id, _("book_not_found"))
 
 # -------------------------------------------------------
 # Handler for confirm delete button
-@engt.base_router.callback_query(env.ConfirmDelete.filter(F.action == "delete"))
-async def confirm_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
+@eng.on_callback(eng.base_router,env.ConfirmDelete.filter(eng.F.action == "delete"))
+@eng.callback_handler
+async def confirm_delete_callback(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     data = await state.get_data()
     book_id = data.get("book_id")
     # Delete the book from the database
-    async with pool.acquire() as connection:
+    async with db.pool.acquire() as connection:
         await connection.execute("""
             DELETE FROM books
             WHERE user_id = $1 AND book_id = $2
         """, event_from_user.id, book_id)
-    await callback.message.answer((_("{bookid}_deleted")).format(bookid=data["book_id"]))
+    await eng.send_message(event_chat.id, (_("{bookid}_deleted")).format(bookid=data["book_id"]))
     # Return to main menu
-    await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+    await h_start.MainMenu(state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for cancel delete button
-@engt.base_router.callback_query(env.ConfirmDelete.filter(F.action == "cancel"))
-async def cancel_delete_callback(callback: CallbackQuery, callback_data: env.ConfirmDelete, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
-    await engt.RemoveInlineKeyboards(callback, state, bot, event_chat)
-    await callback.message.answer(_("cancel"))
+@eng.on_callback(eng.base_router,env.ConfirmDelete.filter(eng.F.action == "cancel"))
+@eng.callback_handler
+async def cancel_delete_callback(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+    await eng.send_message(event_chat.id, _("cancel"))
     # Return to editing field selection
-    await SelectField(callback.message, state, pool, bot, event_chat)
+    await SelectField(state, event_chat)

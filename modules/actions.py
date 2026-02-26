@@ -49,13 +49,15 @@ PUBLIC_BOOK_FIELDS = [
 HIDDEN_BOOK_FIELDS = [
     "photo_filename",
     "cover_filename",
+    'cover_token',
     "brief_filename",
     "brief2_filename",
     _translate_("authors"),
     _translate_("annotation"),
     "user_id",
     _translate_("book_id"),
-    _translate_("category")
+    _translate_("category"),
+    "platform"
 ]
 BOOK_ACTIONS = [
     _translate_("move_book"),

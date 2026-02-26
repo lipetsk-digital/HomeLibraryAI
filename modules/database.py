@@ -54,6 +54,7 @@ async def init():
             category TEXT,
             photo_filename TEXT,
             cover_filename TEXT,
+            cover_token TEXT,
             brief_filename TEXT,
             title TEXT,
             authors TEXT,

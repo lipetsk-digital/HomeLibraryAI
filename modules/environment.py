@@ -29,7 +29,8 @@ class State(eng.StatesGroup):
 
 # Internal data fields:
 # -------------------------------------------------------
-# inline: int - message ID of the last sent message with inline keyboard
+# messages_to_remove: list[int] - ID of messages to remove them after an user reaction
+# keyboards_to_remove: list[int] - ID of messages with inline keyboards to remove the keyboards after an user reaction
 
 # Data of user conversation:
 # -------------------------------------------------------
@@ -39,11 +40,13 @@ class State(eng.StatesGroup):
 # field: str - currently selected book field for editing
 # brief_base64: str - base64 of the uploaded brief photo
 # brief2_base64: str - base64 of the uploaded brief photo
+# photo_token: str - messenger token of the user's uploaded book cover photo
 
 # Data of the book fields:
 # -------------------------------------------------------
 # photo_filename: str - filename of the uploaded book cover photo
 # cover_filename: str - filename of the processed book cover photo
+# cover_token: str - messenger token of the processed book cover photo
 # brief_filename: str - filename of the uploaded brief photo
 # brief2_filename: str - filename of the uploaded brief photo
 # title: str - book title

@@ -10,9 +10,10 @@ import modules.book as book # For book routines
 import modules.h_start as h_start # For handling start command
 import modules.h_search as h_search # For handling book search routines
 import modules.h_cover as h_cover # For do book cover photos
-#import modules.h_edit as h_edit # For handling book editing
+import modules.h_edit as h_edit # For handling book editing
 
-from email.mime import message
+# Constants
+MaxBytesInCategoryName = eng.MaxBytesInButtonCaption-len(env.Category.prefix.encode())-1
 
 # -------------------------------------------------------
 # Prepares and sends the inline keyboard for selecting a category.
@@ -73,7 +74,6 @@ async def SelectCategory(state: eng.FSMContext, event_chat: eng.Chat, event_from
 @eng.on_callback(eng.base_router,env.Category.filter(eng.F.name == "cancel"))
 @eng.callback_handler
 async def category_selection_cancel(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    #await eng.RemovePreviousBotMessage(state, bot, event_chat)
     await h_start.MainMenu(state, event_chat, event_from_user)
 
 # -------------------------------------------------------
@@ -82,8 +82,7 @@ async def category_selection_cancel(message: eng.Message, callback: eng.Callback
 @eng.on_callback(eng.base_router,env.Category.filter())
 @eng.callback_handler
 async def category_selected(message: eng.Message, callback: eng.CallbackData, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
-    #await engt.RemovePreviousBotMessage(state, bot, event_chat)
-    await DoCategory(callback.name, state, event_chat, event_from_user)
+    await DoCategory(callback.name, message, state, event_chat, event_from_user)
 
 # -------------------------------------------------------
 # Handler for entered text when the user can add a new category
@@ -92,14 +91,13 @@ async def category_selected(message: eng.Message, callback: eng.CallbackData, st
 async def category_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     data = await state.get_data()
     action = data.get("action")
-    MaxBytesInCategoryName = eng.MaxBytesInButtonCaption-len(env.Category.prefix.encode())-1
     if (action == "add_book") or (action == "edit_book"):
         if len(message.text.encode()) < MaxBytesInCategoryName:
             if message.text.lower() == "cancel":
                 await message.delete()
                 await eng.send_message(event_chat.id, _("no_such_category_name"))
             else:
-                await DoCategory(message.text, state, event_chat, event_from_user)
+                await DoCategory(message.text, message, state, event_chat, event_from_user)
         else:
             await message.delete()
             await eng.send_message(event_chat.id, _("category_name_{size}").format(size=MaxBytesInCategoryName))
@@ -109,7 +107,7 @@ async def category_entered(message: eng.Message, state: eng.FSMContext, event_ch
 
 # -------------------------------------------------------
 # Process the selected category
-async def DoCategory(category: str, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
+async def DoCategory(category: str, message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Save selected category
     await state.update_data(category=category)
     # Perform the action based on the selected category
@@ -120,41 +118,37 @@ async def DoCategory(category: str, state: eng.FSMContext, event_chat: eng.Chat,
         await h_cover.AskForCover(state, event_chat)
     elif action == "search":
         await h_search.DoSearch("cat", category, state, event_chat, event_from_user)
-        pass
-    '''
     elif action == "rename_category":
         await eng.send_message(event_chat.id, _("rename_category"))
         await eng.send_message(event_chat.id, category)
         await state.set_state(env.State.wait_for_new_category_name)
     elif action == "edit_book":
         # Return to editing book after category selection
-        sent_message = await book.PrintBook(message, state, pool, bot)
-        await h_edit.SelectField(sent_message, state, pool, bot, event_chat)
-    '''
+        sent_message = await book.PrintBook(message, state)
+        await h_edit.SelectField(state, event_chat)
 
-'''
 # -------------------------------------------------------
 # Handler for entered text when the user enters new category name
-@engt.base_router.message(env.State.wait_for_new_category_name, F.text)
-async def new_cat_name_entered(message: Message, state: FSMContext, pool: asyncpg.Pool, bot: Bot, event_chat: Chat, event_from_user: User) -> None:
+@eng.on_message(eng.base_router, env.State.wait_for_new_category_name, eng.F_text())
+@eng.message_handler
+async def new_cat_name_entered(message: eng.Message, state: eng.FSMContext, event_chat: eng.Chat, event_from_user: eng.User) -> None:
     # Check the length of the new category name
-    if len(message.text.encode()) < engb.MaxBytesInCategoryName:
+    if len(message.text.encode()) < MaxBytesInCategoryName:
         # Extract information about field editing
         data = await state.get_data()
         old_cat = data.get("category")
         new_cat = message.text
         # Rename category in the database
-        async with pool.acquire() as conn:
+        async with db.pool.acquire() as conn:
             await conn.execute("""
                 UPDATE books
                 SET category = $1
-                WHERE user_id = $2 AND category = $3
-            """, new_cat, event_from_user.id, old_cat)
+                WHERE user_id = $2 AND category = $3 AND platform = $4
+            """, new_cat, event_from_user.id, old_cat, eng.MESSENGER)
         # Acknowledge the renaming
-        await message.answer(_("category_renamed"))
+        await message.reply(_("category_renamed"))
         # Return to the main menu
-        await h_start.MainMenu(state, pool, bot, event_chat, event_from_user)
+        await h_start.MainMenu(state, event_chat, event_from_user)
     else:
         await message.delete()
-        await message.answer(_("category_name_{size}").format(size=engb.MaxBytesInCategoryName))
-'''
+        await message.reply(_("category_name_{size}").format(size=MaxBytesInCategoryName))

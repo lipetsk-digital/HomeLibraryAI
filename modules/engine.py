@@ -5,6 +5,8 @@ import os # For environment variables
 import datetime # For date and time
 import aiohttp # For async HTTP requests
 from dataclasses import dataclass # For data classes
+from typing import Self # For type hinting of self return type
+from enum import Enum, auto # For enumerations
 
 from aiogram import Bot as Bot_tg
 from maxapi import Bot as Bot_max
@@ -71,8 +73,14 @@ from maxapi import F as F_max
 from aiogram.enums.parse_mode import ParseMode as ParseMode_tg
 from maxapi.enums.parse_mode import ParseMode as ParseMode_max
 
+from aiogram.types import ReactionTypeEmoji as ReactionTypeEmoji_tg
+
 from aiogram.types import BufferedInputFile as BufferedInputFile_tg
 from maxapi.types import InputMediaBuffer as InputMediaBuffer_max
+from maxapi.types import PhotoAttachmentPayload as PhotoAttachmentPayload_max
+from maxapi.types import Attachment as Attachment_max
+from maxapi.enums.attachment import AttachmentType as AttachmentType_max
+
 
 # ========================================================
 # Constants and settings
@@ -157,6 +165,13 @@ class Chat:
             self.id = source
             self.title = ""
 
+@dataclass
+class Attachment():
+    """ Universal Attachment class for both Telegram and MAX messengers"""
+    body: bytes
+    url: str
+    token: str
+
 class Message:
     """ Universal Message class for both Telegram and MAX messengers."""
     id: str
@@ -192,10 +207,53 @@ class Message:
             self.text = source.message.body.text or "" if source.message.body else None
             self.message_max = source.message
     async def delete(self):
+        ''' Delete the message'''
         if MESSENGER == b'T':
             return await bot.delete_message(chat_id=self.chat.id, message_id=self.id)
         elif MESSENGER == b'M':
             return await bot.delete_message(message_id=self.id)
+    async def reply(self, text: str, parse_mode: ParseMode_tg | ParseMode_max = None) -> Self:
+        ''' Reply to the message with the given text and parse mode, and return the new message as a universal Message object.'''
+        if MESSENGER == b'T':
+            reply_message = await self.message_tg.reply(text=text, parse_mode=parse_mode)
+            return self.__class__(reply_message)
+        elif MESSENGER == b'M':
+            sendedmessage = await self.message_max.reply(text=text, parse_mode=parse_mode)
+            return self.__class__(sendedmessage.message)
+    async def get_photo(self) -> Attachment:
+        """ Get the photo bytes from the message."""
+        if MESSENGER == b'T':
+            try:
+                photo = self.message_tg.photo[-1]
+                photo_file = await bot.get_file(photo.file_id)
+                photo_bytesio = await bot.download_file(photo_file.file_path)
+                photo_bytes = photo_bytesio.read()
+            finally: # Close photo_bytesio
+                if photo_bytesio:
+                    photo_bytesio.close()
+                    photo_bytesio = None
+            return Attachment(body=photo_bytes, url=photo_file.file_path, token=photo.file_id)
+        elif MESSENGER == b'M':
+            if self.message_max.body.attachments:
+                if self.message_max.body.attachments[0].type != "image":
+                    raise ValueError("The attachment is not a photo")
+                photo_url = self.message_max.body.attachments[0].payload.url
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(photo_url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
+                        resp.raise_for_status()
+                        photo_bytes = await resp.read()
+                        return Attachment(body=photo_bytes, url=photo_url, token=self.message_max.body.attachments[0].payload.token)
+            else:
+                raise ValueError("No attachments found in the message")
+    async def set_like(self) -> None:
+        """ Set a like reaction to the message."""
+        if MESSENGER == b'T':
+            await bot.set_message_reaction(chat_id=self.chat.id,
+                                            message_id=self.id,
+                                            reaction=[ReactionTypeEmoji_tg(emoji='👍')])
+        elif MESSENGER == b'M':
+            pass; # MAX does not support reactions yet, so we will skip this step
+
 
 CallbackData = CallbackData_tg | CallbackData_max
 
@@ -230,13 +288,11 @@ def Command(*args, **kwargs):
     elif MESSENGER == b'M':
         return Command_max(*args, **kwargs)
     
-@dataclass
-class Attachment():
-    """ Universal Attachment class for both Telegram and MAX messengers"""
-    body: bytes
-    url: str
-    token: str
-    
+class onButtonClick(Enum):
+    RemoveKeyboardAndMessage = auto() # default
+    RemoveKeyboardKeepMessage = auto()
+    KeepKeyboardAndMessage = auto()
+
 # ========================================================
 # Bot startup routines definitions
 # ========================================================
@@ -371,74 +427,72 @@ async def send_message(chat_id: int, text: str, parse_mode: ParseMode_tg | Parse
         sendedmessage = await bot.send_message(chat_id=chat_id, text=text, parse_mode=parse_mode)
         return Message(sendedmessage.message)
 
-async def get_photo(message: Message) -> Attachment:
-    """ Get the photo bytes from the message.
+async def send_photo_from_bytes(chat_id: int, photo_bytes: bytes, filename: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a photo to the specified chat using raw bytes.
 
         Args:
-            message (Message): The universal Message object containing the photo.
-
-        Returns:
-            Attachment: A universal Attachment object containing the photo bytes, URL, and token.
-    """
-    if MESSENGER == b'T':
-        photo = message.message_tg.photo[-1]
-        photo_file = await bot.get_file(photo.file_id)
-        photo_bytesio = await bot.download_file(photo_file.file_path)
-        photo_bytes = photo_bytesio.read()
-        return Attachment(body=photo_bytes, url=photo_file.file_path, token=photo.file_id)
-    elif MESSENGER == b'M':
-        if message.message_max.body.attachments:
-            if message.message_max.body.attachments[0].type != "image":
-                raise ValueError("The attachment is not a photo")
-            photo_url = message.message_max.body.attachments[0].payload.url
-            async with aiohttp.ClientSession() as session:
-                async with session.get(photo_url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
-                    resp.raise_for_status()
-                    photo_bytes = await resp.read()
-                    return Attachment(body=photo_bytes, url=photo_url, token=message.message_max.body.attachments[0].payload.token)
-        else:
-            raise ValueError("No attachments found in the message")
-
-
-'''
-async def download_bytes(url: str) -> bytes:
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, timeout=aiohttp.ClientTimeout(total=HTTP_TIMEOUT_sec)) as resp:
-            resp.raise_for_status()
-            return await resp.read()
-
-async def upload_file_from_url(url: str, filename: str) -> str:
-    buffer = await download_bytes(url)
-    if MESSENGER == b'T':
-        document=BufferedInputFile_tg(buffer, filename=filename)
-        logging.debug(f"Uploading file from URL {url} with filename {filename}")
-
-async def send_photo(chat_id: int, photo: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
-    """ Send a photo message to the specified chat.
-
-        Args:
-            chat_id (int): The ID of the chat to send the message to.
-            photo (str): The URL of the photo to send.
+            chat_id (int): The ID of the chat to send the photo to.
+            photo_bytes (bytes): The raw bytes of the photo to be sent.
+            filename (str): The filename to be used for the photo.
             caption (str): The caption for the photo (optional).
 
         Returns:
             Message: A universal Message object representing the sent message.
     """
     if MESSENGER == b'T':
-        message = await bot.send_photo(chat_id=chat_id, photo=photo, caption=caption, parse_mode=parse_mode)
+        message = await bot.send_photo(chat_id=chat_id, photo=BufferedInputFile_tg(photo_bytes, filename=filename), caption=caption, parse_mode=parse_mode)
         return Message(message)
     elif MESSENGER == b'M':
-                
-        img = await download_bytes(photo)
-        media = InputMediaBuffer_max(buffer=img, filename="image.png")
-        
+        media = InputMediaBuffer_max(buffer=photo_bytes, filename=filename)
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
-'''
+
+async def send_photo_from_token(chat_id: int, token: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a photo to the specified chat using a token.
+
+        Args:
+            chat_id (int): The ID of the chat to send the photo to.
+            token (str): The token of the photo to be sent.
+            caption (str): The caption for the photo (optional).
+
+        Returns:
+            Message: A universal Message object representing the sent message.
+    """
+    if MESSENGER == b'T':
+        message = await bot.send_photo(chat_id=chat_id, photo=token, caption=caption, parse_mode=parse_mode)
+        return Message(message)
+    elif MESSENGER == b'M':
+        #media = InputMedia_max(path=token)
+        attachment = PhotoAttachmentPayload_max(photo_id=0, token=token, url="") # MAX does not support sending photos by token, but we can use the token to create a photo attachment payload and send it as an attachment
+        media = Attachment_max(type=AttachmentType_max.IMAGE, payload=attachment)
+        #media = Image_max(token=token)
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
+        return Message(sendedmessage.message)
+
+async def send_file_from_bytes(chat_id: int, file_bytes: bytes, filename: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+    """ Send a file to the specified chat using raw bytes.
+
+        Args:
+            chat_id (int): The ID of the chat to send the file to.
+            file_bytes (bytes): The raw bytes of the file to be sent.
+            filename (str): The filename to be used for the file.
+            caption (str): The caption for the file (optional).
+
+        Returns:
+            Message: A universal Message object representing the sent message.
+    """
+    if MESSENGER == b'T':
+        message = await bot.send_document(chat_id=chat_id, document=BufferedInputFile_tg(file_bytes, filename=filename), caption=caption, parse_mode=parse_mode)
+        return Message(message)
+    elif MESSENGER == b'M':
+        media = InputMediaBuffer_max(buffer=file_bytes, filename=filename)
+        sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
+        return Message(sendedmessage.message)
+
 # ========================================================
 # Inline keyboards support
 # ========================================================
-async def send_inline_keyboard(message: Message, buttons: list[CallbackButton], state: FSMContext, row_width: int = 1, permanently: bool = False) -> None:
+async def send_inline_keyboard(message: Message, buttons: list[CallbackButton], state: FSMContext, row_width: int = 1, rule: onButtonClick = onButtonClick.RemoveKeyboardAndMessage) -> None:
     """ Send an inline keyboard with the given buttons.
 
         Args:
@@ -467,14 +521,22 @@ async def send_inline_keyboard(message: Message, buttons: list[CallbackButton], 
             builder.row(*row)
         await bot.edit_message(message_id=message.id, attachments=(message.message_max.body.attachments + [builder.as_markup()]))
     # If the keyboard is not permanent, save the message ID in the FSM context to be able to delete it later
-    if not permanently:
+    if rule == onButtonClick.RemoveKeyboardAndMessage:
         data = await state.get_data()
-        inline_messages = data.get("inline", [])
-        if isinstance(inline_messages, list):
-            inline_messages.append(message.id)
+        messages_to_remove = data.get("messages_to_remove", [])
+        if isinstance(messages_to_remove, list):
+            messages_to_remove.append(message.id)
         else:
-            inline_messages = [message.id]
-        await state.update_data(inline=inline_messages)
+            messages_to_remove = [message.id]
+        await state.update_data(messages_to_remove=messages_to_remove)
+    elif rule == onButtonClick.RemoveKeyboardKeepMessage:
+        data = await state.get_data()
+        keyboards_to_remove = data.get("keyboards_to_remove", [])
+        if isinstance(keyboards_to_remove, list):
+            keyboards_to_remove.append(message.id)
+        else:
+            keyboards_to_remove = [message.id]
+        await state.update_data(keyboards_to_remove=keyboards_to_remove)
 
 async def remove_temporary_inline_keyboards(chat_id: int, state: FSMContext) -> None:
     """ Remove all temporary inline keyboards by their message IDs stored in the FSM context.
@@ -484,19 +546,33 @@ async def remove_temporary_inline_keyboards(chat_id: int, state: FSMContext) -> 
             state (FSMContext): The FSM context where the message IDs of inline keyboards are stored.
     """
     data = await state.get_data()
-    inline_messages = data.get("inline", [])
-    if isinstance(inline_messages, list):
-        for message_id in inline_messages:
+    messages_to_remove = data.get("messages_to_remove", [])
+    if isinstance(messages_to_remove, list):
+        for message_id in messages_to_remove:
             try:
                 if MESSENGER == b'T':
-                    #await bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
                     await bot.delete_message(chat_id=chat_id, message_id=message_id)
                 elif MESSENGER == b'M':
-                    #await bot.edit_message(message_id=message_id, attachments=[])
                     await bot.delete_message(message_id=message_id)
             except Exception as e:
                 logging.warning(f"Failed to remove inline keyboard from message {message_id}: {e}")
-        await state.update_data(inline=[])
+        await state.update_data(messages_to_remove=[])
+    keyboards_to_remove = data.get("keyboards_to_remove", [])
+    if isinstance(keyboards_to_remove, list):
+        for message_id in keyboards_to_remove:
+            try:
+                if MESSENGER == b'T':
+                    await bot.edit_message_reply_markup(chat_id=chat_id, message_id=message_id, reply_markup=None)
+                elif MESSENGER == b'M':
+                    message_max = await bot.get_message(message_id=message_id)
+                    attachments_new = []
+                    for attachment in message_max.body.attachments:
+                        if attachment.type != "inline_keyboard":
+                            attachments_new.append(attachment)
+                    await bot.edit_message(message_id=message_id, attachments=attachments_new)
+            except Exception as e:
+                logging.warning(f"Failed to remove inline keyboard from message {message_id}: {e}")
+        await state.update_data(keyboards_to_remove=[])
 
 # ========================================================
 # Decorators of message handlers
@@ -594,7 +670,7 @@ def callback_handler(func):
                 if event.callback.user.user_id == exclude_user:
                     return
             await remove_temporary_inline_keyboards(event.message.recipient.chat_id, context)
-            return await func(message=event.message, callback=payload, state=context, event_chat=Chat(event.message.recipient.chat_id), event_from_user=User(event.callback.user))
+            return await func(message=Message(event.message), callback=payload, state=context, event_chat=Chat(event.message.recipient.chat_id), event_from_user=User(event.callback.user))
         return wrapper_max
 
 def on_callback(router: any, *args):
