@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-02-26 03:07+0300\n"
+"POT-Creation-Date: 2026-02-26 03:16+0300\n"
 "PO-Revision-Date: 2025-05-01 01:46+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -55,7 +55,7 @@ msgid "likes"
 msgstr "👍 Нравится"
 
 #: modules/actions.py:24 modules/actions.py:66 modules/actions.py:99
-#: modules/h_cat.py:58 modules/h_edit.py:51 modules/h_edit.py:163
+#: modules/h_cat.py:61 modules/h_edit.py:51 modules/h_edit.py:163
 msgid "cancel"
 msgstr "Отмена"
 
@@ -231,7 +231,7 @@ msgstr "❌ Не нужно"
 msgid "delete"
 msgstr "🗑️ Удалить"
 
-#: modules/book.py:25 modules/book.py:180 modules/h_cat.py:66
+#: modules/book.py:25 modules/book.py:180 modules/h_cat.py:69
 msgid "no_books"
 msgstr "Пока нет книг в библиотеке 🥺"
 
@@ -322,47 +322,55 @@ msgstr "📗 Книга сохранена в библиотеку под ном
 msgid "add_next_{category}"
 msgstr "Добавить следующую книгу в категорию {category}?"
 
-#: modules/h_cat.py:42
+#: modules/h_cat.py:45
 msgid "select_or_enter_category_add_book"
 msgstr "➕ Выберите 📂 категорию, в которую добавить новую книгу или введите название новой категории:"
 
-#: modules/h_cat.py:44
+#: modules/h_cat.py:47
 msgid "select_category_to_view_books"
 msgstr "Выберите 📂 категорию, чтобы посмотреть книги:"
 
-#: modules/h_cat.py:46
+#: modules/h_cat.py:49
 msgid "select_category_to_rename"
 msgstr "Выберите 📂 категорию, которую нужно переименовать:"
 
-#: modules/h_cat.py:48
+#: modules/h_cat.py:51
 msgid "select_category_to_move_book"
 msgstr "Выберите 📂 категорию, в которую перенести книгу или напишите название новой категории:"
 
-#: modules/h_cat.py:57
+#: modules/h_cat.py:60
 msgid "continue_selecting_category"
 msgstr "... продолжение ..."
 
-#: modules/h_cat.py:64
+#: modules/h_cat.py:67
 msgid "enter_category_add_book"
 msgstr "Напишите название 📂 категории, в которую добавить новую книгу:"
 
-#: modules/h_cat.py:98
+#: modules/h_cat.py:100
 msgid "no_such_category_name"
 msgstr "Извините, но нельзя использовать эти слова в качестве названия категории 🥺"
 
-#: modules/h_cat.py:103
+#: modules/h_cat.py:105 modules/h_cat.py:156
 #, python-brace-format
 msgid "category_name_{size}"
 msgstr "Слишком длинное название категории 🥺 (максимум {size} байт)"
 
-#: modules/h_cat.py:106
+#: modules/h_cat.py:108
 msgid "can_not_add_category"
 msgstr "🫸 Сейчас невозможно добавить новую категорию. Пожалуйста, выберите одну из существующих"
 
-#: modules/h_cat.py:117
+#: modules/h_cat.py:119
 #, python-brace-format
 msgid "adding_book_in_{category}"
 msgstr "➕ Добавляем книгу в категорию {category}"
+
+#: modules/h_cat.py:124
+msgid "rename_category"
+msgstr "Напишите новое название 📂 категории:"
+
+#: modules/h_cat.py:151
+msgid "category_renamed"
+msgstr "✅ Категория успешно переименована"
 
 #: modules/h_cover.py:34
 msgid "photo_cover"
@@ -434,10 +442,4 @@ msgstr ""
 #: modules/h_start.py:18
 msgid "welcome_message"
 msgstr "Бот для упорядочивания и каталогизации вашей домашней библиотеки. Две фотки - и книга в базе данных! ИИ обработает обложку, распознает автора и название книги, сократит аннотацию. Поделись с друзьями!"
-
-#~ msgid "rename_category"
-#~ msgstr "Напишите новое название 📂 категории:"
-
-#~ msgid "category_renamed"
-#~ msgstr "✅ Категория успешно переименована"
 
