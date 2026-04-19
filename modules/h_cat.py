@@ -13,7 +13,7 @@ import modules.h_cover as h_cover # For do book cover photos
 import modules.h_edit as h_edit # For handling book editing
 
 # Constants
-MaxBytesInCategoryName = eng.MaxBytesInButtonCaption-len(env.Category.prefix.encode())-1
+MaxBytesInCategoryName = eng.MaxBytesInButtonCaption-len("cat")-1
 
 # -------------------------------------------------------
 # Prepares and sends the inline keyboard for selecting a category.
