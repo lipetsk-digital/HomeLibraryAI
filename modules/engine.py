@@ -11,6 +11,9 @@ from enum import Enum, auto # For enumerations
 from aiogram import Bot as Bot_tg
 from maxapi import Bot as Bot_max
 
+from aiogram.client.session.aiohttp import AiohttpSession as Session_tg
+from maxapi.client import DefaultConnectionProperties as Session_max
+
 from aiogram import Dispatcher as Dispatcher_tg
 from maxapi import Dispatcher as Dispatcher_max
 
@@ -322,7 +325,11 @@ def init_bot(messenger: str, postgres_config: dict, _only_user: str = None, _exc
     if MESSENGER == b'T':
         MESSENGER_TOKEN = os.getenv("TELEGRAM_TOKEN")
         MESSENGER_PROXY = os.getenv("TELEGRAM_PROXY")
-        bot = Bot_tg(token=MESSENGER_TOKEN, proxy=MESSENGER_PROXY)
+        if MESSENGER_PROXY:
+            session = Session_tg(proxy=MESSENGER_PROXY)
+            bot = Bot_tg(token=MESSENGER_TOKEN, session=session)
+        else:
+            bot = Bot_tg(token=MESSENGER_TOKEN)
         storage = PostgresStorage_tg(**postgres_config)
         dp = Dispatcher_tg(storage=storage)
         StatesGroup = StatesGroup_tg
@@ -334,7 +341,12 @@ def init_bot(messenger: str, postgres_config: dict, _only_user: str = None, _exc
 
     elif MESSENGER == b'M':
         MESSENGER_TOKEN = os.getenv("MAX_TOKEN")
-        bot = Bot_max(MESSENGER_TOKEN)
+        MESSENGER_PROXY = os.getenv("MAX_PROXY")
+        if MESSENGER_PROXY:
+            connection_props = Session_max(proxy=MESSENGER_PROXY)
+            bot = Bot_max(MESSENGER_TOKEN, default_connection=connection_props)
+        else:
+            bot = Bot_max(MESSENGER_TOKEN)
         postgres_storage = PostgresStorage_max(**postgres_config)
         storage = postgres_storage  # Alias for compatibility
         dp = Dispatcher_max(storage=PostgresContext_max, postgres_storage=postgres_storage)
