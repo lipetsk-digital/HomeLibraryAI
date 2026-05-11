@@ -113,7 +113,8 @@ async def PrintBooksList(rows: list, state: eng.FSMContext, event_chat: eng.Chat
             keyboard.append(eng.CallbackButton(text=_("edit"), payload=env.EditBook(book_id=book_id)))
             caption = f"{book_id}.{favorites}{likes} <b>{title}</b> - {authors}, {year}"
             if token:
-                message = await eng.send_photo_from_token(event_chat.id, token=token, caption=caption, parse_mode=eng.ParseMode.HTML)
+                photo_url = web.AWS_EXTERNAL_URL + "/" + photo
+                message = await eng.send_photo_from_token(event_chat.id, token=token, url=photo_url, caption=caption, parse_mode=eng.ParseMode.HTML)
             elif photo:
                 photo_url = web.AWS_EXTERNAL_URL + "/" + photo
                 # Download books cover from S3 storage
