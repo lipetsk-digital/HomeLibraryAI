@@ -459,12 +459,13 @@ async def send_photo_from_bytes(chat_id: int, photo_bytes: bytes, filename: str,
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
         return Message(sendedmessage.message)
 
-async def send_photo_from_token(chat_id: int, token: str, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
+async def send_photo_from_token(chat_id: int, token: str, url: str = None, caption: str = None, parse_mode: ParseMode_tg | ParseMode_max = None) -> Message:
     """ Send a photo to the specified chat using a token.
 
         Args:
             chat_id (int): The ID of the chat to send the photo to.
             token (str): The token of the photo to be sent.
+            url (str): The URL of the photo (optional).
             caption (str): The caption for the photo (optional).
 
         Returns:
@@ -475,7 +476,7 @@ async def send_photo_from_token(chat_id: int, token: str, caption: str = None, p
         return Message(message)
     elif MESSENGER == b'M':
         #media = InputMedia_max(path=token)
-        attachment = PhotoAttachmentPayload_max(photo_id=0, token=token, url="") # MAX does not support sending photos by token, but we can use the token to create a photo attachment payload and send it as an attachment
+        attachment = PhotoAttachmentPayload_max(photo_id=0, token=token, url=url) # MAX does not support sending photos by token, but we can use the token to create a photo attachment payload and send it as an attachment
         media = Attachment_max(type=AttachmentType_max.IMAGE, payload=attachment)
         #media = Image_max(token=token)
         sendedmessage = await bot.send_message(chat_id=chat_id, text=caption, attachments=[media], parse_mode=parse_mode)
